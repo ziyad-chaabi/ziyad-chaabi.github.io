@@ -147,42 +147,50 @@ const stick = () => head.classList.toggle('is-stuck', scrollY > 30);
 ScrollTrigger.create({ start: 0, end: 'max', onUpdate: stick }); stick();
 
 /* ---------- Visiteurs : au total, ce mois-ci, aujourd'hui ----------
-   Une personne = une connexion. Opera et Chrome ne partagent pas leur stockage, mais ils sortent par la même
-   adresse IP : on compte donc une empreinte de l'IP (SHA-256, calculée ici, l'IP elle-même n'est jamais envoyée
-   au compteur). Abacus sert aussi de registre « déjà vu » : la clé d'une empreinte renvoie 1 au premier passage.
-   Chaque compteur n'avance qu'une fois par empreinte et par période ; rafraîchir ou changer de page ne recompte rien.
-   Le navigateur garde aussi « déjà compté » pour éviter des appels inutiles. Pas de comptage en local ni pour les robots.
-   Si le service d'IP ne répond pas, on retombe sur un comptage par navigateur.
-   ponytail: compteurs publics (Abacus), gonflables par quelqu'un qui appellerait l'API à la main ; plusieurs personnes
-   derrière la même box (famille, école) comptent pour une, et un téléphone en 4G compte à part. Un Worker Cloudflare
-   avec sel secret fermerait le premier point ; le second demanderait une connexion des visiteurs. */
+   Un visiteur = un appareil. On calcule une empreinte de l'appareil à partir de ce qui ne change ni avec le navigateur
+   (Opera, Chrome, Edge, Firefox…) ni avec le réseau (Wi-Fi, 4G) : fabricant de la carte graphique, nombre de cœurs,
+   taille de l'écran, fuseau horaire, plateforme, écran tactile, profondeur de couleurs. Deux personnes sur la même box
+   ont deux appareils, donc deux empreintes. L'empreinte est hachée (SHA-256) ici ; rien d'autre n'est envoyé.
+   Abacus sert aussi de registre « déjà vu » : la clé d'une empreinte renvoie 1 au premier passage de la période.
+   Rafraîchir ou changer de page ne recompte rien ; le navigateur garde aussi « déjà compté » pour éviter des appels.
+   Pas de comptage en local ni pour les robots.
+   ponytail: compteurs publics (Abacus), gonflables à la main ; deux appareils strictement identiques (même modèle,
+   même écran, même fuseau) comptent pour un. Seule une connexion des visiteurs relierait le téléphone et le PC
+   d'une même personne. */
 (() => {
   if (!$$('[data-stat]').length) return;
-  const API = 'https://abacus.jasoncameron.dev', NS = 'ziyad-chaabi-site';
+  const API = 'https://abacus.jasoncameron.dev', NS = 'ziyad-chaabi-visites';
   const day = new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris' }).format(new Date()); // AAAA-MM-JJ, heure de Paris
   const month = day.slice(0, 7);
   const periods = { total: ['visiteurs', 'oui', 'v-'], month: ['mois-' + month, month, `m-${month}-`], day: ['jour-' + day, day, `d-${day}-`] };
   const live = location.hostname === 'ziyad-chaabi.github.io' && !navigator.webdriver;
   let seen = {};
-  try { seen = JSON.parse(localStorage.getItem('zc-vu2') || '{}'); } catch {}
-  const remember = (k, mark) => { seen[k] = mark; try { localStorage.setItem('zc-vu2', JSON.stringify(seen)); } catch {} };
+  try { seen = JSON.parse(localStorage.getItem('zc-vu3') || '{}'); } catch {}
+  const remember = (k, mark) => { seen[k] = mark; try { localStorage.setItem('zc-vu3', JSON.stringify(seen)); } catch {} };
   const call = (op, key) => fetch(`${API}/${op}/${NS}/${key}`).then(r => (r.ok ? r.json() : r.status === 404 ? { value: 0 } : Promise.reject())).then(d => d.value);
   const num = new Intl.NumberFormat('fr-FR');
   const show = (k, v) => { $(`[data-stat="${k}"]`).textContent = num.format(v); };
 
-  // empreinte de la connexion : SHA-256 de l'IP, tronquée ; null si le service ne répond pas
-  const fingerprint = (async () => {
+  // empreinte de l'appareil, identique d'un navigateur à l'autre et d'un réseau à l'autre ;
+  // calculée seulement au premier passage d'une période (elle ouvre un contexte WebGL, rendu aussitôt)
+  let fpOnce;
+  const fingerprint = () => fpOnce ||= (async () => {
     try {
-      const { ip } = await (await fetch('https://api.ipify.org?format=json')).json();
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('ziyad-chaabi:' + ip));
-      return [...new Uint8Array(buf)].slice(0, 10).map(b => b.toString(16).padStart(2, '0')).join('');
+      let gpu = 'aucun';
+      const gl = document.createElement('canvas').getContext('webgl'), ext = gl?.getExtension('WEBGL_debug_renderer_info');
+      // seulement le fabricant : Firefox simplifie le nom du modèle, Chrome le donne en entier
+      if (gl) { gpu = (String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)).match(/nvidia|geforce|radeon|amd|intel|apple|adreno|mali|powervr|qualcomm/i)?.[0] || 'autre').toLowerCase().replace('geforce', 'nvidia').replace('radeon', 'amd'); gl.getExtension('WEBGL_lose_context')?.loseContext(); }
+      const sw = Math.max(screen.width, screen.height), sh = Math.min(screen.width, screen.height);
+      const parts = [gpu, navigator.hardwareConcurrency, sw, sh, screen.colorDepth, Intl.DateTimeFormat().resolvedOptions().timeZone, navigator.platform, navigator.maxTouchPoints];
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('ziyad-chaabi:' + parts.join('|')));
+      return [...new Uint8Array(buf)].slice(0, 10).map(x => x.toString(16).padStart(2, '0')).join('');
     } catch { return null; }
   })();
 
   Object.entries(periods).forEach(async ([k, [key, mark, prefix]]) => {
     try {
       if (!live || seen[k] === mark) return show(k, await call('get', key)); // déjà compté (ou pas en ligne) : on lit
-      const fp = await fingerprint;
+      const fp = await fingerprint();
       // registre : la clé de cette empreinte vaut 1 au premier passage de la période, plus ensuite
       const isNew = fp ? (await call('hit', prefix + fp)) === 1 : true;
       show(k, await call(isNew ? 'hit' : 'get', key));
