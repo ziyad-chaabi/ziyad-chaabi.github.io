@@ -1,0 +1,41 @@
+# Synchronise le portfolio avec GitHub : nouveaux dépôts → sommet dans le labo, page projet, captures.
+# Tourne chaque jour, et à la demande (onglet Actions > « Synchroniser les projets GitHub » > Run workflow).
+name: Synchroniser les projets GitHub
+
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Installer Playwright (captures d'écran)
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Chercher les nouveaux dépôts et leurs visuels
+        run: node scripts/sync.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Régénérer les pages
+        run: node build.mjs
+      - name: Publier s'il y a du nouveau
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data img/auto js/auto.js js/tex projets index.html projets.html labo.html parcours.html competences.html veille.html sitemap.xml
+          git diff --cached --quiet || (git commit -m "chore(projets): synchronise les dépôts GitHub" && git push)

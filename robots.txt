@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://subdij.github.io/Final-Portfolio-V.X/sitemap.xml

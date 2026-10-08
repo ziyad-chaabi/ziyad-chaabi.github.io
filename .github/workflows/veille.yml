@@ -1,0 +1,32 @@
+# Relève GitHub Trending (semaine) pour la page Veille : la page n'a ni API ni CORS, on la lit côté serveur.
+# Toutes les 3 h, et à la demande (onglet Actions > « Relever la veille » > Run workflow).
+name: Relever la veille
+
+on:
+  schedule:
+    - cron: '23 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: veille
+  cancel-in-progress: true
+
+jobs:
+  veille:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/veille.mjs
+      - name: Publier s'il y a du nouveau
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add js/veille-data.js
+          git diff --cached --quiet || (git commit -m "chore(veille): relève GitHub Trending" && git pull --rebase && git push)

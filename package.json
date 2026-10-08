@@ -1,0 +1,11 @@
+{
+  "name": "portfolio-ziyad-chaabi",
+  "private": true,
+  "scripts": {
+    "sync": "node scripts/sync.mjs",
+    "build": "node build.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.57.0"
+  }
+}

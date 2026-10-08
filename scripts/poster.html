@@ -1,0 +1,39 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=block" rel="stylesheet">
+<style>
+html,body{margin:0;width:1600px;height:1000px;overflow:hidden;font-family:Archivo,sans-serif}
+body{background:var(--bg);color:var(--fg)}
+#bg{position:absolute;inset:0;width:100%;height:100%}
+.dev{position:absolute;right:-40px;top:40px;width:1060px;height:920px}
+.copy{position:absolute;left:84px;bottom:92px;width:720px}
+.k{font-weight:600;font-stretch:110%;font-size:22px;color:var(--ac);margin:0 0 18px}
+h1{margin:0;font-weight:760;font-stretch:125%;text-transform:uppercase;font-size:118px;line-height:.86;letter-spacing:-.025em}
+p.s{margin:26px 0 0;font-size:26px;line-height:1.35;max-width:24ch;opacity:.78}
+.veil{position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 18%,transparent 62%)}
+</style></head><body>
+<canvas id="bg"></canvas><div class="veil"></div>
+<canvas class="device-canvas dev"></canvas>
+<div class="copy"><p class="k"></p><h1></h1><p class="s"></p></div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
+<script src="../js/data.js"></script><script src="../js/relief.js"></script>
+<script>
+const q = new URLSearchParams(location.search), p = ZC.projects.find(x => x.slug === q.get('slug')), dark = q.get('dark') === '1';
+document.body.style.setProperty('--bg', dark ? '#121417' : '#EEF0EB'); document.body.style.setProperty('--fg', dark ? '#EEF0EB' : '#121417'); document.body.style.setProperty('--ac', p.color);
+document.querySelector('.k').textContent = p.context + ', ' + p.year; document.querySelector('h1').textContent = p.title; document.querySelector('.s').textContent = p.kicker;
+const c = document.querySelector('.device-canvas'); Object.assign(c.dataset, { device: p.device, seed: p.slug, color: p.color });
+const r = Relief.createRelief(document.getElementById('bg'), { seed: Relief.seedOf(p.slug), peaks: (p.relief?.peaks || 3) + 2, rough: p.relief?.rough || .6, levels: 15, accent: p.color, paper: dark ? '#121417' : '#EEF0EB', ink: dark ? '#EEF0EB' : '#121417', dark: dark ? 1 : 0, maxDpr: 1 });
+r.render({ time: 30 });
+document.body.dataset.base = '../';
+</script>
+<script src="../js/devices.js"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { MapControls } from 'three/addons/controls/MapControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+window.THREE = THREE; window.THREE_ADDONS = { MapControls, RoomEnvironment, RoundedBoxGeometry };
+dispatchEvent(new Event('three:ready'));
+</script>
+</body></html>
