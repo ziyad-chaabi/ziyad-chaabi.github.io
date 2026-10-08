@@ -22,7 +22,7 @@ async function device() {
   });
   return ctx;
 }
-const read = async p => { await p.waitForFunction(() => [...document.querySelectorAll('[data-stat]')].every(e => e.textContent !== '–'), null, { timeout: 15000 }); return p.$$eval('[data-stat]', es => es.map(e => +e.textContent.replace(/\s/g, ''))); };
+const read = async p => { await p.waitForFunction(() => [...document.querySelectorAll('[data-stat]')].every(e => e.textContent !== '–'), null, { timeout: 15000 }); return p.$$eval('[data-stat]', es => ['total', 'day', 'month'].map(k => +es.find(e => e.dataset.stat === k).textContent.replace(/\s/g, ''))); };
 const A = await device(), pa = await A.newPage();
 await pa.goto('https://ziyad-chaabi.github.io/'); assert.deepEqual(await read(pa), [1, 1, 1]); console.log('1re visite        : total, jour, mois =', await read(pa));
 await pa.reload(); await pa.waitForTimeout(800); assert.deepEqual(await read(pa), [1, 1, 1]); console.log('rafraîchissement  :', await read(pa));
