@@ -484,6 +484,8 @@ body[data-page="labo"] .site-foot { border-top: 1px solid rgb(233 235 230 / .1);
 .foot-cols h3 { font-size: .8125rem; font-weight: 500; color: var(--on-night-2); margin-bottom: 14px; }
 .foot-cols a { display: inline-block; padding-block: 10px; }
 .foot-cols a:hover { color: var(--accent); }
+.foot-stats b { color: var(--on-night); font-weight: 600; }
+.foot-stats span { margin-inline: 4px; color: var(--accent); }
 .foot-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 70px; padding-top: 20px; border-top: 1px solid rgb(233 235 230 / .12); font-size: .8125rem; color: var(--on-night-2); font-variant-numeric: tabular-nums; }
 @media (max-width: 860px) { .foot-main { grid-template-columns: 1fr; } }
 

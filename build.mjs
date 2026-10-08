@@ -188,7 +188,7 @@ function footer(b) {
     </div>
     <div class="foot-bottom">
       <p>© 2026 Ziyad Chaabi, Troyes</p>
-      <p>48°17′ N, 4°04′ E</p>
+      <p class="foot-stats" aria-live="polite"><b data-stat="total">–</b> visiteurs depuis le début <span>·</span> <b data-stat="day">–</b> aujourd’hui <span>·</span> <b data-stat="month">–</b> ce mois-ci</p>
       <a href="#main">Revenir en haut</a>
     </div>
   </div>

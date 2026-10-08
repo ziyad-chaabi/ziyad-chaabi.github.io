@@ -146,6 +146,34 @@ const head = $('.site-head');
 const stick = () => head.classList.toggle('is-stuck', scrollY > 30);
 ScrollTrigger.create({ start: 0, end: 'max', onUpdate: stick }); stick();
 
+/* ---------- Visiteurs : total, aujourd'hui, ce mois-ci ----------
+   Une personne = un appareil (navigateur). Chaque compteur n'avance qu'une fois par appareil et par période :
+   le navigateur garde seulement « déjà compté », sans identifiant ni donnée envoyée sur la personne.
+   Rafraîchir ou changer de page ne recompte donc rien. Pas de comptage en local ni pour les robots de test.
+   ponytail: compteurs publics (Abacus), donc gonflables par quelqu'un qui appellerait l'API à la main ;
+   un Worker Cloudflare avec dédoublonnage par IP hachée le fermerait si ça devenait un problème. */
+(() => {
+  const out = $$('[data-stat]');
+  if (!out.length) return;
+  const API = 'https://abacus.jasoncameron.dev', NS = 'ziyad-chaabi-github-io';
+  const day = new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris' }).format(new Date()); // AAAA-MM-JJ, heure de Paris
+  const keys = { total: ['visiteurs', 'oui'], day: ['jour-' + day, day], month: ['mois-' + day.slice(0, 7), day.slice(0, 7)] };
+  const live = location.hostname === 'ziyad-chaabi.github.io' && !navigator.webdriver;
+  let seen = {};
+  try { seen = JSON.parse(localStorage.getItem('zc-vu') || '{}'); } catch {}
+  const num = new Intl.NumberFormat('fr-FR');
+  Object.entries(keys).forEach(([k, [key, mark]]) => {
+    const count = live && seen[k] !== mark; // pas encore compté pour cette période sur cet appareil
+    fetch(`${API}/${count ? 'hit' : 'get'}/${NS}/${key}`)
+      .then(r => (r.ok ? r.json() : r.status === 404 ? { value: 0 } : Promise.reject()))
+      .then(({ value }) => {
+        $(`[data-stat="${k}"]`).textContent = num.format(value);
+        if (count) { seen[k] = mark; try { localStorage.setItem('zc-vu', JSON.stringify(seen)); } catch {} }
+      })
+      .catch(() => {}); // service injoignable : on laisse le tiret
+  });
+})();
+
 /* ---------- Copier l'e-mail ---------- */
 $$('[data-copy]').forEach(b => b.addEventListener('click', async () => {
   const v = b.dataset.copy, out = b.closest('.foot-mail')?.querySelector('.copy-msg') || b;
