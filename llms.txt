@@ -1,0 +1,68 @@
+# Ziyad Chaabi
+
+> Ziyad Chaabi est un développeur basé à Troyes (France), passé par le design avant le code. Il conçoit des applications web et mobiles, des expériences en réalité virtuelle et des outils d'IA appliquée. Ce fichier résume son portfolio, https://ziyad-chaabi.github.io/
+
+- Lieu : Troyes, Grand Est, France
+- Formation : Master Informatique, Sciences et Technologies du Métavers, INSA Hauts-de-France, Valenciennes (2024 à 2026) ; BUT Métiers du Multimédia et de l'Internet, IUT de Meaux, Université Gustave Eiffel (2021 à 2024) ; Bac STI2D option SIN, lycée Saint-Joseph La Salle, Troyes (2021)
+- Projet en cours : SubForge. Un coach nutrition où l'on décrit son repas en une phrase. L'IA propose, la personne décide. (https://ziyad-chaabi.github.io/projets/subforge.html)
+- Hors de l'écran : manga (JoJo's Bizarre Adventure), League of Legends, musculation, e-sport
+- Contact : ziyadou2011@hotmail.fr ; LinkedIn https://www.linkedin.com/in/ziyad-chaabi/ ; GitHub https://github.com/Subdij ; Instagram https://www.instagram.com/ziyad_chb/
+
+## Parcours
+
+- 2021, Troyes : Le déclic. Bac STI2D, option Systèmes d'information et numérique, au lycée Saint-Joseph La Salle. J'y écris mes premiers programmes, avec l'envie de comprendre ce qu'il y a derrière un écran.
+- 2021, Meaux : Le détour par le design. Je pars trois ans à Meaux pour un BUT MMI : code, UX, vidéo, graphisme. J'y ai appris qu'une interface se teste sur les gens qui l'utilisent, pas sur soi.
+- 2022, Troyes : Mon premier outil métier. Un stage administratif chez Ophta Médical. En voyant le planning de l'équipe, j'ai construit un tableau qui calcule les heures et les heures supplémentaires de chacun. Je ne savais pas encore que c'était ça, mon métier.
+- 2023, Saint-André-les-Vergers : Un vrai site, une vraie entreprise. Trois mois chez Réseau Sûr France pour livrer leur nouveau site, avec l'équipe marketing et des demandes qui changent jusqu'au bout.
+- 2023, Troyes : Dix mois d'e-commerce. En alternance chez Distri Sûr France, j'ai conçu et développé la boutique en ligne, des maquettes Figma à la mise en ligne sur Odoo.
+- 2024, Valenciennes : Cap sur le métavers. Master Sciences et Technologies du Métavers à l'INSA Hauts-de-France : réalité virtuelle, IA, mobile, blockchain, big data. Et l'équipe e-sport de l'école entre deux rendus.
+- 2026, Troyes : BTP-360, seul aux commandes. Sept mois pour remplacer les fichiers Excel de quatre sociétés par une seule application, web et Android, en production sur AWS.
+- 2026, Troyes : Et maintenant. De retour à Troyes. SubForge avance, et le labo grossit à chaque nouveau dépôt GitHub.
+
+## Projets
+
+- [BTP-360](https://ziyad-chaabi.github.io/projets/btp-360.html) : L'application qui a remplacé les fichiers Excel de quatre entreprises du BTP. Stage de fin d’études, Mars à septembre 2026. Rôle : Conception, développement, mise en production. Stack : Ionic 8, Angular 20, NgRx, Capacitor, NestJS 11, Prisma 7, PostgreSQL 16, Socket.IO, Docker, Terraform, AWS, GitHub Actions, Playwright, Sentry.
+- [SubForge](https://ziyad-chaabi.github.io/projets/subforge.html) : Un coach nutrition où l'on décrit son repas en une phrase. L'IA propose, la personne décide. Projet personnel, Depuis août 2026. Rôle : Produit, design, développement. Stack : React Native, Expo, TypeScript, Supabase, Edge Functions, Gemini 2.5 Flash, Jest, Sentry, PostHog, EAS.
+- [Funfair VR](https://ziyad-chaabi.github.io/projets/funfair-vr.html) : Une fête foraine médiévale en réalité virtuelle, avec cinq attractions. Master Sciences et Technologies du Métavers, 2025. Rôle : Développement Unity, interactions VR. Stack : Unity 2022.3, C#, URP, XR Interaction Toolkit, OpenXR, Meta Quest.
+- [Hotel Murder VR](https://ziyad-chaabi.github.io/projets/hotel-murder-vr.html) : Un escape game d'enquête en VR, dans un hôtel où quelqu'un vient d'être tué. Master Sciences et Technologies du Métavers, 2026. Rôle : Développement Unity, énigmes et interactions. Stack : Unity 6, C#, XR Interaction Toolkit 3, Audio spatialisé.
+- [lolop](https://ziyad-chaabi.github.io/projets/lolop.html) : Le compagnon League of Legends que je voulais avoir dans la poche. Projet personnel, Fin 2025. Rôle : Conception et développement. Stack : Java, Android, MVVM, Retrofit, SQLite, WorkManager.
+- [Turaty Naturels](https://ziyad-chaabi.github.io/projets/turaty-naturels.html) : Une boutique de cosmétiques bio, du catalogue jusqu’à la facture. Projet personnel, Été 2025. Rôle : Conception et développement. Stack : Symfony 6, Doctrine, MySQL 8, Twig, Tailwind, Stripe, PayPal, Docker.
+- [Distri Sûr France](https://ziyad-chaabi.github.io/projets/distri-sur-france.html) : Dix mois d'alternance pour créer la boutique en ligne d'une entreprise. Alternance, Novembre 2023 à août 2024. Rôle : Développeur full stack e-commerce. Stack : Odoo, Python, HTML, CSS, Figma, SEO.
+- [ZABI](https://ziyad-chaabi.github.io/projets/zabi.html) : Un jeu de duel entre super-héros, façon arcade. Master Sciences et Technologies du Métavers, Avril 2025. Rôle : Développement full stack. Stack : Node.js, Express 5, MongoDB, API REST, JavaScript.
+- [SUBCHAINE](https://ziyad-chaabi.github.io/projets/subchaine.html) : Un simulateur pour comprendre une blockchain en la manipulant. Master Sciences et Technologies du Métavers, Mai 2025. Rôle : Développement. Stack : Node.js, Express, Socket.IO, crypto-js, elliptic.
+- [Réseau Sûr France](https://ziyad-chaabi.github.io/projets/reseau-sur-france.html) : Le nouveau site d'une entreprise d'électricité et de domotique de l'Aube. Stage, Avril à juin 2023. Rôle : Design et développement. Stack : WordPress, Figma, Photoshop, HTML, CSS, JavaScript, OVH.
+- [JPO IUT de Meaux](https://ziyad-chaabi.github.io/projets/jpo-iut-meaux.html) : Le site des portes ouvertes du département MMI, avec une salle modélisée en 3D. BUT Métiers du Multimédia et de l’Internet, Janvier 2024. Rôle : Modélisation et intégration 3D. Stack : Blender, 3ds Max, Unity, WebGL, Angular, Sass, C#.
+- [Gestionnaire d’articles](https://ziyad-chaabi.github.io/projets/gestion-articles.html) : Une application Symfony pour publier, modifier et supprimer des articles. BUT Métiers du Multimédia et de l’Internet, Mars 2024. Rôle : Design, intégration, développement. Stack : Symfony, PHP, Twig, MySQL, HTML, CSS, JavaScript.
+- [Web-documentaire artisans](https://ziyad-chaabi.github.io/projets/web-doc-artisans.html) : Des artisans aux métiers rares, racontés par leurs propres mots. BUT Métiers du Multimédia et de l’Internet, Novembre 2022. Rôle : Interviews et design. Stack : Figma, Premiere Pro, HTML, CSS, JavaScript.
+- [Pub Steel Ball Run](https://ziyad-chaabi.github.io/projets/pub-steel-ball-run.html) : Une publicité animée pour un manga que j’adore. BUT Métiers du Multimédia et de l’Internet, Mars 2022. Rôle : Scénario, animation, montage. Stack : After Effects, Media Encoder.
+
+## Autres dépôts GitHub
+
+- [Prénoms et Hadoop](https://ziyad-chaabi.github.io/projets/mini-projet-hadoop.html) : Les prénoms les plus donnés par décennie, données INSEE, Hadoop Streaming et Pig. (Python, Hadoop, Pig)
+- [JoJo Maze](https://ziyad-chaabi.github.io/projets/jojo-maze.html) : Un labyrinthe 3D sous Unity, clin d'œil à JoJo's Bizarre Adventure. (Unity, C#)
+- [Wifi auto](https://ziyad-chaabi.github.io/projets/wifi-connexion.html) : Un script qui se reconnecte seul au portail wifi. Né d’une vraie frustration. (Python, Selenium)
+- [Portfolio Next.js](https://ziyad-chaabi.github.io/projets/portfolio-2-0-1.html) : Une version de portfolio en Next.js. (Next.js, Tailwind)
+- [Hôtel : gestion et paie](https://ziyad-chaabi.github.io/projets/hotel-paie.html) : Gestion hôtelière et paie des employés, à trois. (PHP, MySQL, Tailwind)
+- [QuizDown](https://ziyad-chaabi.github.io/projets/tp5-quizz.html) : Un quiz en Pygame, à cinq. J'étais responsable de l'architecture. (Python, Pygame)
+- [Scène 3D foot](https://ziyad-chaabi.github.io/projets/base-3d-foot-ref.html) : Base d'une scène 3D web servie par Node. (three.js, Node.js)
+- [FPS en three.js](https://ziyad-chaabi.github.io/projets/test-fps-three-js.html) : Un jeu de tir à la première personne dans le navigateur. (three.js, WebGL)
+- [Facture Android](https://ziyad-chaabi.github.io/projets/android-facture.html) : Mes débuts en Kotlin, autour de la facturation. (Kotlin, Android)
+- [Livre d'or](https://ziyad-chaabi.github.io/projets/guest-book.html) : Un livre d'or en PHP. (PHP)
+- [Bouton WebGL](https://ziyad-chaabi.github.io/projets/webgl-button.html) : Une scène Unity exportée en WebGL. (Unity, WebGL)
+- [Gestion académique](https://ziyad-chaabi.github.io/projets/academic-management-system-ts.html) : Étudiants, cours, notes et moyennes pondérées. (TypeScript)
+- [API REST employés](https://ziyad-chaabi.github.io/projets/api-rest-employee-management.html) : Une API REST en PHP. (PHP)
+- [AppScol](https://ziyad-chaabi.github.io/projets/app-scol.html) : Une application scolaire en Angular 17. (Angular, TypeScript)
+- [Salaire brut en net](https://ziyad-chaabi.github.io/projets/calculateur-de-salaire-brut-en-net.html) : Convertir un salaire brut en net, en direct. (JavaScript)
+- [Calculateur d'IMC](https://ziyad-chaabi.github.io/projets/calculateur-d-imc.html) : Calculer son indice de masse corporelle. (JavaScript)
+- [Portfolio V2](https://ziyad-chaabi.github.io/projets/portfolio-v2.html) : Un ancien portfolio, pour mesurer le chemin. (HTML, CSS)
+- [Mini Twitter](https://ziyad-chaabi.github.io/projets/twitter.html) : Un clone simplifié de Twitter. (PHP, MySQL)
+- [Site Minecraft](https://ziyad-chaabi.github.io/projets/minecraft.html) : Un site de fan : constructions et redstone. (HTML, Bootstrap)
+
+## Pages
+
+- [Accueil](https://ziyad-chaabi.github.io/) : présentation et projets choisis
+- [Parcours](https://ziyad-chaabi.github.io/parcours.html) : le chemin de Troyes à Valenciennes, étape par étape
+- [Projets](https://ziyad-chaabi.github.io/projets.html) : les 14 projets racontés en détail
+- [Compétences](https://ziyad-chaabi.github.io/competences.html) : chaque outil relié aux projets où il a servi
+- [Labo](https://ziyad-chaabi.github.io/labo.html) : carte en 3D de tous les projets et dépôts
+- [Veille](https://ziyad-chaabi.github.io/veille.html) : tendances GitHub et IA, mises à jour en continu

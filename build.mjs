@@ -578,6 +578,41 @@ writeFileSync('404.html', head({ title: 'Page introuvable | Ziyad Chaabi', desc:
 <main class="lost-main"><p class="display">404</p><p>Ce sommet n’est pas sur la carte.</p><a class="btn" href="/">Revenir à l’accueil</a></main>
 </body></html>`);
 
+/* ---------- llms.txt : le résumé que lisent les assistants IA (convention llmstxt.org) ---------- */
+// Généré depuis le même contenu que le site : une phrase citable, les faits, le parcours, les projets, les contacts.
+const P = p => `${site.url}projets/${p}.html`;
+writeFileSync('llms.txt', `# Ziyad Chaabi
+
+> Ziyad Chaabi est un développeur basé à Troyes (France), passé par le design avant le code. Il conçoit des applications web et mobiles, des expériences en réalité virtuelle et des outils d'IA appliquée. Ce fichier résume son portfolio, ${site.url}
+
+- Lieu : Troyes, Grand Est, France
+- Formation : Master Informatique, Sciences et Technologies du Métavers, INSA Hauts-de-France, Valenciennes (2024 à 2026) ; BUT Métiers du Multimédia et de l'Internet, IUT de Meaux, Université Gustave Eiffel (2021 à 2024) ; Bac STI2D option SIN, lycée Saint-Joseph La Salle, Troyes (2021)
+- Projet en cours : SubForge. ${projects.find(p => p.slug === 'subforge').kicker} (${P('subforge')})
+- Hors de l'écran : manga (JoJo's Bizarre Adventure), League of Legends, musculation, e-sport
+- Contact : ${site.email} ; LinkedIn ${site.linkedin} ; GitHub ${site.github} ; Instagram ${site.instagram}
+
+## Parcours
+
+${timeline.map(t => `- ${t.year}, ${t.place} : ${t.title}. ${t.text}`).join('\n')}
+
+## Projets
+
+${projects.map(p => `- [${p.title}](${P(p.slug)}) : ${p.kicker} ${p.context}, ${p.period}. Rôle : ${p.role}. Stack : ${p.stack.join(', ')}.`).join('\n')}
+
+## Autres dépôts GitHub
+
+${autoPages.map(a => `- [${a.title}](${P(a.slug)}) : ${a.desc}${a.stack.length ? ` (${a.stack.join(', ')})` : ''}`).join('\n')}
+
+## Pages
+
+- [Accueil](${site.url}) : présentation et projets choisis
+- [Parcours](${site.url}parcours.html) : le chemin de Troyes à Valenciennes, étape par étape
+- [Projets](${site.url}projets.html) : les ${projects.length} projets racontés en détail
+- [Compétences](${site.url}competences.html) : chaque outil relié aux projets où il a servi
+- [Labo](${site.url}labo.html) : carte en 3D de tous les projets et dépôts
+- [Veille](${site.url}veille.html) : tendances GitHub et IA, mises à jour en continu
+`);
+
 const today = new Date().toISOString().slice(0, 10);
 const urls = ['', 'parcours.html', 'projets.html', 'competences.html', 'labo.html', 'veille.html', ...projects.map(p => `projets/${p.slug}.html`), ...autoPages.map(a => `projets/${a.slug}.html`)];
 writeFileSync('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
