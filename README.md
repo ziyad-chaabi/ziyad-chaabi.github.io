@@ -1,6 +1,6 @@
 # Portfolio de Ziyad Chaabi
 
-Site statique hébergé par GitHub Pages : https://subdij.github.io/Final-Portfolio-V.X/
+Site statique hébergé par GitHub Pages : https://ziyad-chaabi.github.io/
 Il marche aussi ouvert en double-clic sur `index.html`.
 
 ## Modifier le contenu

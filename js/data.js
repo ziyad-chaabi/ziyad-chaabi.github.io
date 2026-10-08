@@ -4,7 +4,7 @@
 
 const site = {
   name: 'Ziyad Chaabi',
-  url: 'https://subdij.github.io/Final-Portfolio-V.X/',
+  url: 'https://ziyad-chaabi.github.io/',
   email: 'ziyadou2011@hotmail.fr',
   github: 'https://github.com/Subdij',
   linkedin: 'https://www.linkedin.com/in/ziyad-chaabi/',
@@ -343,7 +343,7 @@ const repos = [
   { n: 'Wifi auto', repo: 'wifi-connexion', z: 'data', y: '2025', d: 'Un script qui se reconnecte seul au portail wifi. Né d’une vraie frustration.', s: ['Python', 'Selenium'] },
 ];
 // Dépôts publics volontairement absents (doublons, tests vides, ce site).
-const skipRepos = ['Final-Portfolio-V.X', 'subdij', 'premierprojet_git', 'test_FPS', 'video', 'Hotel-Paiee'];
+const skipRepos = ['Final-Portfolio-V.X', 'ziyad-chaabi.github.io', 'subdij', 'premierprojet_git', 'test_FPS', 'video', 'Hotel-Paiee'];
 
 const timeline = [
   { year: '2021', place: 'Troyes', coords: '48.30° N, 4.08° E', title: 'Le déclic', text: "Bac STI2D, option Systèmes d'information et numérique, au lycée Saint-Joseph La Salle. J'y écris mes premiers programmes, avec l'envie de comprendre ce qu'il y a derrière un écran." },

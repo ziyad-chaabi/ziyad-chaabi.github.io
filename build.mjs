@@ -550,9 +550,9 @@ page('veille.html', {
 </section>`);
 
 /* ================= 404 et plan du site ================= */
-writeFileSync('404.html', head({ title: 'Page introuvable | Ziyad Chaabi', desc: 'Cette page n’existe pas.', path: '404.html', b: '/Final-Portfolio-V.X/' }).replace('<link rel="canonical"', '<meta name="robots" content="noindex">\n<link rel="canonical"') + `
+writeFileSync('404.html', head({ title: 'Page introuvable | Ziyad Chaabi', desc: 'Cette page n’existe pas.', path: '404.html', b: '/' }).replace('<link rel="canonical"', '<meta name="robots" content="noindex">\n<link rel="canonical"') + `
 <body class="lost">
-<main class="lost-main"><p class="display">404</p><p>Ce sommet n’est pas sur la carte.</p><a class="btn" href="/Final-Portfolio-V.X/">Revenir à l’accueil</a></main>
+<main class="lost-main"><p class="display">404</p><p>Ce sommet n’est pas sur la carte.</p><a class="btn" href="/">Revenir à l’accueil</a></main>
 </body></html>`);
 
 const today = new Date().toISOString().slice(0, 10);
