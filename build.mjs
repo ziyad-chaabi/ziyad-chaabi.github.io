@@ -83,6 +83,7 @@ function head({ title, desc, path, b, image = 'img/og.jpg', jsonld = '' }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <meta name="author" content="Ziyad Chaabi">
+<meta name="google-site-verification" content="4kWqjcimy18LhSDn4mD4XuOtKIBeuHQXVvQ8QMu2TKg">
 <meta name="robots" content="${path === '404.html' ? 'noindex' : 'index, follow, max-image-preview:large'}">
 <meta name="theme-color" content="#121417">
 <link rel="canonical" href="${site.url}${path}">
