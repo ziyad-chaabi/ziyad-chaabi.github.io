@@ -48,6 +48,32 @@ function texBundle(name, srcs) {
   return name;
 }
 
+// Une seule entité « Ziyad Chaabi », référencée par son @id sur toutes les pages : c'est ce qui permet
+// à un moteur de relier le site, la personne et ses profils (recherche sur le nom).
+const ME = site.url + '#ziyad', SITE = site.url + '#site';
+const PERSON = {
+  '@type': 'Person', '@id': ME, name: 'Ziyad Chaabi', givenName: 'Ziyad', familyName: 'Chaabi', alternateName: ['Ziyad CHAABI', 'Subdij'],
+  url: site.url, image: { '@type': 'ImageObject', url: site.url + 'img/ziyad-photo.webp', caption: 'Ziyad Chaabi' },
+  jobTitle: 'Développeur web, mobile et réalité virtuelle',
+  description: 'Développeur à Troyes, passé par le design avant le code : applications web et mobiles, réalité virtuelle et IA appliquée.',
+  email: 'mailto:' + site.email,
+  address: { '@type': 'PostalAddress', addressLocality: 'Troyes', addressRegion: 'Grand Est', addressCountry: 'FR' },
+  alumniOf: [{ '@type': 'CollegeOrUniversity', name: 'INSA Hauts-de-France' }, { '@type': 'CollegeOrUniversity', name: 'Université Gustave Eiffel, IUT de Meaux' }],
+  knowsAbout: ['TypeScript', 'Angular', 'Ionic', 'NestJS', 'PostgreSQL', 'React Native', 'Supabase', 'Intelligence artificielle', 'Réalité virtuelle', 'Unity', 'UX design'],
+  knowsLanguage: ['fr', 'ar', 'en'],
+  sameAs: [site.linkedin, site.github, 'https://github.com/ziyad-chaabi', site.instagram],
+};
+const WEBSITE = { '@type': 'WebSite', '@id': SITE, url: site.url, name: 'Ziyad Chaabi', alternateName: 'Portfolio de Ziyad Chaabi', inLanguage: 'fr-FR', publisher: { '@id': ME }, author: { '@id': ME } };
+function graph({ title, desc, path, jsonld }) {
+  const url = site.url + path, name = title.split(' | ')[0];
+  const pageNode = path === ''
+    ? { '@type': 'ProfilePage', '@id': url + '#page', url, name: title, description: desc, isPartOf: { '@id': SITE }, about: { '@id': ME }, mainEntity: { '@id': ME }, inLanguage: 'fr-FR', primaryImageOfPage: { '@type': 'ImageObject', url: site.url + 'img/og.jpg' } }
+    : { '@type': 'WebPage', '@id': url + '#page', url, name: title, description: desc, isPartOf: { '@id': SITE }, about: { '@id': ME }, author: { '@id': ME }, inLanguage: 'fr-FR',
+        breadcrumb: { '@type': 'BreadcrumbList', itemListElement: [['Accueil', ''], ...(path.startsWith('projets/') ? [['Projets', 'projets.html']] : []), [name, path]]
+          .map(([n, p], i) => ({ '@type': 'ListItem', position: i + 1, name: n, item: site.url + p })) } };
+  return { '@context': 'https://schema.org', '@graph': [WEBSITE, PERSON, pageNode, ...(jsonld ? [jsonld] : [])] };
+}
+
 function head({ title, desc, path, b, image = 'img/og.jpg', jsonld = '' }) {
   return `<!doctype html>
 <html lang="fr">
@@ -57,6 +83,7 @@ function head({ title, desc, path, b, image = 'img/og.jpg', jsonld = '' }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <meta name="author" content="Ziyad Chaabi">
+<meta name="robots" content="${path === '404.html' ? 'noindex' : 'index, follow, max-image-preview:large'}">
 <meta name="theme-color" content="#121417">
 <link rel="canonical" href="${site.url}${path}">
 <link rel="icon" href="${b}favicon.svg" type="image/svg+xml">
@@ -68,7 +95,9 @@ function head({ title, desc, path, b, image = 'img/og.jpg', jsonld = '' }) {
 <meta property="og:url" content="${site.url}${path}">
 <meta property="og:image" content="${site.url}${image}">
 <meta name="twitter:card" content="summary_large_image">
-${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld)}</script>` : ''}
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Ziyad Chaabi, développeur à Troyes">
+${path === '404.html' ? '' : `<script type="application/ld+json">${JSON.stringify(graph({ title, desc, path, jsonld }))}</script>`}
 <style>html.js:not(.is-ready){background:#121417}html.js .veil{position:fixed;inset:0;z-index:100;background:#121417}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -197,13 +226,6 @@ page('index.html', {
   page: 'index', path: '', tex: texBundle('index', ['img/ziyad-relief.png', 'img/ziyad-photo.webp']),
   title: 'Ziyad Chaabi | Développeur Full Stack à Troyes, web, mobile et IA',
   desc: 'Portfolio de Ziyad Chaabi, développeur full stack TypeScript basé à Troyes : applications web et mobiles (Angular, NestJS, React Native), IA appliquée et réalité virtuelle.',
-  jsonld: { '@context': 'https://schema.org', '@type': 'ProfilePage', url: site.url, mainEntity: {
-    '@type': 'Person', name: 'Ziyad Chaabi', alternateName: ['Ziyad CHAABI', 'Subdij'], jobTitle: 'Développeur Full Stack', url: site.url,
-    image: site.url + 'img/ziyad.webp', email: 'mailto:' + site.email,
-    address: { '@type': 'PostalAddress', addressLocality: 'Troyes', addressRegion: 'Grand Est', addressCountry: 'FR' },
-    alumniOf: [{ '@type': 'CollegeOrUniversity', name: 'INSA Hauts-de-France' }, { '@type': 'CollegeOrUniversity', name: 'Université Gustave Eiffel, IUT de Meaux' }],
-    knowsAbout: ['TypeScript', 'Angular', 'Ionic', 'NestJS', 'PostgreSQL', 'React Native', 'Supabase', 'Intelligence artificielle', 'Réalité virtuelle', 'UX design'],
-    sameAs: [site.linkedin, site.github, site.instagram] } },
 }, `
 <section class="hero hero-home">
   <canvas class="hero-canvas" data-relief data-img="img/ziyad-relief.png" data-photo="img/ziyad-photo.webp" data-seed="ziyad-chaabi" data-peaks="5" data-rough=".8" data-levels="16"></canvas>
@@ -333,8 +355,8 @@ projects.forEach((p, i) => {
     page: 'projet', path: `projets/${p.slug}.html`, tex: texBundle(p.slug, [p.screen, p.screenM]),
     title: `${p.title} | Projet de Ziyad Chaabi`,
     desc: `${p.kicker} ${p.context}, ${p.period}. Stack : ${p.stack.slice(0, 6).join(', ')}.`,
-    jsonld: { '@context': 'https://schema.org', '@type': 'CreativeWork', name: p.title, description: p.kicker, dateCreated: p.year,
-      author: { '@type': 'Person', name: 'Ziyad Chaabi', url: site.url }, keywords: p.stack.join(', '), url: `${site.url}projets/${p.slug}.html` },
+    jsonld: { '@type': 'CreativeWork', '@id': `${site.url}projets/${p.slug}.html#projet`, name: p.title, description: p.kicker, dateCreated: p.year,
+      author: { '@id': ME }, keywords: p.stack.join(', '), url: `${site.url}projets/${p.slug}.html`, ...(firstImg(p) ? { image: site.url + firstImg(p) } : {}) },
   }, `
 <article class="p" style="--accent:${p.color}" data-slug="${p.slug}">
 <section class="p-hero">
@@ -550,7 +572,7 @@ page('veille.html', {
 </section>`);
 
 /* ================= 404 et plan du site ================= */
-writeFileSync('404.html', head({ title: 'Page introuvable | Ziyad Chaabi', desc: 'Cette page n’existe pas.', path: '404.html', b: '/' }).replace('<link rel="canonical"', '<meta name="robots" content="noindex">\n<link rel="canonical"') + `
+writeFileSync('404.html', head({ title: 'Page introuvable | Ziyad Chaabi', desc: 'Cette page n’existe pas.', path: '404.html', b: '/' }) + `
 <body class="lost">
 <main class="lost-main"><p class="display">404</p><p>Ce sommet n’est pas sur la carte.</p><a class="btn" href="/">Revenir à l’accueil</a></main>
 </body></html>`);
