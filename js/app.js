@@ -146,31 +146,48 @@ const head = $('.site-head');
 const stick = () => head.classList.toggle('is-stuck', scrollY > 30);
 ScrollTrigger.create({ start: 0, end: 'max', onUpdate: stick }); stick();
 
-/* ---------- Visiteurs : total, aujourd'hui, ce mois-ci ----------
-   Une personne = un appareil (navigateur). Chaque compteur n'avance qu'une fois par appareil et par période :
-   le navigateur garde seulement « déjà compté », sans identifiant ni donnée envoyée sur la personne.
-   Rafraîchir ou changer de page ne recompte donc rien. Pas de comptage en local ni pour les robots de test.
-   ponytail: compteurs publics (Abacus), donc gonflables par quelqu'un qui appellerait l'API à la main ;
-   un Worker Cloudflare avec dédoublonnage par IP hachée le fermerait si ça devenait un problème. */
+/* ---------- Visiteurs : au total, ce mois-ci, aujourd'hui ----------
+   Une personne = une connexion. Opera et Chrome ne partagent pas leur stockage, mais ils sortent par la même
+   adresse IP : on compte donc une empreinte de l'IP (SHA-256, calculée ici, l'IP elle-même n'est jamais envoyée
+   au compteur). Abacus sert aussi de registre « déjà vu » : la clé d'une empreinte renvoie 1 au premier passage.
+   Chaque compteur n'avance qu'une fois par empreinte et par période ; rafraîchir ou changer de page ne recompte rien.
+   Le navigateur garde aussi « déjà compté » pour éviter des appels inutiles. Pas de comptage en local ni pour les robots.
+   Si le service d'IP ne répond pas, on retombe sur un comptage par navigateur.
+   ponytail: compteurs publics (Abacus), gonflables par quelqu'un qui appellerait l'API à la main ; plusieurs personnes
+   derrière la même box (famille, école) comptent pour une, et un téléphone en 4G compte à part. Un Worker Cloudflare
+   avec sel secret fermerait le premier point ; le second demanderait une connexion des visiteurs. */
 (() => {
-  const out = $$('[data-stat]');
-  if (!out.length) return;
-  const API = 'https://abacus.jasoncameron.dev', NS = 'ziyad-chaabi-github-io';
+  if (!$$('[data-stat]').length) return;
+  const API = 'https://abacus.jasoncameron.dev', NS = 'ziyad-chaabi-site';
   const day = new Intl.DateTimeFormat('fr-CA', { timeZone: 'Europe/Paris' }).format(new Date()); // AAAA-MM-JJ, heure de Paris
-  const keys = { total: ['visiteurs', 'oui'], day: ['jour-' + day, day], month: ['mois-' + day.slice(0, 7), day.slice(0, 7)] };
+  const month = day.slice(0, 7);
+  const periods = { total: ['visiteurs', 'oui', 'v-'], month: ['mois-' + month, month, `m-${month}-`], day: ['jour-' + day, day, `d-${day}-`] };
   const live = location.hostname === 'ziyad-chaabi.github.io' && !navigator.webdriver;
   let seen = {};
-  try { seen = JSON.parse(localStorage.getItem('zc-vu') || '{}'); } catch {}
+  try { seen = JSON.parse(localStorage.getItem('zc-vu2') || '{}'); } catch {}
+  const remember = (k, mark) => { seen[k] = mark; try { localStorage.setItem('zc-vu2', JSON.stringify(seen)); } catch {} };
+  const call = (op, key) => fetch(`${API}/${op}/${NS}/${key}`).then(r => (r.ok ? r.json() : r.status === 404 ? { value: 0 } : Promise.reject())).then(d => d.value);
   const num = new Intl.NumberFormat('fr-FR');
-  Object.entries(keys).forEach(([k, [key, mark]]) => {
-    const count = live && seen[k] !== mark; // pas encore compté pour cette période sur cet appareil
-    fetch(`${API}/${count ? 'hit' : 'get'}/${NS}/${key}`)
-      .then(r => (r.ok ? r.json() : r.status === 404 ? { value: 0 } : Promise.reject()))
-      .then(({ value }) => {
-        $(`[data-stat="${k}"]`).textContent = num.format(value);
-        if (count) { seen[k] = mark; try { localStorage.setItem('zc-vu', JSON.stringify(seen)); } catch {} }
-      })
-      .catch(() => {}); // service injoignable : on laisse le tiret
+  const show = (k, v) => { $(`[data-stat="${k}"]`).textContent = num.format(v); };
+
+  // empreinte de la connexion : SHA-256 de l'IP, tronquée ; null si le service ne répond pas
+  const fingerprint = (async () => {
+    try {
+      const { ip } = await (await fetch('https://api.ipify.org?format=json')).json();
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('ziyad-chaabi:' + ip));
+      return [...new Uint8Array(buf)].slice(0, 10).map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch { return null; }
+  })();
+
+  Object.entries(periods).forEach(async ([k, [key, mark, prefix]]) => {
+    try {
+      if (!live || seen[k] === mark) return show(k, await call('get', key)); // déjà compté (ou pas en ligne) : on lit
+      const fp = await fingerprint;
+      // registre : la clé de cette empreinte vaut 1 au premier passage de la période, plus ensuite
+      const isNew = fp ? (await call('hit', prefix + fp)) === 1 : true;
+      show(k, await call(isNew ? 'hit' : 'get', key));
+      remember(k, mark);
+    } catch {} // service injoignable : on laisse le tiret
   });
 })();
 
