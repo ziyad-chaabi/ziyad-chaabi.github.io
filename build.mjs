@@ -158,6 +158,7 @@ ${THREE_PAGES.includes(page) ? `<script src="${b}js/devices.js"></script>` : ''}
 ${page === 'veille' ? `<script src="${b}js/veille-data.js"></script>` : ''}
 ${PAGE_JS[page] ? `<script src="${b}js/pages/${PAGE_JS[page]}.js"></script>` : ''}
 <script src="${b}js/app.js"></script>
+<script data-goatcounter="https://ziyad-chaabi.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 ${THREE_PAGES.includes(page) ? THREE_LOADER : ''}
 </body>
 </html>
