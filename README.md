@@ -13,7 +13,7 @@ node build.mjs
 
 ## Synchronisation automatique avec GitHub
 
-Chaque dépôt public devient un sommet du labo et une page légère reliée au labo (« Projets » ne garde que les projets racontés à la main).
+Chaque dépôt public devient un galet dans la coupe du labo (dans la couche de son année) et une page légère reliée au labo (« Projets » ne garde que les projets racontés à la main).
 Les visuels sont cherchés dans cet ordre : images du README, captures rangées dans le dépôt,
 site en ligne (homepage ou GitHub Pages), puis le projet est cloné, lancé en local (site statique,
 Node ou PHP) et capturé avec Playwright. Les pages d'erreur et les écrans vides sont écartés ;
@@ -52,5 +52,5 @@ les initiales sont remplacées par les photos.
 - `js/relief.js` : le shader des courbes de niveau (fonds, couvertures, transitions)
 - `js/devices.js` : les modèles 3D (Meta Quest 3, téléphone, ordinateur) et leur mise en scène
 - `js/app.js` : défilement doux, voile du premier chargement, apparitions, montage de Scrollcraft
-- `js/pages/*.js` : ce qui est propre à une page (héros en couches, vol du parcours, galerie, folio des fiches, fils des compétences, veille, labo 3D)
+- `js/pages/*.js` : ce qui est propre à une page (héros en couches, vol du parcours, galerie, folio des fiches, fils des compétences, veille, coupe du labo)
 - `scrollcraft/` : le brief de la refonte (`builds/portfolio/BRIEF.md`) et le registre des empreintes (`FINGERPRINTS.md`)

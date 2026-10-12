@@ -203,3 +203,26 @@ veille et BTP-360, en bureau 1440×900, téléphone 390×844 et mouvement rédui
 | Fiche | confiance | lecture posée | sur-titres « Chapitre n » retirés, le folio suffit |
 | Compétences | clarté | clarté, puis satisfaction à l'effondrement | conforme |
 | Veille | vivacité | vivacité | conforme |
+
+## Refonte du Labo (13 octobre 2026)
+
+*Brief rédigé sous délégation créative explicite* (« sois créatif, fais autre
+chose de créatif mais en restant sur le même type de design du site »).
+
+L'ancienne carte 3D sombre ne plaisait pas. Le Labo devient **une coupe de
+terrain** : au lieu de survoler la carte (c'est déjà le Parcours), on la
+tranche. Une couche par année, du plus récent en surface au plus ancien au
+fond, une colonne par domaine, un galet en courbes de niveau par projet.
+Même famille que le reste : papier, encre, une couleur par projet, Archivo.
+
+- Grammaire (nouvelle) : **coupe stratigraphique**. Navigation = la carotte ;
+  séquence = des couches en flux, coupes franches, motifs de carte géologique ;
+  fin = le socle sombre qui rejoint le pied de page. Interdits : épinglage,
+  vidéo, fond qui glisse d'une couleur à l'autre.
+- Ressenti : curiosité (la surface et sa ligne de coupe) → découverte (les
+  galets qui se posent couche après couche) → densité (2023, onze
+  prélèvements dans le web) → ancrage (le socle, le bac à Troyes).
+- Signature : **la carotte de forage**, qui se remplit des couches traversées,
+  un point par galet, et sur laquelle on clique pour descendre.
+- Vérifié : rendu bureau et téléphone en pleine page, fiche, Échap, filtre et
+  carotte dans `scripts/test-scroll.mjs`.

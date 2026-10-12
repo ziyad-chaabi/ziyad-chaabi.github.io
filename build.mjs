@@ -7,7 +7,7 @@ import vm from 'node:vm';
 // js/data.js est un script classique (il pose window.ZC) : on l'exécute dans un bac à sable.
 const sandbox = { window: {} };
 vm.runInNewContext(readFileSync('js/data.js', 'utf8'), sandbox);
-const { site, projects, repos, timeline, skills, notes, labZone } = sandbox.window.ZC;
+const { site, projects, repos, timeline, skills, notes, labZone, zones } = sandbox.window.ZC;
 
 /* ---------- Dépôts synchronisés automatiquement ---------- */
 const auto = existsSync('data/auto.json') ? JSON.parse(readFileSync('data/auto.json', 'utf8')) : [];
@@ -108,7 +108,7 @@ ${path === '404.html' ? '' : `<script type="application/ld+json">${JSON.stringif
 // Scripts classiques uniquement : le site marche aussi ouvert en double-clic (file://).
 // three.js n'existe qu'en module : un petit module en ligne le charge depuis le CDN puis prévient la page.
 const PAGE_JS = { index: 'index', projet: 'projet', depot: 'projet', parcours: 'parcours', projets: 'projets', competences: 'competences', labo: 'labo', veille: 'veille' };
-const THREE_PAGES = ['labo', 'projet'];
+const THREE_PAGES = ['projet'];
 const THREE_LOADER = `<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -274,7 +274,7 @@ page('index.html', {
   <canvas class="band-canvas" data-relief="dark" data-seed="labo" data-peaks="6" data-rough=".9" data-accent="#E07A3E"></canvas>
   <div class="band-inner wrap">
     <h2 class="h2" data-reveal>Le labo</h2>
-    <p data-reveal>${labCount} projets et dépôts, des projets d’école aux expériences du dimanche, posés sur une carte en relief que l’on parcourt en 3D. Elle se met à jour toute seule à chaque nouveau dépôt GitHub.</p>
+    <p data-reveal>${labCount} projets et dépôts, des projets d’école aux expériences du dimanche, rangés en coupe comme les couches d’un sol, une par année. Elle se refait toute seule à chaque nouveau dépôt GitHub.</p>
     <a class="btn" href="labo.html" data-reveal>Explorer le labo</a>
   </div>
 </section>
@@ -310,7 +310,7 @@ page('projets.html', {
       <li class="gal-obj gal-end">
         <h2 class="gal-title">Les ${autoPages.length} autres dépôts</h2>
         <p class="gal-meta">2021 à 2026. Exercices d’école, scripts du dimanche, essais.</p>
-        <p class="gal-meta">Rangés sur la carte en relief du labo, mise à jour à chaque nouveau dépôt.</p>
+        <p class="gal-meta">Rangés en couches dans le labo, une par année, mis à jour à chaque nouveau dépôt.</p>
         <p class="gal-tools"><a class="arrow-link" href="labo.html">Explorer le labo</a></p>
       </li>
     </ol>
@@ -525,39 +525,83 @@ page('competences.html', {
 </section>
 `);
 
-/* ================= Labo ================= */
-const repoItems = [
-  ...autoPages.map(a => `<li><b><a href="projets/${a.slug}.html">${esc(a.title)}</a></b> <span>${esc(a.desc)}</span> <a href="${a.url}" target="_blank" rel="noopener">GitHub</a></li>`),
-  ...privateRepos.map(r => `<li><b>${esc(r.n)}</b> <span>${esc(r.d)}</span> <em>Code privé</em></li>`),
-].join('');
+/* ================= Labo : la coupe =================
+   Le terrain tranché comme un sol : une couche par année (la plus récente en surface), une colonne par domaine,
+   chaque projet est un galet dessiné en courbes de niveau. À droite, la carotte se remplit des couches traversées. */
+const LAB_COL = { pro: '#D2602A', mobile: '#5B8DEF', xr: '#C772B5', web: '#4FAE7B', data: '#C9A33C', jeux: '#E07A5F' };
+// hasard déterministe : la même graine donne toujours le même galet et la même ligne de couche
+const hsh = (s, k = 0) => { let x = 2166136261 ^ k; for (const c of String(s)) x = Math.imul(x ^ c.charCodeAt(0), 16777619); return ((x >>> 0) % 10000) / 10000; };
+const f1 = n => n.toFixed(1);
+function pebble(seed, big) {
+  const ph = hsh(seed, 1) * 6.283, a1 = .05 + hsh(seed, 2) * .09, a2 = .02 + hsh(seed, 3) * .05, sq = .7 + hsh(seed, 4) * .2;
+  const rings = big ? [46, 36, 26, 16, 7] : [44, 31, 18, 7];
+  return `<svg class="peb" viewBox="0 0 100 100" aria-hidden="true">${rings.map((R, i) => {
+    const pts = Array.from({ length: 49 }, (_, j) => { const t = j / 48 * 6.283, r = R * (1 + a1 * Math.sin(3 * t + ph + i * .6) + a2 * Math.sin(5 * t + 2 * ph - i)); return `${f1(50 + Math.cos(t) * r)} ${f1(50 + Math.sin(t) * r * sq)}`; });
+    return `<path d="M${pts.join(' L')}Z" style="--i:${i}"/>`;
+  }).join('')}</svg>`;
+}
+// la ligne qui sépare deux couches : un profil de terrain, plus marqué pour les couches profondes
+function ridge(seed, amp) {
+  const ph = hsh(seed, 5) * 6.283, ph2 = hsh(seed, 6) * 6.283;
+  const pts = Array.from({ length: 51 }, (_, j) => { const x = j * 20; return `${x} ${f1(45 + amp * (Math.sin(x * .0062 + ph) * 15 + Math.sin(x * .019 + ph2) * 7 + (hsh(seed, j) - .5) * 6))}`; });
+  return `M${pts.join(' L')}`;
+}
+const edge = (seed, amp) => { const d = ridge(seed, amp); return `<svg class="st-edge" viewBox="0 0 1000 90" preserveAspectRatio="none" aria-hidden="true"><path class="st-fill" d="${d} L1000 90 L0 90Z"/><path class="st-line" d="${d}" pathLength="1"/></svg>`; };
+
+const labItems = [
+  ...projects.map(p => ({ id: p.slug, name: p.title, zone: labZone[p.slug], year: p.year, desc: p.kicker, stack: p.stack.slice(0, 6), page: `projets/${p.slug}.html`,
+    repo: p.links.find(l => l[1].includes('github.com'))?.[1], demo: p.links.find(l => !l[1].includes('github.com'))?.[1], color: p.color, img: firstImg(p), ctx: p.context, big: true })),
+  ...autoPages.map(a => ({ id: a.slug, name: a.title, zone: a.zone, year: a.year, desc: a.desc, stack: a.stack, page: `projets/${a.slug}.html`, repo: a.url, gh: a.repo, demo: a.live, color: LAB_COL[a.zone], img: a.shot, stars: a.stars, ctx: 'Dépôt GitHub' })),
+  ...privateRepos.map(r => ({ id: r.n, name: r.n, zone: r.z, year: r.y, desc: r.d, stack: r.s, color: '#8A9099', ctx: 'Code privé', priv: true })),
+];
+const labYears = [...new Set(labItems.map(i => i.year))].sort((a, b) => b - a);
+const cell = (y, z) => labItems.filter(i => i.year === y && i.zone === z);
+// une colonne large là où l'on a beaucoup creusé (le web de 2023), étroite ailleurs
+const colW = zones.map(z => Math.max(1, Math.sqrt(Math.max(...labYears.map(y => cell(y, z.id).length))))).map(w => `minmax(0, ${w.toFixed(2)}fr)`).join(' ');
+const specimen = i => {
+  const data = `data-name="${esc(i.name)}" data-desc="${esc(i.desc)}" data-stack="${esc((i.stack || []).join('|'))}" data-year="${i.year}" data-ctx="${esc(i.ctx)}" data-zone="${i.zone}"${i.img ? ` data-img="${esc(i.img)}"` : ''}${i.repo ? ` data-repo="${esc(i.repo)}"` : ''}${i.demo ? ` data-demo="${esc(i.demo)}"` : ''}${i.gh ? ` data-gh="${esc(i.gh)}"` : ''}${i.stars ? ` data-stars="${i.stars}"` : ''} data-seed="${esc(i.id)}"`;
+  const inner = `${pebble(i.id, i.big)}<span class="sp-name">${esc(i.name)}</span>`;
+  return `<li class="sp${i.big ? ' is-big' : ''}${i.priv ? ' is-priv' : ''}" data-zone="${i.zone}" data-sc-in style="--c:${i.color};--dx:${Math.round((hsh(i.id, 7) - .5) * 26)}px;--dy:${Math.round((hsh(i.id, 8) - .5) * 18)}px">${i.page
+    ? `<a class="sp-btn" href="${i.page}" ${data}>${inner}</a>` : `<button type="button" class="sp-btn" ${data}>${inner}</button>`}</li>`;
+};
+
 page('labo.html', {
   page: 'labo', path: 'labo.html',
-  title: 'Le labo | Tous les projets GitHub de Ziyad Chaabi en 3D',
-  desc: `Le labo de Ziyad Chaabi : ${labCount} projets et dépôts GitHub posés sur une carte en relief en 3D, mise à jour automatiquement à chaque nouveau dépôt.`,
+  title: 'Le labo | Tous les projets GitHub de Ziyad Chaabi, en coupe',
+  desc: `Le labo de Ziyad Chaabi : ${labCount} projets et dépôts GitHub rangés en couches, une par année, du plus récent au plus ancien. Mis à jour automatiquement à chaque nouveau dépôt.`,
 }, `
-<section class="lab">
-  <div class="lab-stage"></div>
-  <div class="lab-ui">
-    <div class="lab-intro">
-      <h1 class="display" data-hero>Le labo</h1>
-      <p data-hero-fade>${labCount} projets et dépôts, posés sur une carte en relief qui se met à jour seule à chaque nouveau dépôt GitHub. Glissez pour vous déplacer, pincez ou utilisez Ctrl + molette pour zoomer, cliquez sur un nom pour ouvrir le projet.</p>
-    </div>
-    <div class="lab-tools" data-hero-fade>
-      <div class="filters lab-zones" role="group" aria-label="Zones"></div>
-      <div class="filters lab-zoom"><button type="button" data-zoom="1" aria-label="Zoomer">+</button><button type="button" data-zoom="-1" aria-label="Dézoomer">−</button></div>
-      <button type="button" class="lab-listbtn" aria-pressed="false">Vue liste</button>
-    </div>
-    <p class="lab-live" aria-live="polite"></p>
+<section class="lab-surface">
+  <canvas class="hero-canvas" data-relief data-seed="labo" data-peaks="6" data-rough=".9" data-levels="16"></canvas>
+  <div class="wrap lab-intro">
+    <h1 class="display" data-hero>Le labo</h1>
+    <p class="page-lede" data-hero-fade>${labCount} projets et dépôts, rangés comme un sol : le plus récent en surface, le plus ancien au fond. Chaque galet s’ouvre sur sa fiche.</p>
+    <p class="lab-live" aria-live="polite" data-hero-fade>La coupe se refait seule à chaque nouveau dépôt GitHub.</p>
   </div>
-  <aside class="lab-card" hidden data-lenis-prevent></aside>
-  <div class="lab-labels"></div>
+  ${edge('surface', .7).replace('st-edge', 'st-edge st-edge-first')}
 </section>
-<section class="lab-list wrap" hidden>
-  <h2 class="h2">Tous les projets</h2>
-  <ol class="rows">${rows(projects, '')}</ol>
-  <h2 class="h2">Et les autres dépôts</h2>
-  <ul class="repo-list">${repoItems}</ul>
-</section>`);
+<div class="lab-cols" role="group" aria-label="Filtrer par domaine" style="--cols:${colW}">
+  <span class="lab-cols-pad"></span>${zones.map(z => `<button type="button" aria-pressed="false" data-z="${z.id}" style="--c:${LAB_COL[z.id]}">${esc(z.name)}</button>`).join('')}
+</div>
+<div class="lab-cut" style="--cols:${colW}">
+  ${labYears.map((y, k) => { const n = labItems.filter(i => i.year === y).length; return `<section class="st st-${k % 4}" data-year="${y}" aria-labelledby="st-${y}">
+    ${k ? edge(y, .8 + k * .25) : ''}
+    <header class="st-head"><h2 id="st-${y}" class="st-year">${y}</h2><p>${n} prélèvement${n > 1 ? 's' : ''}</p></header>
+    <div class="st-grid">${zones.map(z => `<ul class="st-cell" data-zone="${z.id}" aria-label="${esc(z.name)}">${cell(y, z.id).map(specimen).join('')}</ul>`).join('')}</div>
+  </section>`; }).join('\n  ')}
+  <section class="st st-rock" aria-labelledby="st-rock">
+    ${edge('socle', 2.2)}
+    <div class="rock-in wrap">
+      <h2 id="st-rock" class="st-year">2021</h2>
+      <p class="rock-title">Le socle</p>
+      <p class="rock-text">Avant le premier dépôt : un bac STI2D à Troyes et mes premiers programmes. La suite se lit dans <a href="parcours.html">mon parcours</a>, et tout le code public est sur <a href="${site.github}" target="_blank" rel="noopener">GitHub</a>.</p>
+    </div>
+  </section>
+</div>
+<nav class="core" aria-label="Carotte : aller à une couche">
+  <div class="core-tube" aria-hidden="true"><div class="core-fill"></div><span class="core-bit"></span></div>
+  <ol>${labYears.map(y => `<li><button type="button" data-go="${y}">${y}</button></li>`).join('')}<li><button type="button" data-go="rock">Socle</button></li></ol>
+</nav>
+<aside class="sample" role="dialog" aria-modal="false" aria-labelledby="sample-h" hidden data-lenis-prevent></aside>`);
 
 /* ================= Veille ================= */
 page('veille.html', {
@@ -633,7 +677,7 @@ ${autoPages.map(a => `- [${a.title}](${P(a.slug)}) : ${a.desc}${a.stack.length ?
 - [Parcours](${site.url}parcours.html) : le chemin de Troyes à Valenciennes, étape par étape
 - [Projets](${site.url}projets.html) : les ${projects.length} projets racontés en détail
 - [Compétences](${site.url}competences.html) : chaque outil relié aux projets où il a servi
-- [Labo](${site.url}labo.html) : carte en 3D de tous les projets et dépôts
+- [Labo](${site.url}labo.html) : tous les projets et dépôts, en coupe, une couche par année
 - [Veille](${site.url}veille.html) : tendances GitHub et IA, mises à jour en continu
 `);
 

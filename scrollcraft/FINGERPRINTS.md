@@ -34,6 +34,7 @@ changes only grammar and world will fail it.
 | portfolio / fiche projet | Chaptered editorial | Pas de barre fixe : folio dans la marge (chapitre n sur N) | Page de titre typographique, aucune image | flow : titre > 5 à 8 chapitres sur fonds alternés (coupes franches) > colophon | Colophon en petite typo, liens écrits dans la phrase | La vignette relief du folio gagne des courbes à chaque chapitre lu | Papier / papier foncé alternés | 5174 |
 | portfolio / compétences | Split stage | Le séparateur porte les deux libellés (outils / projets) | 50/50, deux titres lisibles d'emblée, papier / nuit | flow (split) > `pin` 1,9vh (effondrement) | L'effondrement : le séparateur part au bord, la nuit prend toute la largeur avec le bouton | Fils tirés de l'outil choisi vers chacun de ses projets | Papier contre nuit | 5174 |
 | portfolio / veille | Live surface | Barre d'état collante (relevé, compte à rebours réel, nouveautés) + sélecteur de flux | La surface déjà chargée, aucun titre display | flow uniquement, panneaux | Un vrai champ de recherche (Hacker News + GitHub en direct) | La page finit en tendant son propre outil de veille | Panneaux sur papier | 5174 |
+| portfolio / labo (coupe) | Coupe stratigraphique (nouvelle) | Carotte de forage fixe : se remplit des couches traversées, cliquable | Surface en relief tranchée par une ligne de coupe | flow : 5 couches (une par année) + socle, coupes franches | Le socle sombre (2021) qui rejoint le pied de page, liens dans la phrase | Galets en courbes de niveau qui respirent + carotte qui se remplit | Coupe géologique sur papier | 5174 |
 
 Ce que les six partagent, à dessein : la barre du site (sauf la fiche) et le
 pied de page « Écrivons-nous. ». Les six lignes diffèrent deux à deux sur au
@@ -51,6 +52,7 @@ as a constraint, so writing them down is the whole point.
 - Grammaires prises : affiche typographique, monde continu, galerie, éditorial en chapitres, scène partagée, surface vivante.
 - Le monde continu **sans vidéo** (un shader survolé par une caméra) est pris.
 - Le pic « survol d'une carte entre de vraies coordonnées » est pris.
+- La coupe stratigraphique (une couche par année) et la carotte de forage sont prises.
 - Les fins : liens dans une phrase, arrivée sur place, plaque-étiquette, colophon, effondrement, champ de recherche.
 
 ---

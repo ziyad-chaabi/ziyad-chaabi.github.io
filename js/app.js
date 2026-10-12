@@ -24,7 +24,7 @@ if (!calm && window.Lenis) {
 const first = !document.documentElement.classList.contains('seen');
 try { sessionStorage.setItem('zc-seen', '1'); } catch {}
 const veil = $('.veil'), veilText = $('.veil-text'), veilCount = $('.veil-count');
-const flood = first && !calm && createRelief($('.veil canvas'), { mode: 1, levels: 9, rough: .9, peaks: 4, seed: 7.7, accent: '#D2602A', ink: '#121417' });
+const flood = (first && !calm && createRelief($('.veil canvas'), { mode: 1, levels: 9, rough: .9, peaks: 4, seed: 7.7, accent: '#D2602A', ink: '#121417' })) || null;
 const showVeil = p => {
   if (flood) veil.style.background = 'transparent';
   veil.style.visibility = p > .001 ? 'visible' : 'hidden';

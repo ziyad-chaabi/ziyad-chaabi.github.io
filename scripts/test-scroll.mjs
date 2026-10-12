@@ -42,5 +42,22 @@ page = await open('index.html', { width: 390, height: 844 });
 const [name, copy] = await page.evaluate(() => ['.hh-name', '.hero-lede'].map(s => document.querySelector(s).getBoundingClientRect().toJSON()));
 assert.ok(name.bottom <= copy.top, `le nom recouvre le texte : ${name.bottom} > ${copy.top}`);
 
+// Labo : un galet ouvre sa fiche, Échap la ferme et rend le focus, le filtre éteint les autres domaines,
+// la carotte apparaît dans la coupe et se remplit en descendant
+page = await open('labo.html');
+await page.click('.sp-btn[data-zone="xr"]');
+const fiche = await page.evaluate(() => ({ open: !document.querySelector('.sample').hidden, title: document.querySelector('#sample-h')?.textContent }));
+assert.ok(fiche.open && fiche.title, 'la fiche ne s’ouvre pas');
+await page.keyboard.press('Escape');
+assert.ok(await page.evaluate(() => document.querySelector('.sample').hidden && document.activeElement.classList.contains('sp-btn')), 'Échap ne ferme pas la fiche ou perd le focus');
+await page.click('.lab-cols [data-z="web"]'); await page.waitForTimeout(800); // fin des fondus
+await page.evaluate(() => document.querySelector('.sp[data-zone="web"]').scrollIntoView({ block: 'center' })); await page.waitForTimeout(900);
+const dim = await page.evaluate(() => ['xr', 'web'].map(z => getComputedStyle(document.querySelector(`.sp[data-zone="${z}"]`)).opacity));
+assert.ok(+dim[0] < .5 && +dim[1] === 1, `le filtre n’agit pas : ${dim}`);
+const p0 = await page.evaluate(() => +getComputedStyle(document.querySelector('.core')).getPropertyValue('--p'));
+await page.evaluate(() => scrollTo(0, document.querySelector('.st-rock').offsetTop - innerHeight / 2)); await page.waitForTimeout(400);
+const core = await page.evaluate(() => ({ on: document.querySelector('.core').classList.contains('is-on'), p: +getComputedStyle(document.querySelector('.core')).getPropertyValue('--p'), seg: document.querySelectorAll('.core-fill > span').length }));
+assert.ok(core.on && core.p > p0 + .5 && core.seg >= 5, `la carotte ne suit pas : ${JSON.stringify(core)}`);
+
 await b.close();
-console.log('ok : caméra du parcours, clavier dans la galerie, héros mobile');
+console.log('ok : caméra du parcours, clavier dans la galerie, héros mobile, coupe du labo');

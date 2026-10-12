@@ -64,5 +64,5 @@
 - [Parcours](https://ziyad-chaabi.github.io/parcours.html) : le chemin de Troyes à Valenciennes, étape par étape
 - [Projets](https://ziyad-chaabi.github.io/projets.html) : les 14 projets racontés en détail
 - [Compétences](https://ziyad-chaabi.github.io/competences.html) : chaque outil relié aux projets où il a servi
-- [Labo](https://ziyad-chaabi.github.io/labo.html) : carte en 3D de tous les projets et dépôts
+- [Labo](https://ziyad-chaabi.github.io/labo.html) : tous les projets et dépôts, en coupe, une couche par année
 - [Veille](https://ziyad-chaabi.github.io/veille.html) : tendances GitHub et IA, mises à jour en continu
