@@ -4,7 +4,7 @@
 // Rechargée toutes les 5 minutes tant que la page est ouverte, et au retour sur l'onglet.
 // Ce qui est apparu depuis le dernier passage est marqué « Nouveau ».
 // ponytail: cache local de 4 min pour rester sous la limite anonyme de GitHub (10 recherches / min) ; un vrai temps réel demanderait un serveur.
-window.ZC_PAGE = function ({ $ }) {
+window.ZC_PAGE = function ({ $, $$ }) {
   const EVERY = 5 * 60e3;
   const day = n => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
   const fmt = n => (n >= 1000 ? (n / 1000).toFixed(1).replace('.0', '') + ' k' : n);
@@ -28,6 +28,8 @@ window.ZC_PAGE = function ({ $ }) {
       ? items.map(i => `<li${!first && !seen.has(i.url) ? ' class="is-new"' : ''}><a href="${esc(safe(i.url))}" target="_blank" rel="noopener"><b>${esc(i.title)}</b><small>${esc(i.sub)}</small></a></li>`).join('')
       : `<li class="err">${msg}</li>`;
     if (items.length) store.set('zc-seen-' + id, [...new Set([...seen, ...items.map(i => i.url)])].slice(-200));
+    const n = $$('.vs-panels li.is-new').length;
+    $('.vs-new').textContent = n ? `${n} nouveau${n > 1 ? 'x' : ''} depuis votre dernier passage` : '';
     ScrollTrigger.refresh();
   };
   const gh = d => (d.items || []).slice(0, 7).map(r => ({ url: r.html_url, title: r.full_name, sub: `★ ${fmt(r.stargazers_count)}${r.language ? `, ${r.language}` : ''}${r.description ? `. ${r.description.slice(0, 100)}` : ''}` }));
@@ -52,10 +54,41 @@ window.ZC_PAGE = function ({ $ }) {
     cached('zc-hn', `https://hn.algolia.com/api/v1/search?query=AI&tags=story&numericFilters=created_at_i>${Math.floor(Date.now() / 1000) - 7 * 86400},points>100&hitsPerPage=7`)
       .then(d => fill('feed-hn', d.hits.map(h => ({ url: h.url || `https://news.ycombinator.com/item?id=${h.objectID}`, title: h.title, sub: `${h.points} points, ${h.num_comments} commentaires` })), 'Rien de marquant cette semaine.'))
       .catch(() => fill('feed-hn', [], "Hacker News ne répond pas pour l'instant. La liste se recharge toute seule dans quelques minutes."));
-    $('.veille-time').textContent = `Mis à jour à ${time.format(new Date())}, puis toutes les 5 minutes.`;
+    $('.veille-time').textContent = `En direct, mis à jour à ${time.format(new Date())}`;
   }
   load();
   setInterval(() => { if (!document.hidden) load(); }, EVERY);
   document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() - last > EVERY) load(); });
+
+  // barre d'état : le vrai compte à rebours jusqu'au prochain rechargement
+  const next = $('.vs-next');
+  const tick = () => { const s = Math.max(0, Math.round((last + EVERY - Date.now()) / 1000)); next.textContent = `prochain relevé dans ${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+  tick(); setInterval(tick, 1000);
+
+  // afficher un seul flux (plus large) ou tous
+  const shows = $$('.vs-show button'), panels = $$('.vs-panels [data-feed]');
+  shows.forEach(b => b.addEventListener('click', () => {
+    shows.forEach(x => x.setAttribute('aria-pressed', x === b));
+    panels.forEach(p => (p.hidden = b.dataset.show !== 'all' && p.dataset.feed !== b.dataset.show));
+    $('.vs-panels').classList.toggle('is-one', b.dataset.show !== 'all');
+    ScrollTrigger.refresh();
+  }));
+
+  // la fin de la page : votre propre veille, en direct sur les mêmes sources
+  const form = $('.vs-ask'), out = $('.vs-results');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const q = $('#vs-q').value.trim();
+    if (!q) return;
+    out.hidden = false;
+    $('#ask-hn').innerHTML = $('#ask-gh').innerHTML = '<li class="wait">Recherche…</li>';
+    const list = (id, items, msg) => { $('#' + id).innerHTML = items.length ? items.map(i => `<li><a href="${esc(safe(i.url))}" target="_blank" rel="noopener"><b>${esc(i.title)}</b><small>${esc(i.sub)}</small></a></li>`).join('') : `<li class="err">${msg}</li>`; };
+    fetch(`https://hn.algolia.com/api/v1/search?query=${encodeURIComponent(q)}&tags=story&hitsPerPage=6`).then(r => r.json())
+      .then(d => list('ask-hn', d.hits.map(h => ({ url: h.url || `https://news.ycombinator.com/item?id=${h.objectID}`, title: h.title, sub: `${h.points} points, ${h.num_comments} commentaires, ${new Date(h.created_at).getFullYear()}` })), 'Rien sur Hacker News pour ce sujet.'))
+      .catch(() => list('ask-hn', [], 'Hacker News ne répond pas pour l’instant.'));
+    fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(q)}&sort=stars&order=desc&per_page=6`).then(r => (r.ok ? r.json() : Promise.reject()))
+      .then(d => list('ask-gh', gh(d), 'Aucun dépôt pour ce sujet.'))
+      .catch(() => list('ask-gh', [], ghErr));
+  });
 }
 })();

@@ -29,10 +29,6 @@ writeFileSync('js/auto.js', `// Généré par build.mjs à partir de data/auto.j
 
 const esc = s => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const labCount = projects.length + autoPages.length + privateRepos.length;
-const T = {
-  index: 'Retour au point de départ', parcours: 'On remonte le temps', projets: 'Voilà ce qui en est sorti',
-  competences: 'La boîte à outils', labo: 'On descend au labo', veille: 'Ce qui bouge en ce moment',
-};
 const NAV = [['index', 'Accueil'], ['parcours', 'Parcours'], ['projets', 'Projets', projects.length], ['competences', 'Compétences'], ['labo', 'Labo', labCount], ['veille', 'Veille']];
 const firstImg = p => p.screen || p.screenM || p.cover || p.figures?.find(f => f.type === 'img')?.src || null;
 
@@ -99,19 +95,20 @@ function head({ title, desc, path, b, image = 'img/og.jpg', jsonld = '' }) {
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Ziyad Chaabi, développeur à Troyes">
 ${path === '404.html' ? '' : `<script type="application/ld+json">${JSON.stringify(graph({ title, desc, path, jsonld }))}</script>`}
-<style>html.js:not(.is-ready){background:#121417}html.js .veil{position:fixed;inset:0;z-index:100;background:#121417}</style>
+<style>html.js:not(.is-ready):not(.seen){background:#121417}html.js .veil{position:fixed;inset:0;z-index:100;background:#121417}html.seen .veil{display:none}html.js.seen:not(.is-ready) :is([data-hero],[data-hero-fade]){visibility:hidden}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="${b}css/scrollcraft.css">
 <link rel="stylesheet" href="${b}css/style.css">
-<script>document.documentElement.classList.add('js');setTimeout(function(){if(!document.documentElement.classList.contains('is-ready'))document.documentElement.classList.remove('js')},8000)</script>
+<script>document.documentElement.classList.add('js');try{if(sessionStorage.getItem('zc-seen'))document.documentElement.classList.add('seen')}catch(e){}setTimeout(function(){if(!document.documentElement.classList.contains('is-ready'))document.documentElement.classList.remove('js')},8000)</script>
 </head>`;
 }
 
 // Scripts classiques uniquement : le site marche aussi ouvert en double-clic (file://).
 // three.js n'existe qu'en module : un petit module en ligne le charge depuis le CDN puis prévient la page.
-const PAGE_JS = { parcours: 'parcours', projets: 'projets', competences: 'competences', labo: 'labo', veille: 'veille' };
-const THREE_PAGES = ['parcours', 'labo', 'projet'];
+const PAGE_JS = { index: 'index', projet: 'projet', depot: 'projet', parcours: 'parcours', projets: 'projets', competences: 'competences', labo: 'labo', veille: 'veille' };
+const THREE_PAGES = ['labo', 'projet'];
 const THREE_LOADER = `<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -123,14 +120,13 @@ dispatchEvent(new Event('three:ready'));
 </script>`;
 
 function shell(page, b, main, tex) {
-  const nav = NAV.map(([k, label, n]) => `<a href="${b}${k}.html" data-t="${T[k]}"${page === k ? ' aria-current="page"' : ''}>${label}${n ? `<sup>${n}</sup>` : ''}</a>`).join('');
+  const nav = NAV.map(([k, label, n]) => `<a href="${b}${k}.html"${page === k ? ' aria-current="page"' : ''}>${label}${n ? `<sup>${n}</sup>` : ''}</a>`).join('');
   return `<body data-page="${page}" data-base="${b}">
 <div class="veil" aria-hidden="true"><canvas></canvas><p class="veil-text"></p><p class="veil-count"></p></div>
 <a class="skip" href="#main">Aller au contenu</a>
 <header class="site-head">
-  <a class="brand" href="${b}index.html" data-t="${T.index}">Ziyad Chaabi</a>
+  <a class="brand" href="${b}index.html">Ziyad Chaabi</a>
   <nav class="nav" aria-label="Navigation principale">${nav}</nav>
-  <p class="head-meta">Troyes <span data-clock>--:--</span></p>
   <a class="head-cta" href="#contact">Me contacter</a>
   <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
 </header>
@@ -144,7 +140,6 @@ function shell(page, b, main, tex) {
 ${main}
 </main>
 ${footer(b)}
-<div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"><em class="cursor-label"></em></span></div>
 <div class="peek" aria-hidden="true"><canvas></canvas><img alt=""><p class="peek-title"></p></div>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
@@ -157,6 +152,7 @@ ${tex ? `<script>if (location.protocol === 'file:') document.write('<script src=
 ${THREE_PAGES.includes(page) ? `<script src="${b}js/devices.js"></script>` : ''}
 ${page === 'veille' ? `<script src="${b}js/veille-data.js"></script>` : ''}
 ${PAGE_JS[page] ? `<script src="${b}js/pages/${PAGE_JS[page]}.js"></script>` : ''}
+<script src="${b}js/scrollcraft.js"></script>
 <script src="${b}js/app.js"></script>
 <script data-goatcounter="https://ziyad-chaabi.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 ${THREE_PAGES.includes(page) ? THREE_LOADER : ''}
@@ -172,8 +168,8 @@ function footer(b) {
     <p class="foot-kicker">Un projet, une idée, une question sur la VR&nbsp;: la boîte est ouverte.</p>
     <div class="foot-main">
       <div class="foot-mail">
-        <a href="mailto:${site.email}" data-cursor="Écrire">${site.email}</a>
-        <button type="button" data-copy="${site.email}" data-cursor="Copier">Copier l’adresse</button>
+        <a href="mailto:${site.email}">${site.email}</a>
+        <button type="button" data-copy="${site.email}">Copier l’adresse</button>
         <span class="copy-msg" aria-live="polite"></span>
       </div>
       <div class="foot-cols">
@@ -183,7 +179,7 @@ function footer(b) {
           <li><a href="${site.instagram}" target="_blank" rel="noopener me">Instagram</a></li>
         </ul></div>
         <div><h3>Pages</h3><ul>
-          ${NAV.map(([k, l]) => `<li><a href="${b}${k}.html" data-t="${T[k]}">${l}</a></li>`).join('')}
+          ${NAV.map(([k, l]) => `<li><a href="${b}${k}.html">${l}</a></li>`).join('')}
         </ul></div>
       </div>
     </div>
@@ -206,7 +202,7 @@ const device = (o, b) => `<canvas class="device-canvas" data-device="${o.device}
 const tag = p => ({ pro: 'Pro', perso: 'Perso', ecole: 'École' }[p.kind]);
 const rows = (list, b) => list.map(p => `
     <li class="row-item" data-kind="${p.kind}">
-      <a class="row" href="${b}projets/${p.slug}.html" data-peek="${p.slug}"${firstImg(p) ? ` data-img="${b}${firstImg(p)}"` : ''} data-cursor="Ouvrir" data-t="${esc(p.title)}">
+      <a class="row" href="${b}projets/${p.slug}.html" data-peek="${p.slug}"${firstImg(p) ? ` data-img="${b}${firstImg(p)}"` : ''}>
         <span class="row-cover">${firstImg(p) ? `<img src="${b}${firstImg(p)}" alt="" loading="lazy">` : `<canvas data-cover="${p.slug}"></canvas>`}</span>
         <span class="row-title">${esc(p.title)}</span>
         <span class="row-meta">${esc(p.context)}</span>
@@ -229,34 +225,36 @@ page('index.html', {
   title: 'Ziyad Chaabi | Développeur Full Stack à Troyes, web, mobile et IA',
   desc: 'Portfolio de Ziyad Chaabi, développeur full stack TypeScript basé à Troyes : applications web et mobiles (Angular, NestJS, React Native), IA appliquée et réalité virtuelle.',
 }, `
-<section class="hero hero-home">
-  <canvas class="hero-canvas" data-relief data-img="img/ziyad-relief.png" data-photo="img/ziyad-photo.webp" data-seed="ziyad-chaabi" data-peaks="5" data-rough=".8" data-levels="16"></canvas>
-  <div class="hero-grid wrap">
-    <div class="hero-copy">
-      <a class="status" href="projets/subforge.html" data-t="SubForge" data-hero-fade><span class="dot"></span>En ce moment : SubForge, un coach nutrition à l’IA</a>
-      <h1 class="hero-title"><span class="display hero-name" data-hero>Ziyad<br>Chaabi</span></h1>
-      <p class="hero-lede" data-hero-fade>Développeur à Troyes, passé par le design avant le code. Je fais des applis web et mobiles, des mondes en réalité virtuelle, et des scripts pour les petites frustrations du quotidien.</p>
-      <div class="hero-cta" data-hero-fade>
-        <a class="btn" href="projets.html" data-t="${T.projets}">Voir mes projets</a>
-        <a class="btn btn-line" href="labo.html" data-t="${T.labo}">Explorer le labo</a>
-      </div>
-    </div>
-    <figure class="hero-stage" data-hero-fade title="Maintenez le clic pour voir la photo">
+<!-- Héros en couches : terrain (loin) / « Ziyad » (derrière le visage) / visage en courbes de niveau / « Chaabi » (devant) / texte.
+     Chaque plan suit --sc-p à sa vitesse (css), le visage retourne dans la carte pendant que la phrase s'assemble. -->
+<section class="hero hero-home" data-sc-act="pin" data-sc-span="2.3">
+  <div class="hh-stage" data-sc-stage>
+    <canvas class="hero-canvas hh-terrain" data-relief data-layer="1" data-seed="ziyad-chaabi" data-peaks="5" data-rough=".8" data-levels="16"></canvas>
+    <h1 class="hh-name display"><span class="hh-back"><span data-hero>Ziyad</span></span> <span class="hh-front"><span data-hero>Chaabi</span></span></h1>
+    <figure class="hh-face" data-hero-fade title="Maintenez le clic pour voir la photo">
+      <canvas data-face="img/ziyad-relief.png" data-photo="img/ziyad-photo.webp" aria-hidden="true"></canvas>
       <img src="img/ziyad-photo.webp" alt="Portrait de Ziyad Chaabi" width="600" height="750">
     </figure>
+    <div class="hh-copy" data-sc-cue="0 0.4 0">
+      <p class="hero-lede" data-hero-fade>Développeur à Troyes, passé par le design avant le code. Je fais des applis web et mobiles, des mondes en réalité virtuelle, et des scripts pour les petites frustrations du quotidien.</p>
+      <div class="hero-cta" data-hero-fade>
+        <a class="btn" href="projets.html">Voir mes projets</a>
+        <a class="btn btn-line" href="labo.html">Explorer le labo</a>
+      </div>
+    </div>
+    <p class="hh-turn" data-sc-cue="0.48" data-sc-kinetic="lines">J’aime comprendre un problème avant d’ouvrir l’éditeur.</p>
   </div>
 </section>
 
 <section class="intro wrap">
-  <p class="intro-a" data-reveal>J’aime comprendre un problème avant d’ouvrir l’éditeur.</p>
   <div class="intro-b" data-reveal>
     <p>Je pense d’abord aux gens qui vont se servir de l’outil, sur un chantier ou un casque VR sur la tête, et seulement ensuite à la stack.</p>
-    <a class="arrow-link" href="parcours.html" data-t="${T.parcours}">Lire mon parcours</a>
+    <a class="arrow-link" href="parcours.html">Lire mon parcours</a>
   </div>
 </section>
 
 <section class="work wrap">
-  <div class="sec-head"><h2 class="h2" data-reveal>Projets choisis</h2><a class="arrow-link" href="projets.html" data-t="${T.projets}">Voir les ${projects.length} projets</a></div>
+  <div class="sec-head"><h2 class="h2" data-reveal>Projets choisis</h2><a class="arrow-link" href="projets.html">Voir les ${projects.length} projets</a></div>
   <ol class="rows">${rows(featured, '')}
   </ol>
 </section>
@@ -264,10 +262,10 @@ page('index.html', {
 <section class="off wrap">
   <div class="sec-head"><h2 class="h2" data-reveal>Hors de l’écran</h2><p class="sec-note" data-reveal>Presque tous mes projets perso sont nés d’ici.</p></div>
   <ul class="off-list">${off.map(o => `
-    <li class="off-item" style="--c:${o.color}" data-reveal>
-      <p class="off-what">${o.what}</p>
-      <p class="off-text">${o.text}</p>
-      <p class="off-links">${o.links.map(([l, h]) => `<a class="arrow-link" href="${h}" data-t="${esc(l)}">${l}</a>`).join('')}</p>
+    <li class="off-item" style="--c:${o.color}">
+      <p class="off-what"><span data-wipe>${o.what}</span></p>
+      <p class="off-text" data-reveal>${o.text}</p>
+      <p class="off-links" data-reveal>${o.links.map(([l, h]) => `<a class="arrow-link" href="${h}">${l}</a>`).join('')}</p>
     </li>`).join('')}
   </ul>
 </section>
@@ -277,16 +275,12 @@ page('index.html', {
   <div class="band-inner wrap">
     <h2 class="h2" data-reveal>Le labo</h2>
     <p data-reveal>${labCount} projets et dépôts, des projets d’école aux expériences du dimanche, posés sur une carte en relief que l’on parcourt en 3D. Elle se met à jour toute seule à chaque nouveau dépôt GitHub.</p>
-    <a class="btn" href="labo.html" data-t="${T.labo}" data-cursor="Explorer" data-reveal>Explorer le labo</a>
+    <a class="btn" href="labo.html" data-reveal>Explorer le labo</a>
   </div>
 </section>
 
 <section class="now wrap">
-  <h2 class="h2" data-reveal>Ce que je lis</h2>
-  <div class="now-grid">
-    <p data-reveal>Les agents de code, MCP, les dépôts qui grimpent sur GitHub dans la semaine. Ma veille les rassemble, rechargée à chaque visite.</p>
-    <a class="arrow-link" href="veille.html" data-t="${T.veille}" data-reveal>Ma veille, en direct</a>
-  </div>
+  <p class="now-line" data-reveal>En ce moment : <a href="projets/subforge.html">SubForge, un coach nutrition à l’IA</a>. Ce que je lis : les agents de code, MCP et les dépôts qui grimpent sur GitHub dans la semaine, rassemblés dans <a href="veille.html">ma veille, en direct</a>.</p>
 </section>`);
 
 /* ================= Projets ================= */
@@ -295,30 +289,32 @@ page('projets.html', {
   title: 'Projets | Ziyad Chaabi, développeur full stack',
   desc: `${projects.length} projets de Ziyad Chaabi : BTP-360 (SaaS Angular, NestJS, AWS), SubForge (React Native et IA), réalité virtuelle, e-commerce et sites web, et ${autoPages.length} autres dépôts dans le labo.`,
 }, `
-<section class="page-hero wrap">
-  ${relief('projets')}
-  <h1 class="display" data-hero>Projets</h1>
-  <p class="page-lede" data-hero-fade>${projects.length} projets, du stage de fin d’études aux exercices de BUT. Chaque fiche raconte le problème, ce que j’ai fait et ce que j’en ai retenu.</p>
-</section>
-<section class="wrap">
-  <div class="toolbar" data-hero-fade>
-    <div class="filters" role="group" aria-label="Filtrer les projets">
-      <button type="button" aria-pressed="true" data-f="all">Tous <sup>${projects.length}</sup></button>
-      <button type="button" aria-pressed="false" data-f="pro">Pro <sup>${projects.filter(p => p.kind === 'pro').length}</sup></button>
-      <button type="button" aria-pressed="false" data-f="perso">Perso <sup>${projects.filter(p => p.kind === 'perso').length}</sup></button>
-      <button type="button" aria-pressed="false" data-f="ecole">École <sup>${projects.filter(p => p.kind === 'ecole').length}</sup></button>
-    </div>
-    <div class="views" role="group" aria-label="Affichage">
-      <button type="button" aria-pressed="true" data-v="list">Liste</button>
-      <button type="button" aria-pressed="false" data-v="grid">Grille</button>
-    </div>
+<!-- Galerie : la collection commence en haut de la page. Un rail qu'on longe en scrollant (Scrollcraft pan),
+     chaque objet porte la même étiquette, l'index saute à l'objet. Sous le rail, le sol du musée (relief) défile
+     moins vite et prend la couleur de l'objet devant lequel on se trouve. -->
+<section class="gal" data-sc-act="pan" data-sc-span="9">
+  <div class="gal-stage" data-sc-stage>
+    <canvas class="gal-floor" aria-hidden="true"></canvas>
+    <nav class="gal-index" aria-labelledby="gal-h">
+      <h1 id="gal-h" class="gal-h">Projets <span>${projects.length} objets, 2021 à 2026</span></h1>
+      ${[['pro', 'Pro'], ['perso', 'Perso'], ['ecole', 'École']].map(([k, l]) => `<h2>${l}</h2><ul>${projects.filter(p => p.kind === k).map(p => `<li><a href="projets/${p.slug}.html" data-go="${p.slug}">${esc(p.title)}</a></li>`).join('')}</ul>`).join('')}
+    </nav>
+    <ol class="gal-rail" data-sc-pan="0.02">
+      ${['pro', 'perso', 'ecole'].flatMap(k => projects.filter(p => p.kind === k)).map(p => { const im = firstImg(p); return `<li class="gal-obj" data-slug="${p.slug}" data-color="${p.color}" style="--c:${p.color}">
+        <a class="gal-pic${!p.screen && p.screenM ? ' is-phone' : ''}" href="projets/${p.slug}.html" data-sc-tilt="5" aria-label="${esc(p.title)}, la fiche">${im ? `<img src="${im}" alt="" loading="lazy">` : `<canvas data-cover="${p.slug}"></canvas>`}</a>
+        <h2 class="gal-title">${esc(p.title)}</h2>
+        <p class="gal-meta">${esc(p.year)}. ${esc(p.context)}. ${esc(p.org)}.</p>
+        <p class="gal-meta">${esc(p.role)}.</p>
+        <p class="gal-tools">${esc(p.stack.slice(0, 4).join(', '))}</p>
+      </li>`; }).join('\n      ')}
+      <li class="gal-obj gal-end">
+        <h2 class="gal-title">Les ${autoPages.length} autres dépôts</h2>
+        <p class="gal-meta">2021 à 2026. Exercices d’école, scripts du dimanche, essais.</p>
+        <p class="gal-meta">Rangés sur la carte en relief du labo, mise à jour à chaque nouveau dépôt.</p>
+        <p class="gal-tools"><a class="arrow-link" href="labo.html">Explorer le labo</a></p>
+      </li>
+    </ol>
   </div>
-  <ol class="rows rows-all">${rows(projects, '')}
-  </ol>
-</section>
-<section class="more wrap">
-  <p class="statement" data-reveal>Les ${autoPages.length} autres dépôts, des exercices d’école aux scripts du dimanche, sont rangés sur la carte du labo.</p>
-  <a class="btn" href="labo.html" data-t="${T.labo}" data-cursor="Explorer" data-reveal>Explorer le labo</a>
 </section>`);
 
 /* ================= Pages projet ================= */
@@ -332,27 +328,32 @@ const figure = (f, b) => {
   if (f.type === 'diagram') return `<figure class="fig fig-wide fig-diagram" data-reveal><ol class="diagram">${f.layers.map(([t, items]) => `<li><h3>${esc(t)}</h3><ul>${items.map(x => `<li>${esc(x)}</li>`).join('')}</ul></li>`).join('')}</ol>${cap}</figure>`;
   return '';
 };
-const section = s => `
-<section class="p-sec wrap">
-  <h2 class="p-sec-title" data-reveal>${esc(s.title)}</h2>
-  <div class="p-sec-body">
-    ${(s.body || []).map(t => `<p data-reveal>${esc(t)}</p>`).join('')}
-    ${s.list ? `<dl class="p-list">${s.list.map(([k, v]) => `<div data-reveal><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>` : ''}
-    ${s.quote ? `<blockquote class="p-quote" data-reveal><p>« ${esc(s.quote[0])} »</p><footer>${esc(s.quote[1])}</footer></blockquote>` : ''}
-  </div>
+// Fiches : grammaire éditoriale. Page de titre sans image, des chapitres sur leur propre fond (coupes franches),
+// les médias dans leur colonne avec légende, les vrais chiffres dans le texte, un colophon pour finir.
+// Le folio (marge) suit le chapitre en cours ; sa vignette en relief gagne des courbes à chaque chapitre lu.
+const chapter = (n, title, body) => `
+<section class="ed-ch${n % 2 ? '' : ' is-alt'}" data-ch="${esc(title)}" aria-labelledby="ch-${n}">
+  <header class="ed-inter wrap" data-wipe><h2 class="ed-ch-title" id="ch-${n}">${esc(title)}</h2></header>
+  ${body}
 </section>`;
-const nextBlock = (next, b) => `
-<a class="p-next" href="${next.slug}.html" data-t="${esc(next.title)}" data-cursor="Suivant" style="--accent:${next.color || '#D2602A'}">
-  <span class="p-next-label">Projet suivant</span>
-  <span class="p-next-title display${next.title.length > 12 ? ' is-long' : ''}">${esc(next.title)}</span>
-  <span class="p-next-cover">${firstImg(next) ? `<img src="${b}${firstImg(next)}" alt="" loading="lazy">` : `<canvas data-cover="${next.slug}"></canvas>`}</span>
-</a>`;
+const sectionBody = s => `<div class="ed-spread wrap"><div class="ed-text">${(s.body || []).map(t => `<p data-reveal>${esc(t)}</p>`).join('')}${s.list ? `<dl class="p-list">${s.list.map(([k, v]) => `<div data-reveal><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>` : ''}</div>${s.quote ? `<aside class="ed-side"><blockquote class="p-quote" data-reveal><p>« ${esc(s.quote[0])} »</p><footer>${esc(s.quote[1])}</footer></blockquote></aside>` : ''}</div>`;
+const folio = (slug, color, relief) => `<aside class="folio" aria-hidden="true" data-seed="${slug}" data-color="${color}" data-peaks="${relief?.peaks || 3}" data-rough="${relief?.rough || .5}"><canvas class="folio-map"></canvas><p><span class="folio-n"></span><span class="folio-t"></span></p></aside>`;
+const colophon = (lines, prev, next, back) => `
+<footer class="ed-colophon wrap">
+  <p class="ed-colo-mark">Colophon</p>
+  ${lines.map(l => `<p>${l}</p>`).join('')}
+  <p>Projet précédent : <a href="${prev.slug}.html">${esc(prev.title)}</a>. Projet suivant : <a href="${next.slug}.html">${esc(next.title)}</a>. Ou ${back}.</p>
+</footer>`;
+const lower = s => s.charAt(0).toLowerCase() + s.slice(1);
 
 projects.forEach((p, i) => {
   const b = '../', n = projects.length;
   const prev = projects[(i - 1 + n) % n], next = projects[(i + 1) % n];
   const [first, ...rest] = p.figures;
   const links = p.links.map(([l, u]) => `<a class="btn btn-line" href="${u}" target="_blank" rel="noopener">${esc(l)}</a>`).join('');
+  // les chiffres vrais, écrits dans une phrase, et qui comptent quand on arrive dessus (Scrollcraft count)
+  const stats = p.stats ? `<p class="ed-figures" data-reveal>En chiffres : ${p.stats.map(([v, l]) => `<b data-sc-count="0 ${v}">${v}</b> ${esc(l)}`).join(', ')}.</p>` : '';
+  let ch = 1;
   page(`projets/${p.slug}.html`, {
     page: 'projet', path: `projets/${p.slug}.html`, tex: texBundle(p.slug, [p.screen, p.screenM]),
     title: `${p.title} | Projet de Ziyad Chaabi`,
@@ -360,83 +361,63 @@ projects.forEach((p, i) => {
     jsonld: { '@type': 'CreativeWork', '@id': `${site.url}projets/${p.slug}.html#projet`, name: p.title, description: p.kicker, dateCreated: p.year,
       author: { '@id': ME }, keywords: p.stack.join(', '), url: `${site.url}projets/${p.slug}.html`, ...(firstImg(p) ? { image: site.url + firstImg(p) } : {}) },
   }, `
-<article class="p" style="--accent:${p.color}" data-slug="${p.slug}">
-<section class="p-hero">
+<article class="p ed" style="--accent:${p.color}" data-slug="${p.slug}">
+<header class="ed-title">
   ${relief(p.slug, `data-accent="${p.color}" data-peaks="${p.relief?.peaks || 3}" data-rough="${p.relief?.rough || .5}"`)}
-  <div class="wrap p-top" data-hero-fade>
-    <a class="back" href="${b}projets.html" data-t="${T.projets}">Tous les projets</a>
+  <p class="p-context wrap" data-hero-fade><a class="back" href="${b}projets.html">Projets</a><span class="tag">${tag(p)}</span>${esc(p.context)}, ${esc(p.year)}</p>
+  <div class="wrap">
+    <h1 class="display p-title${p.title.length > 12 ? ' is-long' : ''}" data-hero>${esc(p.title)}</h1>
+    <p class="p-kicker" data-hero-fade>${esc(p.kicker)}</p>
   </div>
-  <div class="p-head wrap">
-    <div class="p-head-copy">
-      <p class="p-context" data-hero-fade><span class="tag">${tag(p)}</span>${esc(p.context)}, ${esc(p.year)}</p>
-      <h1 class="display p-title${p.title.length > 12 ? ' is-long' : ''}" data-hero>${esc(p.title)}</h1>
-      <p class="p-kicker" data-hero-fade>${esc(p.kicker)}</p>
-    </div>
-    <div class="p-stage" data-hero-fade>${device({ ...p, label: `${p.title} en 3D` }, b)}</div>
-  </div>
-</section>
-
-<section class="p-info wrap">
-  <dl class="p-meta">
-    <div><dt>Contexte</dt><dd>${esc(p.org)}</dd></div>
+  <dl class="ed-meta wrap" data-hero-fade>
+    <div><dt>Cadre</dt><dd>${esc(p.org)}</dd></div>
     <div><dt>Période</dt><dd>${esc(p.period)}</dd></div>
     <div><dt>Équipe</dt><dd>${esc(p.team)}</dd></div>
     <div><dt>Mon rôle</dt><dd>${esc(p.role)}</dd></div>
-    <div class="p-stack"><dt>Stack</dt><dd><ul class="chips">${p.stack.map(s => `<li>${esc(s)}</li>`).join('')}</ul></dd></div>
   </dl>
-  <div class="p-intro">
-    <p data-reveal>${esc(p.intro)}</p>
-    ${links || p.privateNote ? `<div class="p-links" data-reveal>${links}${p.privateNote ? `<p class="note">${esc(p.privateNote)}</p>` : ''}</div>` : ''}
+</header>
+${chapter(ch++, 'Le projet', `<div class="ed-spread wrap">
+    <div class="ed-text ed-lead">
+      <p data-reveal>${esc(p.intro)}</p>
+      ${stats}
+      ${links || p.privateNote ? `<div class="p-links" data-reveal>${links}${p.privateNote ? `<p class="note">${esc(p.privateNote)}</p>` : ''}</div>` : ''}
+      <ul class="chips" data-reveal aria-label="Outils">${p.stack.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
+    </div>
+    <figure class="ed-plate" data-reveal>${device({ ...p, label: `${p.title} en 3D` }, b)}<figcaption>${esc(p.title)}, en maquette 3D</figcaption></figure>
   </div>
-</section>
-${p.stats ? `<p class="p-stats wrap" data-reveal>${p.stats.map(([v, l]) => `<span><b>${v}</b> ${esc(l)}</span>`).join('')}</p>` : ''}
-${first ? `<div class="wrap p-figs">${figure(first, b)}</div>` : ''}
-${p.sections.map(section).join('')}
-${rest.length ? `<div class="wrap p-figs p-gallery">${rest.map(f => figure(f, b)).join('')}</div>` : ''}
-
-<nav class="pager wrap" aria-label="Autres projets">
-  <a href="${prev.slug}.html" data-t="${esc(prev.title)}"><span>Précédent</span>${esc(prev.title)}</a>
-  <a href="${b}projets.html" data-t="${T.projets}">Tous les projets</a>
-</nav>
-${nextBlock(next, b)}
-</article>`);
+  ${first ? `<div class="wrap p-figs">${figure(first, b)}</div>` : ''}`)}
+${p.sections.map(s => chapter(ch++, s.title, sectionBody(s))).join('')}
+${rest.length ? chapter(ch++, 'En images', `<div class="wrap p-figs p-gallery">${rest.map(f => figure(f, b)).join('')}</div>`) : ''}
+${colophon([`${esc(p.title)}. ${esc(p.context)}, ${esc(p.org)}, ${esc(lower(p.period))}. ${esc(p.team)}. Rôle : ${esc(lower(p.role))}.`, `Outils : ${esc(p.stack.join(', '))}.`], prev, next, `<a href="${b}projets.html">toute la collection</a>`)}
+</article>
+${folio(p.slug, p.color, p.relief)}`);
 });
 
-/* ---------- Pages des dépôts synchronisés ---------- */
+/* ---------- Pages des dépôts synchronisés : même grammaire, plus courte ---------- */
 autoPages.forEach((a, i) => {
-  const b = '../', next = autoPages[(i + 1) % autoPages.length];
+  const b = '../', n = autoPages.length, prev = autoPages[(i - 1 + n) % n], next = autoPages[(i + 1) % n];
+  const src = a.source ? (a.source === 'lancé en local' ? 'captures prises en lançant le projet' : a.source === 'site en ligne' ? 'captures du site en ligne' : 'images du dépôt') : '';
   page(`projets/${a.slug}.html`, {
     page: 'depot', path: `projets/${a.slug}.html`,
     title: `${a.title} | Dépôt GitHub de Ziyad Chaabi`,
     desc: `${a.desc} ${a.stack.length ? `Stack : ${a.stack.join(', ')}.` : ''}`,
   }, `
-<article class="p p-auto" style="--accent:#D2602A" data-slug="${a.slug}">
-<section class="p-hero">
+<article class="p ed p-auto" style="--accent:#D2602A" data-slug="${a.slug}">
+<header class="ed-title">
   ${relief(a.slug)}
-  <div class="wrap p-top" data-hero-fade>
-    <a class="back" href="${b}labo.html" data-t="${T.labo}">Retour au labo</a>
-    <p>Dépôt GitHub</p>
-  </div>
-  <div class="wrap">
-    <p class="p-context" data-hero-fade><span class="tag">GitHub</span>${esc(a.year)}${a.stars ? `, ★ ${a.stars}` : ''}</p>
-    <h1 class="h2 p-light-title" data-hero>${esc(a.title)}</h1>
-  </div>
-</section>
-<section class="p-info wrap">
-  <dl class="p-meta">
-    <div><dt>Créé en</dt><dd>${esc(a.year)}</dd></div>
-    ${a.stack.length ? `<div class="p-stack"><dt>Langages</dt><dd><ul class="chips">${a.stack.map(s => `<li>${esc(s)}</li>`).join('')}</ul></dd></div>` : ''}
-    ${a.source ? `<div><dt>Visuels</dt><dd>${esc(a.source === 'lancé en local' ? 'Captures prises en lançant le projet' : a.source === 'site en ligne' ? 'Captures du site en ligne' : 'Images du dépôt')}</dd></div>` : ''}
-  </dl>
-  <div class="p-intro">
+  <p class="p-context wrap" data-hero-fade><a class="back" href="${b}labo.html">Labo</a><span class="tag">GitHub</span>${esc(a.year)}${a.stars ? `, ★ ${a.stars}` : ''}</p>
+  <div class="wrap"><h1 class="h2 p-light-title" data-hero>${esc(a.title)}</h1></div>
+</header>
+${chapter(1, 'Le dépôt', `<div class="ed-spread wrap"><div class="ed-text ed-lead">
     ${(a.paras.length ? a.paras : [a.desc]).map(t => `<p data-reveal>${esc(t)}</p>`).join('')}
     ${a.bullets.length ? `<ul class="p-bullets" data-reveal>${a.bullets.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
     <div class="p-links" data-reveal><a class="btn btn-line" href="${a.url}" target="_blank" rel="noopener">Voir le code</a>${a.live ? `<a class="btn btn-line" href="${a.live}" target="_blank" rel="noopener">Voir en ligne</a>` : ''}</div>
-  </div>
-</section>
-${a.images.length ? `<div class="wrap p-figs p-gallery">${a.images.map(g => /mobile/.test(g) ? `<figure class="fig fig-phone" data-reveal><img src="${b}${g}" alt="" loading="lazy"></figure>` : `<figure class="fig" data-reveal><img src="${b}${g}" alt="" loading="lazy"></figure>`).join('')}</div>` : ''}
-${nextBlock(next, b)}
-</article>`);
+    ${a.stack.length ? `<ul class="chips" data-reveal aria-label="Langages">${a.stack.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : ''}
+  </div></div>`)}
+${a.images.length ? chapter(2, 'En images', `<div class="wrap p-figs p-gallery">${a.images.map(g => `<figure class="fig${/mobile/.test(g) ? ' fig-phone' : ''}" data-reveal><img src="${b}${g}" alt="" loading="lazy"></figure>`).join('')}</div>`) : ''}
+${colophon([`${esc(a.title)}. Dépôt GitHub créé en ${esc(a.year)}${a.stack.length ? `, écrit en ${esc(a.stack.join(', '))}` : ''}.${src ? ` Visuels : ${src}.` : ''}`], prev, next, `<a href="${b}labo.html">retour au labo</a>`)}
+</article>
+${folio(a.slug, '#D2602A')}`);
 });
 
 /* ================= Parcours ================= */
@@ -447,50 +428,55 @@ const avis = [
     text: 'Il nous a apporté des idées pour compléter notre planning du personnel, en créant un tableau qui permet de calculer les heures de travail journalières et de visualiser les heures supplémentaires de chaque employé.' },
 ];
 const initials = n => n.split(' ').map(w => w[0]).join('');
+// Une jambe de vol par étape. Les étapes troyennes de 2022-2023 sont courtes et calmes : c'est le silence avant le pic,
+// le grand vol vers Valenciennes, la plus longue jambe de la page. Les fenêtres de texte sont des fractions de toute la piste.
+const legW = timeline.map((t, i) => (i === 0 ? 1.8 : t.place === 'Valenciennes' ? 2.2 : i === timeline.length - 1 ? 1.6 : t.place === 'Meaux' || t.title.startsWith('BTP') ? 1.3 : 1.1));
+const legT = legW.reduce((a, b) => a + b, 0);
+const f3 = x => (+x.toFixed(4)).toString();
+const legs = timeline.map((s, i) => {
+  const c0 = legW.slice(0, i).reduce((a, b) => a + b, 0), w = legW[i], c1 = c0 + w, wn = legW[i + 1] || 0;
+  const [lat, lon] = s.coords.match(/[\d.]+/g).map(Number);
+  const win = i === timeline.length - 1 ? 'finale' : `${f3((c0 + (i ? .42 : .5) * w) / legT)} ${f3(Math.min(1, (c1 + .1 * wn) / legT))} .22 .2`;
+  return { s, w, lat, lon, win };
+});
+const heroWin = `0 ${f3(.56 * legW[0] / legT)} 0 .4`;
+const quoteAt = { 2: avis[1], 3: avis[0] }; // Ophta Médical (2022), Réseau Sûr France (2023)
 page('parcours.html', {
   page: 'parcours', path: 'parcours.html',
   title: 'Parcours | Ziyad Chaabi, de Troyes à Valenciennes, et retour',
   desc: "Le parcours de Ziyad Chaabi : bac STI2D à Troyes, BUT MMI à Meaux, Master Sciences et Technologies du Métavers à l'INSA Hauts-de-France, stages et alternance jusqu'à BTP-360.",
 }, `
-<section class="page-hero wrap">
-  ${relief('parcours')}
-  <h1 class="ph-title" data-hero>De Troyes à Valenciennes, et retour.</h1>
-  <p class="page-lede" data-hero-fade>Un bac à Troyes, le design à Meaux, la réalité virtuelle à Valenciennes, et entre deux, des stages et une alternance dans des entreprises de l’Aube. Voici le chemin, étape par étape.</p>
-</section>
-<div class="ph-strip wrap" data-reveal>
-  <figure><img src="img/ziyad-camera.webp" alt="Ziyad Chaabi, sourire aux lèvres, une caméra JVC à l’épaule" width="1600" height="1200"></figure>
-  <figure><img src="img/ziyad-photo.webp" alt="Portrait de Ziyad Chaabi, lunettes rondes et veste à chevrons" width="600" height="750"></figure>
-  <figure><img src="img/ziyad-vr.webp" alt="Ziyad présente un projet de réalité virtuelle à l’INSA, un Meta Quest 3 sur le bureau" width="1400" height="880" loading="lazy"><figcaption>Avril 2025, présentation d’un projet VR à l’INSA</figcaption></figure>
-</div>
-
-<section class="chapters wrap" aria-label="Chronologie">
-  <div class="ch-rail" aria-hidden="true"><span></span></div>
-  <ol>
-    ${timeline.map((s, i) => `<li class="chapter${s.img ? ' has-img' : ''}">
-      <div class="ch-when"><span class="ch-year">${s.year}</span><span class="ch-place">${esc(s.place)}<small>${esc(s.coords)}</small></span></div>
-      <div class="ch-body">
-        <h2>${esc(s.title)}</h2>
-        <p>${esc(s.text)}</p>
-        ${s.link ? `<a class="arrow-link" href="projets/${s.link}.html" data-t="${esc(projects.find(p => p.slug === s.link).title)}">Voir le projet</a>` : ''}
-      </div>
-      ${s.img ? (s.link ? `<a class="ch-img" href="projets/${s.link}.html" data-t="${esc(projects.find(p => p.slug === s.link).title)}" data-cursor="Ouvrir"><img src="${s.img}" alt="${esc(s.alt || '')}" loading="lazy"></a>` : `<figure class="ch-img"><img src="${s.img}" alt="${esc(s.alt || '')}" loading="lazy"></figure>`) : ''}
-    </li>`).join('')}
-  </ol>
-</section>
-
-<section class="quotes wrap">
-  <h2 class="h2" data-reveal>Ils ont travaillé avec moi</h2>
-  <div class="quotes-grid">
-    ${avis.map(a => `<blockquote data-reveal><p>« ${esc(a.text)} »</p><footer>
-      ${existsSync(a.img) ? `<img class="avatar" src="${a.img}" alt="${esc(a.name)}" loading="lazy">` : `<span class="avatar" aria-hidden="true">${initials(a.name)}</span>`}
-      <span><b>${esc(a.name)}</b>${esc(a.role)}</span></footer></blockquote>`).join('')}
+<!-- Monde continu (Scrollcraft worldflight) : une seule toile fixe, le relief, que la caméra survole d'une étape à l'autre
+     entre les vraies coordonnées. Rien d'autre dans le flux que l'espaceur ; le texte vit dans le calque fixe, par fenêtres. -->
+<div class="pc" data-sc-mode="worldflight" data-sc-seam="0.16" data-sc-lerp="0.12">
+  <div class="pc-world" data-sc-world data-sc-verify-state="">
+    <canvas class="pc-map" aria-hidden="true"></canvas>
+    <svg class="pc-route" aria-hidden="true"><path class="pc-route-all"></path><path class="pc-route-done" pathLength="1"></path></svg>
+    <div class="pc-pins" aria-hidden="true">${[...new Set(timeline.map(t => t.place))].map(pl => `<span class="pc-pin" data-place="${esc(pl)}"><i></i>${esc(pl)}</span>`).join('')}</div>
+    ${legs.map(l => `<div data-sc-segment data-sc-w="${l.w}" data-sc-waypoint="${esc(l.s.year + ' ' + l.s.place)}" data-lat="${l.lat}" data-lon="${l.lon}" data-place="${esc(l.s.place)}"></div>`).join('\n    ')}
   </div>
-</section>
-
-<section class="outro wrap">
-  <p class="statement" data-reveal>Assez parlé de moi. Voilà ce qui en est sorti.</p>
-  <a class="btn" href="projets.html" data-t="${T.projets}" data-reveal>Voir les projets</a>
-</section>`);
+  <div data-sc-world-copy>
+    <div class="sc-world__scrim pc-scrim"></div>
+    <div class="pc-copy pc-hero" data-sc-copy data-sc-window="${heroWin}">
+      <h1 class="ph-title" data-hero>De Troyes à Valenciennes, et retour.</h1>
+      <p class="page-lede" data-hero-fade>Un bac à Troyes, le design à Meaux, la réalité virtuelle à Valenciennes, et entre deux, des stages et une alternance dans des entreprises de l’Aube. Voici le chemin, étape par étape, sur la carte.</p>
+    </div>
+    ${legs.map((l, i) => { const s = l.s, q = quoteAt[i], last = i === legs.length - 1; return `<article class="pc-copy pc-step${last ? ' pc-finale' : ''}" data-sc-copy data-sc-window="${l.win}" data-leg="${i}">
+      <p class="pc-when"><span class="ch-year">${s.year}</span><span class="ch-place">${esc(s.place)}<small>${esc(s.coords)}</small></span></p>
+      <h2>${esc(s.title)}</h2>
+      <p>${esc(s.text)}</p>
+      ${q ? `<blockquote class="pc-quote"><p>« ${esc(q.text)} »</p><footer>${existsSync(q.img) ? `<img class="avatar" src="${q.img}" alt="${esc(q.name)}" loading="lazy">` : `<span class="avatar" aria-hidden="true">${initials(q.name)}</span>`}<span><b>${esc(q.name)}</b>${esc(q.role)}</span></footer></blockquote>` : ''}
+      ${last ? `<figure class="pc-img"><img src="img/ziyad-camera.webp" alt="Ziyad Chaabi, sourire aux lèvres, une caméra JVC à l’épaule" width="1600" height="1200" loading="lazy"></figure>
+      <p class="statement">Assez parlé de moi. Voilà ce qui en est sorti.</p>
+      <p class="pc-actions"><a class="btn" href="projets.html">Voir les projets</a>${s.link ? `<a class="arrow-link" href="projets/${s.link}.html">${esc(projects.find(p => p.slug === s.link).title)}</a>` : ''}</p>`
+      : `${s.img ? `<figure class="pc-img"><img src="${s.img}" alt="${esc(s.alt || '')}" loading="lazy"></figure>` : ''}
+      ${s.link ? `<a class="arrow-link" href="projets/${s.link}.html">Voir le projet</a>` : ''}`}
+    </article>`; }).join('\n    ')}
+  </div>
+  <nav class="pc-rail" aria-label="Étapes du parcours"><ol>${legs.map((l, i) => `<li><button type="button" data-go="${i}"><b>${l.s.year}</b> ${esc(l.s.place.replace('Saint-André-les-Vergers', 'St-André'))}</button></li>`).join('')}</ol></nav>
+  <p class="pc-coords" aria-hidden="true"><span class="pc-latlon">48.30° N, 4.08° E</span></p>
+  <div data-sc-spacer aria-hidden="true"></div>
+</div>`);
 
 /* ================= Compétences ================= */
 const LV = { prod: 'En production', projet: 'Sur des projets' };
@@ -499,28 +485,49 @@ page('competences.html', {
   title: 'Compétences | Ziyad Chaabi, TypeScript, Angular, NestJS, React Native, IA',
   desc: 'Les outils de Ziyad Chaabi, classés selon leur usage réel : ce qui tourne en production et ce qui a servi sur des projets. Chaque compétence renvoie aux projets concernés.',
 }, `
-<section class="page-hero wrap">
-  ${relief('competences')}
-  <h1 class="display is-long" data-hero>Compétences</h1>
-  <p class="page-lede" data-hero-fade>Pas de jauge à 87 % ici. Chaque outil est rangé selon l’usage que j’en ai eu, et renvoie aux projets où il a servi. Survolez ou touchez-en un pour les voir.</p>
-  <ul class="legend" data-hero-fade><li class="lv-prod">${LV.prod}</li><li class="lv-projet">${LV.projet}</li></ul>
-</section>
-<section class="skills wrap">
-  <div class="skills-groups">
-    ${skills.map(g => `<section class="sg" data-reveal><h2 class="sg-title">${esc(g.group)}</h2><ul>${g.items.map(([name, lv, ps]) =>
-      `<li><button type="button" class="skill lv-${lv}" data-projects="${ps.join(' ')}"><span>${esc(name)}</span><em>${LV[lv]}</em></button></li>`).join('')}</ul></section>`).join('')}
+<!-- Scène partagée : deux colonnes en tension pendant toute la page, les outils et là où ils ont servi.
+     Le séparateur porte les deux libellés. Des fils relient l'outil choisi à ses projets. À la fin, l'effondrement :
+     le séparateur part sur le bord et la colonne des projets prend toute la largeur (Scrollcraft pin, --sc-p). -->
+<section class="split">
+  <div class="split-l wrap">
+    <header class="split-head">
+      <h1 class="display is-long" data-hero>Compétences</h1>
+      <p class="page-lede" data-hero-fade>Pas de jauge à 87 % ici. Chaque outil est rangé selon l’usage que j’en ai eu. Choisissez-en un : un fil le relie aux projets où il a servi.</p>
+      <ul class="legend" data-hero-fade><li class="lv-prod">${LV.prod}</li><li class="lv-projet">${LV.projet}</li></ul>
+    </header>
+    ${skills.map(g => `<section class="sg"><h2 class="sg-title">${esc(g.group)}</h2><ul>${g.items.map(([name, lv, ps]) =>
+      `<li><button type="button" class="skill lv-${lv}" data-projects="${ps.join(' ')}" aria-controls="sk-side"><span>${esc(name)}</span><em>${LV[lv]}</em></button></li>`).join('')}</ul></section>`).join('')}
   </div>
-  <aside class="skills-side" aria-live="polite">
-    <p class="side-label">Utilisé dans</p>
-    <p class="side-skill">Choisissez une compétence</p>
-    <ul class="side-list"></ul>
-  </aside>
+  <div class="split-r">
+    <div class="split-r-in">
+      <p class="split-r-h" data-hero-fade>Là où ils ont servi</p>
+      <div id="sk-side" class="skills-side" aria-live="polite">
+        <p class="side-skill">Choisissez une compétence</p>
+        <ul class="side-list"></ul>
+      </div>
+    </div>
+  </div>
+  <p class="split-div" aria-hidden="true"><span>Les outils</span><span>Les projets</span></p>
+  <svg class="threads" aria-hidden="true"></svg>
+</section>
+<section class="collapse" data-sc-act="pin" data-sc-span="1.9">
+  <div class="cl-stage" data-sc-stage>
+    <p class="cl-left">Des outils, il en reste toujours à apprendre.</p>
+    <div class="cl-right">
+      <div class="cl-in wrap">
+        <h2 class="cl-title" data-sc-cue="0.72">Ce qui compte, c’est ce qu’ils ont produit.</h2>
+        <ul class="cl-wall" data-sc-cue="0.78">${projects.map(p => `<li style="--c:${p.color}"><a href="projets/${p.slug}.html">${esc(p.title)}</a></li>`).join('')}</ul>
+        <p class="cl-cta" data-sc-cue="0.84"><a class="btn" href="projets.html">Voir les projets</a></p>
+      </div>
+    </div>
+    <span class="cl-divider" aria-hidden="true"></span>
+  </div>
 </section>
 `);
 
 /* ================= Labo ================= */
 const repoItems = [
-  ...autoPages.map(a => `<li><b><a href="projets/${a.slug}.html" data-t="${esc(a.title)}">${esc(a.title)}</a></b> <span>${esc(a.desc)}</span> <a href="${a.url}" target="_blank" rel="noopener">GitHub</a></li>`),
+  ...autoPages.map(a => `<li><b><a href="projets/${a.slug}.html">${esc(a.title)}</a></b> <span>${esc(a.desc)}</span> <a href="${a.url}" target="_blank" rel="noopener">GitHub</a></li>`),
   ...privateRepos.map(r => `<li><b>${esc(r.n)}</b> <span>${esc(r.d)}</span> <em>Code privé</em></li>`),
 ].join('');
 page('labo.html', {
@@ -529,7 +536,7 @@ page('labo.html', {
   desc: `Le labo de Ziyad Chaabi : ${labCount} projets et dépôts GitHub posés sur une carte en relief en 3D, mise à jour automatiquement à chaque nouveau dépôt.`,
 }, `
 <section class="lab">
-  <div class="lab-stage" data-cursor="Glisser"></div>
+  <div class="lab-stage"></div>
   <div class="lab-ui">
     <div class="lab-intro">
       <h1 class="display" data-hero>Le labo</h1>
@@ -558,20 +565,36 @@ page('veille.html', {
   title: 'Veille technologique IA et GitHub | Ziyad Chaabi',
   desc: 'La veille de Ziyad Chaabi, mise à jour en direct : dépôts qui montent sur GitHub, projets IA du mois et discussions Hacker News, avec ses notes sur les agents de code, MCP et l’IA appliquée.',
 }, `
-<section class="page-hero wrap">
-  ${relief('veille')}
-  <h1 class="display" data-hero>Veille</h1>
-  <p class="page-lede" data-hero-fade>Ce qui monte sur GitHub et ce dont on parle en IA, lu en direct sur les API publiques de GitHub et de Hacker News, et rechargé tout seul tant que la page est ouverte. <span class="veille-time"></span></p>
-</section>
-<section class="feeds wrap">
-  <div class="feed" data-reveal><h2>Tendances GitHub de la semaine</h2><ol id="feed-gh"><li class="wait">Chargement…</li></ol><p class="veille-gh-time feed-note"></p><a class="arrow-link" href="https://github.com/trending?since=weekly" target="_blank" rel="noopener">GitHub Trending</a></div>
-  <div class="feed" data-reveal><h2>Dépôts IA du mois</h2><ol id="feed-ai"><li class="wait">Chargement…</li></ol><a class="arrow-link" href="https://huggingface.co/papers" target="_blank" rel="noopener">Papiers du jour sur Hugging Face</a></div>
-  <div class="feed" data-reveal><h2>Discuté sur Hacker News</h2><ol id="feed-hn"><li class="wait">Chargement…</li></ol><a class="arrow-link" href="https://news.ycombinator.com/" target="_blank" rel="noopener">Hacker News</a></div>
-</section>
-<section class="notes wrap">
-  <h2 class="h2" data-reveal>Ce que j’en retiens</h2>
-  <div class="does-grid">${notes.map(([t, d]) => `<article data-reveal><h3>${esc(t)}</h3><p>${esc(d)}</p></article>`).join('')}</div>
+<!-- Surface vivante : la page se comporte comme l'outil. Une barre d'état (relevé, prochain rechargement, nouveautés),
+     un sélecteur de flux, des panneaux. Elle finit sur un vrai champ qui interroge Hacker News et GitHub en direct. -->
+<section class="vs">
+  <header class="vs-bar wrap">
+    <h1 class="vs-h">Veille</h1>
+    <p class="vs-status" aria-live="polite"><span class="vs-dot" aria-hidden="true"></span><span class="veille-time">Chargement des flux…</span><span class="vs-next"></span><span class="vs-new"></span></p>
+    <div class="vs-show" role="group" aria-label="Afficher">
+      <button type="button" aria-pressed="true" data-show="all">Tout</button>
+      <button type="button" aria-pressed="false" data-show="gh">GitHub</button>
+      <button type="button" aria-pressed="false" data-show="ai">IA</button>
+      <button type="button" aria-pressed="false" data-show="hn">Hacker News</button>
+    </div>
+  </header>
+  <div class="vs-panels wrap">
+    <section class="vs-panel" data-feed="gh" aria-labelledby="vs-gh"><header><h2 id="vs-gh">Tendances GitHub de la semaine</h2><a href="https://github.com/trending?since=weekly" target="_blank" rel="noopener">Source</a></header><ol id="feed-gh"><li class="wait">Chargement…</li></ol><p class="veille-gh-time feed-note"></p></section>
+    <section class="vs-panel" data-feed="ai" aria-labelledby="vs-ai"><header><h2 id="vs-ai">Dépôts IA du mois</h2><a href="https://github.com/search?q=llm+OR+agent+OR+mcp&type=repositories&s=stars" target="_blank" rel="noopener">Source</a></header><ol id="feed-ai"><li class="wait">Chargement…</li></ol></section>
+    <section class="vs-panel" data-feed="hn" aria-labelledby="vs-hn"><header><h2 id="vs-hn">Discuté sur Hacker News</h2><a href="https://news.ycombinator.com/" target="_blank" rel="noopener">Source</a></header><ol id="feed-hn"><li class="wait">Chargement…</li></ol></section>
+    <aside class="vs-notes" aria-labelledby="vs-notes-h"><h2 id="vs-notes-h">Mes notes</h2>${notes.map(([t, d]) => `<article><h3>${esc(t)}</h3><p>${esc(d)}</p></article>`).join('')}</aside>
+  </div>
+  <form class="vs-ask wrap" role="search" action="https://hn.algolia.com/" method="get" target="_blank" rel="noopener">
+    <label class="vs-ask-label" for="vs-q">À vous : votre propre veille</label>
+    <div class="vs-ask-row"><input id="vs-q" name="query" type="search" placeholder="Un sujet : rust, agents, webgpu…" autocomplete="off" required><button class="btn" type="submit">Chercher</button></div>
+    <p class="vs-ask-hint">Les résultats viennent en direct de Hacker News et de GitHub, comme les flux au-dessus.</p>
+    <div class="vs-results" aria-live="polite" hidden>
+      <section class="vs-panel"><header><h2>Sur Hacker News</h2></header><ol id="ask-hn"></ol></section>
+      <section class="vs-panel"><header><h2>Sur GitHub</h2></header><ol id="ask-gh"></ol></section>
+    </div>
+  </form>
 </section>`);
+
 
 /* ================= 404 et plan du site ================= */
 writeFileSync('404.html', head({ title: 'Page introuvable | Ziyad Chaabi', desc: 'Cette page n’existe pas.', path: '404.html', b: '/' }) + `

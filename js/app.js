@@ -19,9 +19,12 @@ if (!calm && window.Lenis) {
   // les animations du voile « sautaient » directement à la fin (la page apparaissait d'un coup).
 }
 
-/* ---------- Voile : chargement et transitions entre pages ---------- */
+/* ---------- Voile : premier chargement seulement ----------
+   Les pages suivantes s'affichent tout de suite (le <head> pose .seen et masque le voile). */
+const first = !document.documentElement.classList.contains('seen');
+try { sessionStorage.setItem('zc-seen', '1'); } catch {}
 const veil = $('.veil'), veilText = $('.veil-text'), veilCount = $('.veil-count');
-const flood = !calm && createRelief($('.veil canvas'), { mode: 1, levels: 9, rough: .9, peaks: 4, seed: 7.7, accent: '#D2602A', ink: '#121417' });
+const flood = first && !calm && createRelief($('.veil canvas'), { mode: 1, levels: 9, rough: .9, peaks: 4, seed: 7.7, accent: '#D2602A', ink: '#121417' });
 const showVeil = p => {
   if (flood) veil.style.background = 'transparent';
   veil.style.visibility = p > .001 ? 'visible' : 'hidden';
@@ -32,46 +35,22 @@ const veilState = { p: 1, reveal: 0 };
 const drawVeil = () => { if (flood) flood.state.reveal = veilState.reveal; showVeil(veilState.p); };
 addEventListener('resize', () => { flood?.resize(); drawVeil(); });
 
-let leaving = false;
-function leave(href, label) {
-  if (leaving) return; // un deuxième clic pendant la sortie relançait une seconde animation
-  leaving = true;
-  try { sessionStorage.setItem('zc-ptr', JSON.stringify(ctx.pointer)); } catch {}
-  if (calm) return void (location.href = href);
-  veilText.textContent = label || '';
-  veilCount.textContent = '';
-  // Le texte apparaît PUIS s'efface sur cette page-ci : il ne traverse plus le changement de page.
-  // Entre deux documents, l'affichage et la police repartent de zéro, et le texte « scintillait ».
-  // power3.out : l'encre couvre tout de suite, le clic se voit dès la première image.
-  gsap.timeline({ onComplete: () => (location.href = href) })
-    .to(veilState, { p: 1, duration: .95, ease: 'power3.out', onUpdate: drawVeil })
-    .fromTo(veilText, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .4, ease: 'power2.out' }, .15)
-    .to(veilText, { opacity: 0, y: -12, duration: .3, ease: 'power2.in' }, .8);
-}
-
 const breathe = fn => requestAnimationFrame(() => requestAnimationFrame(fn));
 function arrive() {
-  const first = !sessionStorage.getItem('zc-seen');
-  sessionStorage.setItem('zc-seen', '1');
   // On n'attend que les polices (pour découper les titres) : attendre « load », c'était attendre three.js,
   // les textures et les vidéos depuis le CDN, et rester plusieurs secondes sur le voile.
   const ready = Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]);
-  if (calm) { showVeil(0); return ready.then(enter); }
+  if (calm || !first) { showVeil(0); return ready.then(enter); }
   veilState.p = 1; drawVeil();
   // enter() est lancé pendant que le voile se retire, plus à la fin : avant, la page apparaissait,
   // puis ses titres disparaissaient pour rejouer leur entrée (l'effet « la page se recharge deux fois »).
   const tl = gsap.timeline({ paused: true }).add(enter, .45);
-  if (first) {
-    // Premier passage : on part des coordonnées de Troyes et on compte jusqu'à 100.
-    veilText.innerHTML = 'Ziyad Chaabi<br><span>48°17′ N, 4°04′ E</span>';
-    const n = { v: 0 };
-    const count = gsap.to(n, { v: 100, duration: 1.9, ease: 'power2.inOut', onUpdate: () => { veilCount.textContent = String(Math.round(n.v)).padStart(3, '0'); veilState.reveal = n.v / 100; } });
-    gsap.from(veilText, { opacity: 0, y: 16, duration: .8, ease: 'power3.out' });
-    ready.then(() => count.then(() => breathe(() => tl.play())));
-  } else {
-    veilText.textContent = ''; // le titre a déjà été montré par la page précédente, avant de partir
-    ready.then(() => breathe(() => tl.play()));
-  }
+  // Premier passage : on part des coordonnées de Troyes et on compte jusqu'à 100.
+  veilText.innerHTML = 'Ziyad Chaabi<br><span>48°17′ N, 4°04′ E</span>';
+  const n = { v: 0 };
+  const count = gsap.to(n, { v: 100, duration: 1.9, ease: 'power2.inOut', onUpdate: () => { veilCount.textContent = String(Math.round(n.v)).padStart(3, '0'); veilState.reveal = n.v / 100; } });
+  gsap.from(veilText, { opacity: 0, y: 16, duration: .8, ease: 'power3.out' });
+  ready.then(() => count.then(() => breathe(() => tl.play())));
   tl.to([veilText, veilCount], { opacity: 0, y: -12, duration: .4, ease: 'power2.in' }, 0)
     .to(veilState, { reveal: 0, duration: .9, ease: 'power2.in' }, .2)
     .to(veilState, { p: 0, duration: 1.2, ease: 'power3.inOut', onUpdate: drawVeil }, .15);
@@ -79,53 +58,21 @@ function arrive() {
   gsap.ticker.add(function idle() { if (tl.progress() >= 1) gsap.ticker.remove(idle); else drawVeil(); });
 }
 
-// Retour arrière depuis le cache du navigateur : on enlève le voile tout de suite.
-addEventListener('pageshow', e => { if (e.persisted) { leaving = false; veilState.p = 0; drawVeil(); } });
-
+// ancres de la page : défilement doux (les liens vers une autre page se suivent normalement, sans voile)
 document.addEventListener('click', e => {
-  const a = e.target.closest('a[href]');
+  const a = e.target.closest('a[href*="#"]');
   if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
   const url = new URL(a.href, location.href);
-  if (a.target === '_blank' || a.hasAttribute('download') || url.origin !== location.origin || /\.(pdf|mp4)$/i.test(url.pathname)) return;
-  if (url.pathname === location.pathname) {
-    if (url.hash) { e.preventDefault(); ctx.lenis ? ctx.lenis.scrollTo(url.hash, { offset: -80 }) : $(url.hash)?.scrollIntoView(); }
-    return;
-  }
-  e.preventDefault();
-  closeMenu();
-  leave(url.href, a.dataset.t || a.textContent.trim());
+  if (url.origin !== location.origin || url.pathname !== location.pathname || !url.hash) return;
+  const target = $(decodeURIComponent(url.hash));
+  if (!target) return;
+  e.preventDefault(); closeMenu();
+  ctx.lenis ? ctx.lenis.scrollTo(target, { offset: -80 }) : target.scrollIntoView();
 });
 
-/* ---------- Curseur ---------- */
-if (fine && !calm) {
-  const cur = $('.cursor'), dot = $('.cursor-dot'), ring = $('.cursor-ring'), lab = $('.cursor-label');
-  document.documentElement.classList.add('has-cursor');
-  const dx = gsap.quickTo(dot, 'x', { duration: .12, ease: 'power3' }), dy = gsap.quickTo(dot, 'y', { duration: .12, ease: 'power3' });
-  const rx = gsap.quickTo(ring, 'x', { duration: .45, ease: 'power3' }), ry = gsap.quickTo(ring, 'y', { duration: .45, ease: 'power3' });
-  ctx.pointer = { x: innerWidth / 2, y: innerHeight / 2 };
-  // la page précédente a noté où était la souris : sans ça, le curseur restait invisible
-  // (le natif est masqué) jusqu'au premier mouvement
-  try {
-    const p = JSON.parse(sessionStorage.getItem('zc-ptr') || 'null');
-    if (p) { ctx.pointer = p; gsap.set([dot, ring], { x: p.x, y: p.y }); cur.classList.add('is-on'); }
-  } catch {}
-  addEventListener('pointermove', e => {
-    ctx.pointer.x = e.clientX; ctx.pointer.y = e.clientY;
-    dx(e.clientX); dy(e.clientY); rx(e.clientX); ry(e.clientY);
-    cur.classList.add('is-on');
-  });
-  document.addEventListener('pointerleave', () => cur.classList.remove('is-on'));
-  addEventListener('pointerdown', () => cur.classList.add('is-down'));
-  addEventListener('pointerup', () => cur.classList.remove('is-down'));
-  document.addEventListener('pointerover', e => {
-    const t = e.target.closest('[data-cursor], a, button, label, input, textarea, select');
-    const text = t?.dataset.cursor || '';
-    cur.classList.toggle('is-link', !!t && !text);
-    cur.classList.toggle('is-label', !!text);
-    cur.classList.toggle('is-text', !!t && /INPUT|TEXTAREA/.test(t.tagName));
-    lab.textContent = text;
-  });
-} else ctx.pointer = { x: innerWidth / 2, y: innerHeight / 2 };
+// position de la souris : l'aperçu des projets vérifie au scroll qu'elle est encore sur une ligne
+ctx.pointer = { x: innerWidth / 2, y: innerHeight / 2 };
+addEventListener('pointermove', e => { ctx.pointer.x = e.clientX; ctx.pointer.y = e.clientY; }, { passive: true });
 
 /* ---------- Navigation ---------- */
 const menuBtn = $('.menu-btn');
@@ -136,10 +83,6 @@ menuBtn?.addEventListener('click', () => {
   if (open && !calm) gsap.from('.menu-panel a', { yPercent: 110, duration: .7, ease: 'power3.out', stagger: .05 });
 });
 addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
-
-const clock = $$('[data-clock]');
-const tick = () => { const t = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit' }).format(new Date()); clock.forEach(c => (c.textContent = t)); };
-tick(); setInterval(tick, 15000);
 
 const head = $('.site-head');
 // En haut de page, la barre reste transparente ; dès qu'on défile, elle devient une bande lisible qui reste en place.
@@ -212,28 +155,11 @@ function heroRelief(c) {
   const r = createRelief(c, {
     seed: seedOf(c.dataset.seed || page), peaks: +(c.dataset.peaks || 4), rough: +(c.dataset.rough || .7), levels: +(c.dataset.levels || 14),
     accent: c.dataset.accent || '#D2602A', paper: dark ? '#121417' : '#EEF0EB', ink: dark ? '#EEF0EB' : '#121417', dark: dark ? 1 : 0,
+    layer: +(c.dataset.layer || 0),
   });
   if (!r) return c.classList.add('no-gl');
-  // accueil : le relief dessine le portrait placé dans .hero-stage, et la loupe suit le curseur de près
-  const stageEl = c.dataset.img && c.parentElement.querySelector('.hero-stage');
-  if (stageEl) {
-    const place = () => { const cb = c.getBoundingClientRect(), sb = stageEl.getBoundingClientRect();
-      r.state.imgRect = [(sb.left - cb.left) / cb.width, 1 - (sb.bottom - cb.top) / cb.height, sb.width / cb.width, sb.height / cb.height]; };
-    const load = src => new Promise(ok => { const im = new Image(); im.onload = () => ok(im); im.src = window.ZC_TEX?.[src] || document.body.dataset.base + src; });
-    Promise.all([load(c.dataset.img), load(c.dataset.photo)]).then(([hm, ph]) => {
-      r.setImage(hm, 0); r.setImage(ph, 1); place();
-      gsap.to(r.state, { imgAmt: 1, duration: calm ? 0 : 2.6, delay: calm ? 0 : .5, ease: 'power2.inOut', onComplete: () => calm && frame() });
-    });
-    addEventListener('resize', place); document.fonts.ready.then(place);
-    // clic maintenu : la loupe s'ouvre sur tout le portrait
-    const lens = v => gsap.to(r.state, { lens: v, duration: v > .2 ? .8 : .5, ease: 'expo.out', overwrite: true });
-    c.parentElement.addEventListener('pointerdown', e => { if (!e.target.closest('a, button')) { pz(1); lens(.75); } });
-    addEventListener('pointerup', () => lens(.13));
-    addEventListener('pointercancel', () => lens(.13));
-  }
-  const lag = stageEl ? .45 : 1.2;
   const ptr = { x: .5, y: .5, z: 0 };
-  const px = gsap.quickTo(ptr, 'x', { duration: lag, ease: 'power3' }), py = gsap.quickTo(ptr, 'y', { duration: lag, ease: 'power3' });
+  const px = gsap.quickTo(ptr, 'x', { duration: 1.2, ease: 'power3' }), py = gsap.quickTo(ptr, 'y', { duration: 1.2, ease: 'power3' });
   const pz = gsap.quickTo(ptr, 'z', { duration: 1.4, ease: 'power2' });
   c.parentElement.addEventListener('pointermove', e => {
     const b = c.getBoundingClientRect();
@@ -289,7 +215,8 @@ function reveals() {
     SplitText.create(el, { type: 'lines', mask: 'lines', autoSplit: true, onSplit: s =>
       gsap.from(s.lines, { yPercent: 105, duration: 1.1, ease: 'expo.out', stagger: .08, scrollTrigger: { trigger: el, start: 'top 88%', once: true } }) });
   });
-  gsap.utils.toArray('[data-reveal]').forEach(el => gsap.from(el, { y: 40, autoAlpha: 0, duration: 1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } }));
+  // une montée de 14 px : au-delà de 24 px, une apparition se lit comme une glissade
+  gsap.utils.toArray('[data-reveal]').forEach(el => gsap.from(el, { y: 14, autoAlpha: 0, duration: .62, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 88%', once: true } }));
   gsap.utils.toArray('[data-wipe]').forEach(el => gsap.fromTo(el, { clipPath: 'inset(100% 0 0 0)' }, { clipPath: 'inset(0% 0 0 0)', duration: 1.4, ease: 'expo.inOut', scrollTrigger: { trigger: el, start: 'top 85%', once: true } }));
   gsap.utils.toArray('[data-speed]').forEach(el => gsap.to(el, { yPercent: () => -+el.dataset.speed * 100, ease: 'none', scrollTrigger: { trigger: el.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } }));
   gsap.utils.toArray('[data-line]').forEach(el => gsap.from(el, { scaleX: 0, transformOrigin: 'left', duration: 1.4, ease: 'expo.inOut', scrollTrigger: { trigger: el, start: 'top 92%', once: true } }));
@@ -315,4 +242,7 @@ if (!calm) reveals();
 arrive();
 
 if (window.ZC_PAGE) window.ZC_PAGE(ctx);
+// Scrollcraft lit les data-sc-* une fois la page préparée par son propre script
+ctx.sc = window.ScrollCraft?.mount(document);
+dispatchEvent(new Event('sc:mounted'));
 })();

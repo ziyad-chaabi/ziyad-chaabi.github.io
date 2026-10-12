@@ -108,7 +108,7 @@ function main({ $, $$, calm, lenis }) {
   });
   for (const it of items) {
     const b = document.createElement('button');
-    b.type = 'button'; b.className = 'lab-label'; b.dataset.zone = it.zone; b.dataset.cursor = 'Ouvrir';
+    b.type = 'button'; b.className = 'lab-label'; b.dataset.zone = it.zone;
     b.innerHTML = `<span>${it.name}</span>`;
     b.addEventListener('click', () => open(it));
     labelsEl.append(b); it.el = b;
@@ -157,7 +157,7 @@ function main({ $, $$, calm, lenis }) {
     focus.value.set(it.x, 0, it.z);
     fly(it.x, it.z, 8.5);
     const acts = [
-      it.page && `<a class="btn" href="${it.page}" data-t="${it.name}">Voir la page projet</a>`,
+      it.page && `<a class="btn" href="${it.page}">Voir la page projet</a>`,
       it.repo && `<a class="btn btn-line" href="${it.repo}" target="_blank" rel="noopener">Code sur GitHub</a>`,
       it.demo && `<a class="btn btn-line" href="${it.demo}" target="_blank" rel="noopener">Démo en ligne</a>`,
     ].filter(Boolean).join('');

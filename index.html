@@ -22,62 +22,64 @@
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Ziyad Chaabi, développeur à Troyes">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://ziyad-chaabi.github.io/#site","url":"https://ziyad-chaabi.github.io/","name":"Ziyad Chaabi","alternateName":"Portfolio de Ziyad Chaabi","inLanguage":"fr-FR","publisher":{"@id":"https://ziyad-chaabi.github.io/#ziyad"},"author":{"@id":"https://ziyad-chaabi.github.io/#ziyad"}},{"@type":"Person","@id":"https://ziyad-chaabi.github.io/#ziyad","name":"Ziyad Chaabi","givenName":"Ziyad","familyName":"Chaabi","alternateName":["Ziyad CHAABI","Subdij"],"url":"https://ziyad-chaabi.github.io/","image":{"@type":"ImageObject","url":"https://ziyad-chaabi.github.io/img/ziyad-photo.webp","caption":"Ziyad Chaabi"},"jobTitle":"Développeur web, mobile et réalité virtuelle","description":"Développeur à Troyes, passé par le design avant le code : applications web et mobiles, réalité virtuelle et IA appliquée.","email":"mailto:ziyadou2011@hotmail.fr","address":{"@type":"PostalAddress","addressLocality":"Troyes","addressRegion":"Grand Est","addressCountry":"FR"},"alumniOf":[{"@type":"CollegeOrUniversity","name":"INSA Hauts-de-France"},{"@type":"CollegeOrUniversity","name":"Université Gustave Eiffel, IUT de Meaux"}],"knowsAbout":["TypeScript","Angular","Ionic","NestJS","PostgreSQL","React Native","Supabase","Intelligence artificielle","Réalité virtuelle","Unity","UX design"],"knowsLanguage":["fr","ar","en"],"sameAs":["https://www.linkedin.com/in/ziyad-chaabi/","https://github.com/Subdij","https://github.com/ziyad-chaabi","https://www.instagram.com/ziyad_chb/"]},{"@type":"ProfilePage","@id":"https://ziyad-chaabi.github.io/#page","url":"https://ziyad-chaabi.github.io/","name":"Ziyad Chaabi | Développeur Full Stack à Troyes, web, mobile et IA","description":"Portfolio de Ziyad Chaabi, développeur full stack TypeScript basé à Troyes : applications web et mobiles (Angular, NestJS, React Native), IA appliquée et réalité virtuelle.","isPartOf":{"@id":"https://ziyad-chaabi.github.io/#site"},"about":{"@id":"https://ziyad-chaabi.github.io/#ziyad"},"mainEntity":{"@id":"https://ziyad-chaabi.github.io/#ziyad"},"inLanguage":"fr-FR","primaryImageOfPage":{"@type":"ImageObject","url":"https://ziyad-chaabi.github.io/img/og.jpg"}}]}</script>
-<style>html.js:not(.is-ready){background:#121417}html.js .veil{position:fixed;inset:0;z-index:100;background:#121417}</style>
+<style>html.js:not(.is-ready):not(.seen){background:#121417}html.js .veil{position:fixed;inset:0;z-index:100;background:#121417}html.seen .veil{display:none}html.js.seen:not(.is-ready) :is([data-hero],[data-hero-fade]){visibility:hidden}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/scrollcraft.css">
 <link rel="stylesheet" href="css/style.css">
-<script>document.documentElement.classList.add('js');setTimeout(function(){if(!document.documentElement.classList.contains('is-ready'))document.documentElement.classList.remove('js')},8000)</script>
+<script>document.documentElement.classList.add('js');try{if(sessionStorage.getItem('zc-seen'))document.documentElement.classList.add('seen')}catch(e){}setTimeout(function(){if(!document.documentElement.classList.contains('is-ready'))document.documentElement.classList.remove('js')},8000)</script>
 </head>
 <body data-page="index" data-base="">
 <div class="veil" aria-hidden="true"><canvas></canvas><p class="veil-text"></p><p class="veil-count"></p></div>
 <a class="skip" href="#main">Aller au contenu</a>
 <header class="site-head">
-  <a class="brand" href="index.html" data-t="Retour au point de départ">Ziyad Chaabi</a>
-  <nav class="nav" aria-label="Navigation principale"><a href="index.html" data-t="Retour au point de départ" aria-current="page">Accueil</a><a href="parcours.html" data-t="On remonte le temps">Parcours</a><a href="projets.html" data-t="Voilà ce qui en est sorti">Projets<sup>14</sup></a><a href="competences.html" data-t="La boîte à outils">Compétences</a><a href="labo.html" data-t="On descend au labo">Labo<sup>35</sup></a><a href="veille.html" data-t="Ce qui bouge en ce moment">Veille</a></nav>
-  <p class="head-meta">Troyes <span data-clock>--:--</span></p>
+  <a class="brand" href="index.html">Ziyad Chaabi</a>
+  <nav class="nav" aria-label="Navigation principale"><a href="index.html" aria-current="page">Accueil</a><a href="parcours.html">Parcours</a><a href="projets.html">Projets<sup>14</sup></a><a href="competences.html">Compétences</a><a href="labo.html">Labo<sup>35</sup></a><a href="veille.html">Veille</a></nav>
   <a class="head-cta" href="#contact">Me contacter</a>
   <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
 </header>
 <div class="menu-panel" id="menu">
   <nav aria-label="Menu">
-    <a href="index.html" data-t="Retour au point de départ" aria-current="page">Accueil</a><a href="parcours.html" data-t="On remonte le temps">Parcours</a><a href="projets.html" data-t="Voilà ce qui en est sorti">Projets<sup>14</sup></a><a href="competences.html" data-t="La boîte à outils">Compétences</a><a href="labo.html" data-t="On descend au labo">Labo<sup>35</sup></a><a href="veille.html" data-t="Ce qui bouge en ce moment">Veille</a>
+    <a href="index.html" aria-current="page">Accueil</a><a href="parcours.html">Parcours</a><a href="projets.html">Projets<sup>14</sup></a><a href="competences.html">Compétences</a><a href="labo.html">Labo<sup>35</sup></a><a href="veille.html">Veille</a>
   </nav>
   <p class="menu-foot"><a href="mailto:ziyadou2011@hotmail.fr">ziyadou2011@hotmail.fr</a></p>
 </div>
 <main id="main">
 
-<section class="hero hero-home">
-  <canvas class="hero-canvas" data-relief data-img="img/ziyad-relief.png" data-photo="img/ziyad-photo.webp" data-seed="ziyad-chaabi" data-peaks="5" data-rough=".8" data-levels="16"></canvas>
-  <div class="hero-grid wrap">
-    <div class="hero-copy">
-      <a class="status" href="projets/subforge.html" data-t="SubForge" data-hero-fade><span class="dot"></span>En ce moment : SubForge, un coach nutrition à l’IA</a>
-      <h1 class="hero-title"><span class="display hero-name" data-hero>Ziyad<br>Chaabi</span></h1>
-      <p class="hero-lede" data-hero-fade>Développeur à Troyes, passé par le design avant le code. Je fais des applis web et mobiles, des mondes en réalité virtuelle, et des scripts pour les petites frustrations du quotidien.</p>
-      <div class="hero-cta" data-hero-fade>
-        <a class="btn" href="projets.html" data-t="Voilà ce qui en est sorti">Voir mes projets</a>
-        <a class="btn btn-line" href="labo.html" data-t="On descend au labo">Explorer le labo</a>
-      </div>
-    </div>
-    <figure class="hero-stage" data-hero-fade title="Maintenez le clic pour voir la photo">
+<!-- Héros en couches : terrain (loin) / « Ziyad » (derrière le visage) / visage en courbes de niveau / « Chaabi » (devant) / texte.
+     Chaque plan suit --sc-p à sa vitesse (css), le visage retourne dans la carte pendant que la phrase s'assemble. -->
+<section class="hero hero-home" data-sc-act="pin" data-sc-span="2.3">
+  <div class="hh-stage" data-sc-stage>
+    <canvas class="hero-canvas hh-terrain" data-relief data-layer="1" data-seed="ziyad-chaabi" data-peaks="5" data-rough=".8" data-levels="16"></canvas>
+    <h1 class="hh-name display"><span class="hh-back"><span data-hero>Ziyad</span></span> <span class="hh-front"><span data-hero>Chaabi</span></span></h1>
+    <figure class="hh-face" data-hero-fade title="Maintenez le clic pour voir la photo">
+      <canvas data-face="img/ziyad-relief.png" data-photo="img/ziyad-photo.webp" aria-hidden="true"></canvas>
       <img src="img/ziyad-photo.webp" alt="Portrait de Ziyad Chaabi" width="600" height="750">
     </figure>
+    <div class="hh-copy" data-sc-cue="0 0.4 0">
+      <p class="hero-lede" data-hero-fade>Développeur à Troyes, passé par le design avant le code. Je fais des applis web et mobiles, des mondes en réalité virtuelle, et des scripts pour les petites frustrations du quotidien.</p>
+      <div class="hero-cta" data-hero-fade>
+        <a class="btn" href="projets.html">Voir mes projets</a>
+        <a class="btn btn-line" href="labo.html">Explorer le labo</a>
+      </div>
+    </div>
+    <p class="hh-turn" data-sc-cue="0.48" data-sc-kinetic="lines">J’aime comprendre un problème avant d’ouvrir l’éditeur.</p>
   </div>
 </section>
 
 <section class="intro wrap">
-  <p class="intro-a" data-reveal>J’aime comprendre un problème avant d’ouvrir l’éditeur.</p>
   <div class="intro-b" data-reveal>
     <p>Je pense d’abord aux gens qui vont se servir de l’outil, sur un chantier ou un casque VR sur la tête, et seulement ensuite à la stack.</p>
-    <a class="arrow-link" href="parcours.html" data-t="On remonte le temps">Lire mon parcours</a>
+    <a class="arrow-link" href="parcours.html">Lire mon parcours</a>
   </div>
 </section>
 
 <section class="work wrap">
-  <div class="sec-head"><h2 class="h2" data-reveal>Projets choisis</h2><a class="arrow-link" href="projets.html" data-t="Voilà ce qui en est sorti">Voir les 14 projets</a></div>
+  <div class="sec-head"><h2 class="h2" data-reveal>Projets choisis</h2><a class="arrow-link" href="projets.html">Voir les 14 projets</a></div>
   <ol class="rows">
     <li class="row-item" data-kind="pro">
-      <a class="row" href="projets/btp-360.html" data-peek="btp-360" data-img="img/p/btp-360/1.webp" data-cursor="Ouvrir" data-t="BTP-360">
+      <a class="row" href="projets/btp-360.html" data-peek="btp-360" data-img="img/p/btp-360/1.webp">
         <span class="row-cover"><img src="img/p/btp-360/1.webp" alt="" loading="lazy"></span>
         <span class="row-title">BTP-360</span>
         <span class="row-meta">Stage de fin d’études</span>
@@ -85,7 +87,7 @@
       </a>
     </li>
     <li class="row-item" data-kind="perso">
-      <a class="row" href="projets/subforge.html" data-peek="subforge" data-img="img/p/subforge/m1.webp" data-cursor="Ouvrir" data-t="SubForge">
+      <a class="row" href="projets/subforge.html" data-peek="subforge" data-img="img/p/subforge/m1.webp">
         <span class="row-cover"><img src="img/p/subforge/m1.webp" alt="" loading="lazy"></span>
         <span class="row-title">SubForge</span>
         <span class="row-meta">Projet personnel</span>
@@ -93,7 +95,7 @@
       </a>
     </li>
     <li class="row-item" data-kind="pro">
-      <a class="row" href="projets/distri-sur-france.html" data-peek="distri-sur-france" data-img="img/p/distri-sur-france/1.webp" data-cursor="Ouvrir" data-t="Distri Sûr France">
+      <a class="row" href="projets/distri-sur-france.html" data-peek="distri-sur-france" data-img="img/p/distri-sur-france/1.webp">
         <span class="row-cover"><img src="img/p/distri-sur-france/1.webp" alt="" loading="lazy"></span>
         <span class="row-title">Distri Sûr France</span>
         <span class="row-meta">Alternance</span>
@@ -101,7 +103,7 @@
       </a>
     </li>
     <li class="row-item" data-kind="ecole">
-      <a class="row" href="projets/funfair-vr.html" data-peek="funfair-vr" data-img="img/ziyad-vr.webp" data-cursor="Ouvrir" data-t="Funfair VR">
+      <a class="row" href="projets/funfair-vr.html" data-peek="funfair-vr" data-img="img/ziyad-vr.webp">
         <span class="row-cover"><img src="img/ziyad-vr.webp" alt="" loading="lazy"></span>
         <span class="row-title">Funfair VR</span>
         <span class="row-meta">Master Sciences et Technologies du Métavers</span>
@@ -109,7 +111,7 @@
       </a>
     </li>
     <li class="row-item" data-kind="ecole">
-      <a class="row" href="projets/zabi.html" data-peek="zabi" data-img="img/p/zabi/4.webp" data-cursor="Ouvrir" data-t="ZABI">
+      <a class="row" href="projets/zabi.html" data-peek="zabi" data-img="img/p/zabi/4.webp">
         <span class="row-cover"><img src="img/p/zabi/4.webp" alt="" loading="lazy"></span>
         <span class="row-title">ZABI</span>
         <span class="row-meta">Master Sciences et Technologies du Métavers</span>
@@ -122,30 +124,30 @@
 <section class="off wrap">
   <div class="sec-head"><h2 class="h2" data-reveal>Hors de l’écran</h2><p class="sec-note" data-reveal>Presque tous mes projets perso sont nés d’ici.</p></div>
   <ul class="off-list">
-    <li class="off-item" style="--c:#A8402E" data-reveal>
-      <p class="off-what">Manga</p>
-      <p class="off-text">JoJo’s Bizarre Adventure, surtout Steel Ball Run. Assez pour en tirer une pub animée et un labyrinthe en 3D.</p>
-      <p class="off-links"><a class="arrow-link" href="projets/pub-steel-ball-run.html" data-t="Pub Steel Ball Run">Pub Steel Ball Run</a><a class="arrow-link" href="projets/jojo-maze.html" data-t="JoJo Maze">JoJo Maze</a></p>
+    <li class="off-item" style="--c:#A8402E">
+      <p class="off-what"><span data-wipe>Manga</span></p>
+      <p class="off-text" data-reveal>JoJo’s Bizarre Adventure, surtout Steel Ball Run. Assez pour en tirer une pub animée et un labyrinthe en 3D.</p>
+      <p class="off-links" data-reveal><a class="arrow-link" href="projets/pub-steel-ball-run.html">Pub Steel Ball Run</a><a class="arrow-link" href="projets/jojo-maze.html">JoJo Maze</a></p>
     </li>
-    <li class="off-item" style="--c:#1F8A8A" data-reveal>
-      <p class="off-what">League of Legends</p>
-      <p class="off-text">Je voulais les fiches des champions dans la poche, même dans le train sans réseau. J’ai fini par écrire l’appli.</p>
-      <p class="off-links"><a class="arrow-link" href="projets/lolop.html" data-t="lolop">lolop</a></p>
+    <li class="off-item" style="--c:#1F8A8A">
+      <p class="off-what"><span data-wipe>League of Legends</span></p>
+      <p class="off-text" data-reveal>Je voulais les fiches des champions dans la poche, même dans le train sans réseau. J’ai fini par écrire l’appli.</p>
+      <p class="off-links" data-reveal><a class="arrow-link" href="projets/lolop.html">lolop</a></p>
     </li>
-    <li class="off-item" style="--c:#2F5BEA" data-reveal>
-      <p class="off-what">Muscu</p>
-      <p class="off-text">J’ai repris avec un objectif de prise de masse. Noter mes repas me faisait lâcher au bout d’une semaine, alors j’ai construit l’outil qui me manquait.</p>
-      <p class="off-links"><a class="arrow-link" href="projets/subforge.html" data-t="SubForge">SubForge</a></p>
+    <li class="off-item" style="--c:#2F5BEA">
+      <p class="off-what"><span data-wipe>Muscu</span></p>
+      <p class="off-text" data-reveal>J’ai repris avec un objectif de prise de masse. Noter mes repas me faisait lâcher au bout d’une semaine, alors j’ai construit l’outil qui me manquait.</p>
+      <p class="off-links" data-reveal><a class="arrow-link" href="projets/subforge.html">SubForge</a></p>
     </li>
-    <li class="off-item" style="--c:#2F5BEA" data-reveal>
-      <p class="off-what">E-sport</p>
-      <p class="off-text">Dans l’équipe de l’INSA pendant le master, entre deux rendus.</p>
-      <p class="off-links"><a class="arrow-link" href="parcours.html" data-t="Le parcours">Le parcours</a></p>
+    <li class="off-item" style="--c:#2F5BEA">
+      <p class="off-what"><span data-wipe>E-sport</span></p>
+      <p class="off-text" data-reveal>Dans l’équipe de l’INSA pendant le master, entre deux rendus.</p>
+      <p class="off-links" data-reveal><a class="arrow-link" href="parcours.html">Le parcours</a></p>
     </li>
-    <li class="off-item" style="--c:#46546E" data-reveal>
-      <p class="off-what">Petites frustrations</p>
-      <p class="off-text">Un portail wifi qui me déconnectait sans arrêt. Un script Python s’en occupe maintenant.</p>
-      <p class="off-links"><a class="arrow-link" href="projets/wifi-connexion.html" data-t="Wifi auto">Wifi auto</a></p>
+    <li class="off-item" style="--c:#46546E">
+      <p class="off-what"><span data-wipe>Petites frustrations</span></p>
+      <p class="off-text" data-reveal>Un portail wifi qui me déconnectait sans arrêt. Un script Python s’en occupe maintenant.</p>
+      <p class="off-links" data-reveal><a class="arrow-link" href="projets/wifi-connexion.html">Wifi auto</a></p>
     </li>
   </ul>
 </section>
@@ -155,16 +157,12 @@
   <div class="band-inner wrap">
     <h2 class="h2" data-reveal>Le labo</h2>
     <p data-reveal>35 projets et dépôts, des projets d’école aux expériences du dimanche, posés sur une carte en relief que l’on parcourt en 3D. Elle se met à jour toute seule à chaque nouveau dépôt GitHub.</p>
-    <a class="btn" href="labo.html" data-t="On descend au labo" data-cursor="Explorer" data-reveal>Explorer le labo</a>
+    <a class="btn" href="labo.html" data-reveal>Explorer le labo</a>
   </div>
 </section>
 
 <section class="now wrap">
-  <h2 class="h2" data-reveal>Ce que je lis</h2>
-  <div class="now-grid">
-    <p data-reveal>Les agents de code, MCP, les dépôts qui grimpent sur GitHub dans la semaine. Ma veille les rassemble, rechargée à chaque visite.</p>
-    <a class="arrow-link" href="veille.html" data-t="Ce qui bouge en ce moment" data-reveal>Ma veille, en direct</a>
-  </div>
+  <p class="now-line" data-reveal>En ce moment : <a href="projets/subforge.html">SubForge, un coach nutrition à l’IA</a>. Ce que je lis : les agents de code, MCP et les dépôts qui grimpent sur GitHub dans la semaine, rassemblés dans <a href="veille.html">ma veille, en direct</a>.</p>
 </section>
 </main>
 <footer class="site-foot" id="contact">
@@ -173,8 +171,8 @@
     <p class="foot-kicker">Un projet, une idée, une question sur la VR&nbsp;: la boîte est ouverte.</p>
     <div class="foot-main">
       <div class="foot-mail">
-        <a href="mailto:ziyadou2011@hotmail.fr" data-cursor="Écrire">ziyadou2011@hotmail.fr</a>
-        <button type="button" data-copy="ziyadou2011@hotmail.fr" data-cursor="Copier">Copier l’adresse</button>
+        <a href="mailto:ziyadou2011@hotmail.fr">ziyadou2011@hotmail.fr</a>
+        <button type="button" data-copy="ziyadou2011@hotmail.fr">Copier l’adresse</button>
         <span class="copy-msg" aria-live="polite"></span>
       </div>
       <div class="foot-cols">
@@ -184,7 +182,7 @@
           <li><a href="https://www.instagram.com/ziyad_chb/" target="_blank" rel="noopener me">Instagram</a></li>
         </ul></div>
         <div><h3>Pages</h3><ul>
-          <li><a href="index.html" data-t="Retour au point de départ">Accueil</a></li><li><a href="parcours.html" data-t="On remonte le temps">Parcours</a></li><li><a href="projets.html" data-t="Voilà ce qui en est sorti">Projets</a></li><li><a href="competences.html" data-t="La boîte à outils">Compétences</a></li><li><a href="labo.html" data-t="On descend au labo">Labo</a></li><li><a href="veille.html" data-t="Ce qui bouge en ce moment">Veille</a></li>
+          <li><a href="index.html">Accueil</a></li><li><a href="parcours.html">Parcours</a></li><li><a href="projets.html">Projets</a></li><li><a href="competences.html">Compétences</a></li><li><a href="labo.html">Labo</a></li><li><a href="veille.html">Veille</a></li>
         </ul></div>
       </div>
     </div>
@@ -195,7 +193,6 @@
     </div>
   </div>
 </footer>
-<div class="cursor" aria-hidden="true"><span class="cursor-dot"></span><span class="cursor-ring"><em class="cursor-label"></em></span></div>
 <div class="peek" aria-hidden="true"><canvas></canvas><img alt=""><p class="peek-title"></p></div>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js"></script>
@@ -207,7 +204,8 @@
 <script>if (location.protocol === 'file:') document.write('<script src="js/tex/index.js"><\/script>');</script>
 
 
-
+<script src="js/pages/index.js"></script>
+<script src="js/scrollcraft.js"></script>
 <script src="js/app.js"></script>
 <script data-goatcounter="https://ziyad-chaabi.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 

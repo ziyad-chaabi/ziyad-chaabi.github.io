@@ -22,12 +22,13 @@
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Ziyad Chaabi, développeur à Troyes">
 
-<style>html.js:not(.is-ready){background:#121417}html.js .veil{position:fixed;inset:0;z-index:100;background:#121417}</style>
+<style>html.js:not(.is-ready):not(.seen){background:#121417}html.js .veil{position:fixed;inset:0;z-index:100;background:#121417}html.seen .veil{display:none}html.js.seen:not(.is-ready) :is([data-hero],[data-hero-fade]){visibility:hidden}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/scrollcraft.css">
 <link rel="stylesheet" href="/css/style.css">
-<script>document.documentElement.classList.add('js');setTimeout(function(){if(!document.documentElement.classList.contains('is-ready'))document.documentElement.classList.remove('js')},8000)</script>
+<script>document.documentElement.classList.add('js');try{if(sessionStorage.getItem('zc-seen'))document.documentElement.classList.add('seen')}catch(e){}setTimeout(function(){if(!document.documentElement.classList.contains('is-ready'))document.documentElement.classList.remove('js')},8000)</script>
 </head>
 <body class="lost">
 <main class="lost-main"><p class="display">404</p><p>Ce sommet n’est pas sur la carte.</p><a class="btn" href="/">Revenir à l’accueil</a></main>

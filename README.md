@@ -48,7 +48,9 @@ les initiales sont remplacées par les photos.
 - `js/data.js` : le contenu écrit à la main · `data/auto.json` : les dépôts synchronisés
 - `build.mjs` : les gabarits HTML · `scripts/sync.mjs` : la synchronisation GitHub
 - `css/style.css` : le système visuel « Relief »
+- `css/scrollcraft.css`, `js/scrollcraft.js` : le moteur de défilement Scrollcraft, copié tel quel (ne pas modifier, on l'accorde par les jetons `--sc-*` de `style.css`)
 - `js/relief.js` : le shader des courbes de niveau (fonds, couvertures, transitions)
 - `js/devices.js` : les modèles 3D (Meta Quest 3, téléphone, ordinateur) et leur mise en scène
-- `js/app.js` : défilement doux, chargement, transitions, curseur, apparitions
-- `js/pages/*.js` : ce qui est propre à une page (labo 3D, chronologie, veille…)
+- `js/app.js` : défilement doux, voile du premier chargement, apparitions, montage de Scrollcraft
+- `js/pages/*.js` : ce qui est propre à une page (héros en couches, vol du parcours, galerie, folio des fiches, fils des compétences, veille, labo 3D)
+- `scrollcraft/` : le brief de la refonte (`builds/portfolio/BRIEF.md`) et le registre des empreintes (`FINGERPRINTS.md`)

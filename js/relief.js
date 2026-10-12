@@ -11,12 +11,13 @@ precision highp float;
 in vec2 vUv; out vec4 o;
 uniform vec2 uRes; uniform float uTime, uSeed, uPeaks, uRough, uLevels, uMode, uProgress, uDark, uReveal;
 uniform vec3 uPointer; // xy en uv, z = force
+uniform vec2 uCam; uniform float uZoom, uLayer; // caméra (décalage et zoom sur le terrain) ; couche : 0 tout, 1 terrain seul, 2 portrait seul
 uniform vec3 uInk, uPaper, uAccent;
 // portrait : R + B = hauteur sur 16 bits (floutée), G = silhouette ; uPhoto = la photo en couleur ; uImgRect = zone en uv (x, y, l, h)
 uniform sampler2D uImg, uPhoto; uniform float uImgAmt, uLens; uniform vec4 uImgRect; // uLens : rayon de la loupe
 
 vec2 imgUv(vec2 uv){ return (uv - uImgRect.xy) / uImgRect.zw; }
-float imgMask(vec2 q){ return smoothstep(0., .1, q.x) * smoothstep(1., .9, q.x) * smoothstep(0., .08, q.y) * smoothstep(1., .92, q.y) * uImgAmt; }
+float imgMask(vec2 q){ return abs(uLayer - 1.) < .5 ? 0. : smoothstep(0., .1, q.x) * smoothstep(1., .9, q.x) * smoothstep(0., .08, q.y) * smoothstep(1., .92, q.y) * uImgAmt; }
 
 float h21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float noise(vec2 p){
@@ -27,7 +28,7 @@ float fbm(vec2 p){ float a = .5, s = 0.; for(int i = 0; i < 5; i++){ s += a * no
 
 float height(vec2 uv){
   vec2 asp = vec2(uRes.x / uRes.y, 1.);
-  vec2 p = uv * asp;
+  vec2 p = (uv - .5) * asp / uZoom + .5 * asp + uCam;
   float t = uTime * .035;
   // déformation lente du terrain (domain warping)
   vec2 w = vec2(fbm(p * 1.4 + uSeed + t), fbm(p * 1.4 - uSeed * 1.7 - t));
@@ -73,6 +74,8 @@ void main(){
       vec3 photo = texture(uPhoto, vec2(q.x, 1. - q.y)).rgb;
       o.rgb = mix(o.rgb, photo, lens);
     }
+    // portrait seul : la silhouette garde son papier (elle cache ce qui passe derrière), le reste est transparent
+    if(uLayer > 1.5){ float a = texture(uImg, vec2(q.x, 1. - q.y)).g * m; o = vec4(o.rgb * a, a); }
   } else {
     // inondation : l'encre monte jusqu'à couvrir tout l'écran
     float lvl = uProgress * 2.4 - .3;
@@ -103,9 +106,9 @@ function createRelief(canvas, o = {}) {
   const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; for (const n of ['uRes', 'uTime', 'uSeed', 'uPeaks', 'uRough', 'uLevels', 'uMode', 'uProgress', 'uDark', 'uReveal', 'uPointer', 'uInk', 'uPaper', 'uAccent', 'uImg', 'uPhoto', 'uImgAmt', 'uImgRect', 'uLens']) U[n] = gl.getUniformLocation(prog, n);
+  const U = {}; for (const n of ['uRes', 'uTime', 'uSeed', 'uPeaks', 'uRough', 'uLevels', 'uMode', 'uProgress', 'uDark', 'uReveal', 'uPointer', 'uInk', 'uPaper', 'uAccent', 'uImg', 'uPhoto', 'uImgAmt', 'uImgRect', 'uLens', 'uCam', 'uZoom', 'uLayer']) U[n] = gl.getUniformLocation(prog, n);
 
-  const state = { imgAmt: 0, imgRect: [0, 0, 1, 1], lens: .13, time: 0, seed: 3.3, peaks: 3, rough: .6, levels: 14, mode: 0, progress: 0, dark: 0, reveal: 0, pointer: [.5, .5, 0], ink: '#121417', paper: '#EEF0EB', accent: '#D2602A', ...o };
+  const state = { imgAmt: 0, imgRect: [0, 0, 1, 1], lens: .13, time: 0, seed: 3.3, peaks: 3, rough: .6, levels: 14, mode: 0, progress: 0, dark: 0, reveal: 0, pointer: [.5, .5, 0], cam: [0, 0], zoom: 1, layer: 0, ink: '#121417', paper: '#EEF0EB', accent: '#D2602A', ...o };
   const dpr = Math.min(devicePixelRatio || 1, o.maxDpr || 1.5);
   function resize(w = canvas.clientWidth, h = canvas.clientHeight) {
     canvas.width = Math.max(1, Math.round(w * dpr)); canvas.height = Math.max(1, Math.round(h * dpr));
@@ -117,6 +120,7 @@ function createRelief(canvas, o = {}) {
     gl.uniform1f(U.uTime, state.time); gl.uniform1f(U.uSeed, state.seed); gl.uniform1f(U.uPeaks, state.peaks);
     gl.uniform1f(U.uRough, state.rough); gl.uniform1f(U.uLevels, state.levels); gl.uniform1f(U.uMode, state.mode);
     gl.uniform1f(U.uProgress, state.progress); gl.uniform1f(U.uDark, state.dark); gl.uniform1f(U.uReveal, state.reveal); gl.uniform3fv(U.uPointer, state.pointer);
+    gl.uniform2fv(U.uCam, state.cam); gl.uniform1f(U.uZoom, state.zoom); gl.uniform1f(U.uLayer, state.layer);
     gl.uniform1f(U.uImgAmt, state.imgAmt); gl.uniform1f(U.uLens, state.lens); gl.uniform4fv(U.uImgRect, state.imgRect); gl.uniform1i(U.uImg, 0); gl.uniform1i(U.uPhoto, 1);
     gl.uniform3fv(U.uInk, hex(state.ink)); gl.uniform3fv(U.uPaper, hex(state.paper)); gl.uniform3fv(U.uAccent, hex(state.accent));
     gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLES, 0, 3);
