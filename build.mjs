@@ -18,6 +18,8 @@ const autoPages = auto.filter(a => !curatedRepo.has(a.repo)).map(a => {
   const hand = repos.find(r => r.repo === a.repo || r.n === a.title);
   return {
     ...a, title: hand?.n || a.title, desc: hand?.d || a.description || 'Un dépôt publié sur GitHub.',
+    // texte écrit à la main prioritaire : le README brut (« Run ng serve… », installation) ne s'affiche qu'à défaut
+    paras: hand?.d ? [] : a.paras, bullets: hand?.d ? [] : a.bullets,
     zone: hand?.z || a.zone, stack: hand?.s?.length ? hand.s : a.stack, year: hand?.y || a.year,
     shot: a.images.find(i => /desktop|readme|repo/.test(i)) || a.images[0], shotM: a.images.find(i => /mobile/.test(i)),
   };
@@ -165,7 +167,7 @@ function footer(b) {
   return `<footer class="site-foot" id="contact">
   <div class="wrap">
     <h2 class="foot-title" data-split>Écrivons-nous.</h2>
-    <p class="foot-kicker">Un projet, une idée, une question sur la VR&nbsp;: la boîte est ouverte.</p>
+    <p class="foot-kicker">Pour un projet, une idée ou une question sur la VR, écrivez-moi.</p>
     <div class="foot-main">
       <div class="foot-mail">
         <a href="mailto:${site.email}">${site.email}</a>
@@ -274,7 +276,7 @@ page('index.html', {
   <canvas class="band-canvas" data-relief="dark" data-seed="labo" data-peaks="6" data-rough=".9" data-accent="#E07A3E"></canvas>
   <div class="band-inner wrap">
     <h2 class="h2" data-reveal>Le labo</h2>
-    <p data-reveal>${labCount} projets et dépôts, des projets d’école aux expériences du dimanche, rangés en coupe comme les couches d’un sol, une par année. Elle se refait toute seule à chaque nouveau dépôt GitHub.</p>
+    <p data-reveal>${labCount} projets et dépôts GitHub rangés en coupe, comme les couches d’un sol : une couche par année. La coupe se met à jour à chaque nouveau dépôt.</p>
     <a class="btn" href="labo.html" data-reveal>Explorer le labo</a>
   </div>
 </section>
@@ -410,7 +412,7 @@ autoPages.forEach((a, i) => {
 </header>
 ${chapter(1, 'Le dépôt', `<div class="ed-spread wrap"><div class="ed-text ed-lead">
     ${(a.paras.length ? a.paras : [a.desc]).map(t => `<p data-reveal>${esc(t)}</p>`).join('')}
-    ${a.bullets.length ? `<ul class="p-bullets" data-reveal>${a.bullets.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    ${a.bullets.length ? `<ul class="p-bullets" data-reveal>${a.bullets.map(t => `<li>${esc(t.replace(/^-\s*/, ''))}</li>`).join('')}</ul>` : ''}
     <div class="p-links" data-reveal><a class="btn btn-line" href="${a.url}" target="_blank" rel="noopener">Voir le code</a>${a.live ? `<a class="btn btn-line" href="${a.live}" target="_blank" rel="noopener">Voir en ligne</a>` : ''}</div>
     ${a.stack.length ? `<ul class="chips" data-reveal aria-label="Langages">${a.stack.map(s => `<li>${esc(s)}</li>`).join('')}</ul>` : ''}
   </div></div>`)}
@@ -459,7 +461,7 @@ page('parcours.html', {
     <div class="sc-world__scrim pc-scrim"></div>
     <div class="pc-copy pc-hero" data-sc-copy data-sc-window="${heroWin}">
       <h1 class="ph-title" data-hero>De Troyes à Valenciennes, et retour.</h1>
-      <p class="page-lede" data-hero-fade>Un bac à Troyes, le design à Meaux, la réalité virtuelle à Valenciennes, et entre deux, des stages et une alternance dans des entreprises de l’Aube. Voici le chemin, étape par étape, sur la carte.</p>
+      <p class="page-lede" data-hero-fade>Un bac à Troyes, le design à Meaux, la réalité virtuelle à Valenciennes, et entre deux, des stages et une alternance dans des entreprises de l’Aube.</p>
     </div>
     ${legs.map((l, i) => { const s = l.s, q = quoteAt[i], last = i === legs.length - 1; return `<article class="pc-copy pc-step${last ? ' pc-finale' : ''}" data-sc-copy data-sc-window="${l.win}" data-leg="${i}">
       <p class="pc-when"><span class="ch-year">${s.year}</span><span class="ch-place">${esc(s.place)}<small>${esc(s.coords)}</small></span></p>
@@ -467,7 +469,7 @@ page('parcours.html', {
       <p>${esc(s.text)}</p>
       ${q ? `<blockquote class="pc-quote"><p>« ${esc(q.text)} »</p><footer>${existsSync(q.img) ? `<img class="avatar" src="${q.img}" alt="${esc(q.name)}" loading="lazy">` : `<span class="avatar" aria-hidden="true">${initials(q.name)}</span>`}<span><b>${esc(q.name)}</b>${esc(q.role)}</span></footer></blockquote>` : ''}
       ${last ? `<figure class="pc-img"><img src="img/ziyad-camera.webp" alt="Ziyad Chaabi, sourire aux lèvres, une caméra JVC à l’épaule" width="1600" height="1200" loading="lazy"></figure>
-      <p class="statement">Assez parlé de moi. Voilà ce qui en est sorti.</p>
+      <p class="statement">Les projets nés de ces années sont dans la collection.</p>
       <p class="pc-actions"><a class="btn" href="projets.html">Voir les projets</a>${s.link ? `<a class="arrow-link" href="projets/${s.link}.html">${esc(projects.find(p => p.slug === s.link).title)}</a>` : ''}</p>`
       : `${s.img ? `<figure class="pc-img"><img src="${s.img}" alt="${esc(s.alt || '')}" loading="lazy"></figure>` : ''}
       ${s.link ? `<a class="arrow-link" href="projets/${s.link}.html">Voir le projet</a>` : ''}`}
@@ -492,7 +494,7 @@ page('competences.html', {
   <div class="split-l wrap">
     <header class="split-head">
       <h1 class="display is-long" data-hero>Compétences</h1>
-      <p class="page-lede" data-hero-fade>Pas de jauge à 87 % ici. Chaque outil est rangé selon l’usage que j’en ai eu. Choisissez-en un : un fil le relie aux projets où il a servi.</p>
+      <p class="page-lede" data-hero-fade>Chaque outil est classé selon l’usage que j’en ai eu : en production ou sur des projets. Choisissez-en un pour voir les projets où il a servi.</p>
       <ul class="legend" data-hero-fade><li class="lv-prod">${LV.prod}</li><li class="lv-projet">${LV.projet}</li></ul>
     </header>
     ${skills.map(g => `<section class="sg"><h2 class="sg-title">${esc(g.group)}</h2><ul>${g.items.map(([name, lv, ps]) =>
@@ -512,10 +514,10 @@ page('competences.html', {
 </section>
 <section class="collapse" data-sc-act="pin" data-sc-span="1.9">
   <div class="cl-stage" data-sc-stage>
-    <p class="cl-left">Des outils, il en reste toujours à apprendre.</p>
+    <p class="cl-left">Les outils, en bref.</p>
     <div class="cl-right">
       <div class="cl-in wrap">
-        <h2 class="cl-title" data-sc-cue="0.72">Ce qui compte, c’est ce qu’ils ont produit.</h2>
+        <h2 class="cl-title" data-sc-cue="0.72">Les projets où ils ont servi.</h2>
         <ul class="cl-wall" data-sc-cue="0.78">${projects.map(p => `<li style="--c:${p.color}"><a href="projets/${p.slug}.html">${esc(p.title)}</a></li>`).join('')}</ul>
         <p class="cl-cta" data-sc-cue="0.84"><a class="btn" href="projets.html">Voir les projets</a></p>
       </div>

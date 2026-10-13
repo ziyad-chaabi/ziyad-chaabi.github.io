@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wifi auto | Dépôt GitHub de Ziyad Chaabi</title>
-<meta name="description" content="Un script qui se reconnecte seul au portail wifi. Né d’une vraie frustration. Stack : Python, Selenium.">
+<meta name="description" content="Un script Selenium qui se reconnecte au portail wifi toutes les 3 h 30, parce qu’il me déconnectait sans arrêt. Stack : Python, Selenium.">
 <meta name="author" content="Ziyad Chaabi">
 <meta name="google-site-verification" content="4kWqjcimy18LhSDn4mD4XuOtKIBeuHQXVvQ8QMu2TKg">
 <meta name="robots" content="index, follow, max-image-preview:large">
@@ -15,13 +15,13 @@
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="Ziyad Chaabi">
 <meta property="og:title" content="Wifi auto | Dépôt GitHub de Ziyad Chaabi">
-<meta property="og:description" content="Un script qui se reconnecte seul au portail wifi. Né d’une vraie frustration. Stack : Python, Selenium.">
+<meta property="og:description" content="Un script Selenium qui se reconnecte au portail wifi toutes les 3 h 30, parce qu’il me déconnectait sans arrêt. Stack : Python, Selenium.">
 <meta property="og:url" content="https://ziyad-chaabi.github.io/projets/wifi-connexion.html">
 <meta property="og:image" content="https://ziyad-chaabi.github.io/img/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Ziyad Chaabi, développeur à Troyes">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://ziyad-chaabi.github.io/#site","url":"https://ziyad-chaabi.github.io/","name":"Ziyad Chaabi","alternateName":"Portfolio de Ziyad Chaabi","inLanguage":"fr-FR","publisher":{"@id":"https://ziyad-chaabi.github.io/#ziyad"},"author":{"@id":"https://ziyad-chaabi.github.io/#ziyad"}},{"@type":"Person","@id":"https://ziyad-chaabi.github.io/#ziyad","name":"Ziyad Chaabi","givenName":"Ziyad","familyName":"Chaabi","alternateName":["Ziyad CHAABI","Subdij"],"url":"https://ziyad-chaabi.github.io/","image":{"@type":"ImageObject","url":"https://ziyad-chaabi.github.io/img/ziyad-photo.webp","caption":"Ziyad Chaabi"},"jobTitle":"Développeur web, mobile et réalité virtuelle","description":"Développeur à Troyes, passé par le design avant le code : applications web et mobiles, réalité virtuelle et IA appliquée.","email":"mailto:ziyadou2011@hotmail.fr","address":{"@type":"PostalAddress","addressLocality":"Troyes","addressRegion":"Grand Est","addressCountry":"FR"},"alumniOf":[{"@type":"CollegeOrUniversity","name":"INSA Hauts-de-France"},{"@type":"CollegeOrUniversity","name":"Université Gustave Eiffel, IUT de Meaux"}],"knowsAbout":["TypeScript","Angular","Ionic","NestJS","PostgreSQL","React Native","Supabase","Intelligence artificielle","Réalité virtuelle","Unity","UX design"],"knowsLanguage":["fr","ar","en"],"sameAs":["https://www.linkedin.com/in/ziyad-chaabi/","https://github.com/Subdij","https://github.com/ziyad-chaabi","https://www.instagram.com/ziyad_chb/"]},{"@type":"WebPage","@id":"https://ziyad-chaabi.github.io/projets/wifi-connexion.html#page","url":"https://ziyad-chaabi.github.io/projets/wifi-connexion.html","name":"Wifi auto | Dépôt GitHub de Ziyad Chaabi","description":"Un script qui se reconnecte seul au portail wifi. Né d’une vraie frustration. Stack : Python, Selenium.","isPartOf":{"@id":"https://ziyad-chaabi.github.io/#site"},"about":{"@id":"https://ziyad-chaabi.github.io/#ziyad"},"author":{"@id":"https://ziyad-chaabi.github.io/#ziyad"},"inLanguage":"fr-FR","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://ziyad-chaabi.github.io/"},{"@type":"ListItem","position":2,"name":"Projets","item":"https://ziyad-chaabi.github.io/projets.html"},{"@type":"ListItem","position":3,"name":"Wifi auto","item":"https://ziyad-chaabi.github.io/projets/wifi-connexion.html"}]}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://ziyad-chaabi.github.io/#site","url":"https://ziyad-chaabi.github.io/","name":"Ziyad Chaabi","alternateName":"Portfolio de Ziyad Chaabi","inLanguage":"fr-FR","publisher":{"@id":"https://ziyad-chaabi.github.io/#ziyad"},"author":{"@id":"https://ziyad-chaabi.github.io/#ziyad"}},{"@type":"Person","@id":"https://ziyad-chaabi.github.io/#ziyad","name":"Ziyad Chaabi","givenName":"Ziyad","familyName":"Chaabi","alternateName":["Ziyad CHAABI","Subdij"],"url":"https://ziyad-chaabi.github.io/","image":{"@type":"ImageObject","url":"https://ziyad-chaabi.github.io/img/ziyad-photo.webp","caption":"Ziyad Chaabi"},"jobTitle":"Développeur web, mobile et réalité virtuelle","description":"Développeur à Troyes, passé par le design avant le code : applications web et mobiles, réalité virtuelle et IA appliquée.","email":"mailto:ziyadou2011@hotmail.fr","address":{"@type":"PostalAddress","addressLocality":"Troyes","addressRegion":"Grand Est","addressCountry":"FR"},"alumniOf":[{"@type":"CollegeOrUniversity","name":"INSA Hauts-de-France"},{"@type":"CollegeOrUniversity","name":"Université Gustave Eiffel, IUT de Meaux"}],"knowsAbout":["TypeScript","Angular","Ionic","NestJS","PostgreSQL","React Native","Supabase","Intelligence artificielle","Réalité virtuelle","Unity","UX design"],"knowsLanguage":["fr","ar","en"],"sameAs":["https://www.linkedin.com/in/ziyad-chaabi/","https://github.com/Subdij","https://github.com/ziyad-chaabi","https://www.instagram.com/ziyad_chb/"]},{"@type":"WebPage","@id":"https://ziyad-chaabi.github.io/projets/wifi-connexion.html#page","url":"https://ziyad-chaabi.github.io/projets/wifi-connexion.html","name":"Wifi auto | Dépôt GitHub de Ziyad Chaabi","description":"Un script Selenium qui se reconnecte au portail wifi toutes les 3 h 30, parce qu’il me déconnectait sans arrêt. Stack : Python, Selenium.","isPartOf":{"@id":"https://ziyad-chaabi.github.io/#site"},"about":{"@id":"https://ziyad-chaabi.github.io/#ziyad"},"author":{"@id":"https://ziyad-chaabi.github.io/#ziyad"},"inLanguage":"fr-FR","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Accueil","item":"https://ziyad-chaabi.github.io/"},{"@type":"ListItem","position":2,"name":"Projets","item":"https://ziyad-chaabi.github.io/projets.html"},{"@type":"ListItem","position":3,"name":"Wifi auto","item":"https://ziyad-chaabi.github.io/projets/wifi-connexion.html"}]}}]}</script>
 <style>html.js:not(.is-ready):not(.seen){background:#121417}html.js .veil{position:fixed;inset:0;z-index:100;background:#121417}html.seen .veil{display:none}html.js.seen:not(.is-ready) :is([data-hero],[data-hero-fade]){visibility:hidden}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,8 +57,8 @@
 <section class="ed-ch" data-ch="Le dépôt" aria-labelledby="ch-1">
   <header class="ed-inter wrap" data-wipe><h2 class="ed-ch-title" id="ch-1">Le dépôt</h2></header>
   <div class="ed-spread wrap"><div class="ed-text ed-lead">
-    <p data-reveal>Ce projet automatise la connexion à un réseau WiFi en utilisant Selenium pour interagir avec une page de connexion web. Le script se reconnecte automatiquement toutes les 3 heures et 30 minutes pour maintenir la connexion active.</p>
-    <ul class="p-bullets" data-reveal><li>- Connexion automatique au réseau WiFi en utilisant les informations d'identification fournies.</li><li>- Vérification continue de l'URL pour détecter les redirections vers une page spécifique.</li><li>- Minimisation de la fenêtre de commande dans la zone de notification.</li><li>- Utilisation d'un fichier .env pour stocker les informations sensibles (URL, nom d'utilisateur et mot de passe).</li></ul>
+    <p data-reveal>Un script Selenium qui se reconnecte au portail wifi toutes les 3 h 30, parce qu’il me déconnectait sans arrêt.</p>
+    
     <div class="p-links" data-reveal><a class="btn btn-line" href="https://github.com/Subdij/wifi-connexion" target="_blank" rel="noopener">Voir le code</a></div>
     <ul class="chips" data-reveal aria-label="Langages"><li>Python</li><li>Selenium</li></ul>
   </div></div>
@@ -76,7 +76,7 @@
 <footer class="site-foot" id="contact">
   <div class="wrap">
     <h2 class="foot-title" data-split>Écrivons-nous.</h2>
-    <p class="foot-kicker">Un projet, une idée, une question sur la VR&nbsp;: la boîte est ouverte.</p>
+    <p class="foot-kicker">Pour un projet, une idée ou une question sur la VR, écrivez-moi.</p>
     <div class="foot-main">
       <div class="foot-mail">
         <a href="mailto:ziyadou2011@hotmail.fr">ziyadou2011@hotmail.fr</a>

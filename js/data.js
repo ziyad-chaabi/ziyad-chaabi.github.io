@@ -25,7 +25,7 @@ const projects = [
     intro: "Le Groupe Sûr France réunit quatre sociétés : Iso, Climat, Réseau et Distri. Recrutement, contrats, matériel, notes de frais, planning : tout passait par des fichiers Excel envoyés par mail. J'avais sept mois pour les remplacer par un seul outil, utilisable au bureau comme sur un chantier sans réseau.",
     stats: [['4', 'sociétés dans une seule application'], ['47', 'modèles de données'], ['255', 'fichiers de tests unitaires'], ['54', 'suites de tests de bout en bout']],
     sections: [
-      { title: 'Le point de départ', body: ["Les chefs d'équipe pointaient sur papier, les contrats étaient recopiés depuis un modèle Word, et personne ne savait vraiment quel outil se trouvait sur quel chantier.", "Le vrai sujet n'était pas technique. Pour être adoptée, l'application devait être plus rapide qu'Excel, et utilisable avec des gants, en plein soleil, dans une cave sans 4G."] },
+      { title: 'Le point de départ', body: ["Les chefs d'équipe pointaient sur papier, les contrats étaient recopiés depuis un modèle Word, et personne ne savait vraiment quel outil se trouvait sur quel chantier.", "Pour être adoptée, l'application devait être plus rapide qu'Excel, et utilisable avec des gants, en plein soleil, dans une cave sans 4G."] },
       { title: 'Ce que j’ai construit', list: [
         ['RH et contrats', 'Contrats générés en PDF et DOCX à partir de modèles (convention collective, grille de classification BTP), dossiers salariés, absences validées en deux temps, habilitations avec alerte avant expiration.'],
         ['Terrain', 'Pointage géolocalisé à l’entrée et à la sortie du chantier, un QR code par outil, bons de remise signés à l’écran.'],
@@ -34,7 +34,7 @@ const projects = [
       ] },
       { title: 'Les choix techniques', body: ["Hors ligne d'abord : chaque action faite sur le terrain est gardée dans une file NgRx, puis rejouée au retour du réseau. L'application est livrée sur Android avec Capacitor, ou installable en PWA.", "Une seule base PostgreSQL, cloisonnée par société, cinq rôles, un journal d'audit et des données sensibles (numéro de sécurité sociale, salaire) chiffrées au repos. Les validations remontent en temps réel avec Socket.IO."] },
       { title: 'La mise en production', body: ["Docker Compose sur EC2 en région Paris, infrastructure décrite en Terraform, intégration et déploiement continus avec GitHub Actions, sauvegardes PostgreSQL scriptées, erreurs suivies dans Sentry."] },
-      { title: 'Coder avec des agents IA', body: ["J'ai développé avec Claude Code et Codex, encadrés par des règles projet écrites (AGENTS.md, CLAUDE.md), des serveurs MCP et une relecture de chaque changement. Les 255 fichiers de tests et les 54 suites Playwright servent de filet : l'agent propose, les tests et moi décidons."] },
+      { title: 'Coder avec des agents IA', body: ["J'ai développé avec Claude Code et Codex, encadrés par des règles projet écrites (AGENTS.md, CLAUDE.md), des serveurs MCP et une relecture de chaque changement. Chaque changement proposé par un agent passe par les 255 fichiers de tests, les 54 suites Playwright et ma relecture avant d'être gardé."] },
       { title: 'Ce que j’en retiens', body: ["Seul sur un projet de cette taille, on est obligé de tout écrire : la documentation, les décisions, les tests. C'est ce qui m'a permis d'aller vite sans casser ce qui marchait déjà."] },
     ],
     figures: [
@@ -51,17 +51,17 @@ const projects = [
   },
   {
     slug: 'subforge', device: 'phone', screenM: 'img/p/subforge/m1.webp', title: 'SubForge', color: C.eau, relief: { peaks: 2, rough: .35 },
-    kicker: "Un coach nutrition où l'on décrit son repas en une phrase. L'IA propose, la personne décide.",
+    kicker: "Un coach nutrition où l'on note un repas en une phrase, et où l'IA en tire les macros à valider.",
     kind: 'perso', context: 'Projet personnel', org: 'Application mobile', year: '2026', period: 'Depuis août 2026',
     team: 'Seul', role: 'Produit, design, développement',
     stack: ['React Native', 'Expo', 'TypeScript', 'Supabase', 'Edge Functions', 'Gemini 2.5 Flash', 'Jest', 'Sentry', 'PostHog', 'EAS'],
     links: [], privateNote: 'Code privé, projet en cours.',
-    intro: "Je reprenais la musculation avec un objectif de prise de masse, et je savais déjà où j'allais lâcher : l'alimentation. Chaque fois que j'avais essayé de suivre mes repas, j'avais abandonné au bout d'une semaine, parce que la saisie était trop lente. SubForge part de là : si noter un repas prend plus de temps que de le manger, personne ne le fera.",
+    intro: "Je reprenais la musculation avec un objectif de prise de masse, et je savais déjà où j'allais lâcher : l'alimentation. Chaque fois que j'avais essayé de suivre mes repas, j'avais abandonné au bout d'une semaine, parce que la saisie était trop lente. J'ai conçu SubForge pour que noter un repas prenne moins de temps que de le manger.",
     sections: [
       { title: 'L’idée', body: ["On dicte ou on tape « deux œufs, une tartine beurrée et un café ». Le modèle en extrait les aliments, les quantités et les macros dans un JSON contraint par un schéma, jamais dans du texte libre qu'il faudrait relire.", "La personne voit la proposition, corrige si besoin, puis valide. Rien n'est enregistré sans son accord."] },
       { title: 'Quand l’IA ne répond pas', body: ["Le plan de la journée est généré par l'IA : c'est lent, et ça peut échouer. Au-delà de 15 secondes, un plan de repli calculé sans IA prend le relais, à partir de repas prédéfinis filtrés selon les contraintes (halal, budget, temps de préparation). Une erreur à cet instant aurait gâché la première impression."] },
-      { title: 'Sous le capot', body: ["Les besoins caloriques sont calculés sur le téléphone, sans réseau. Les appels à Gemini passent par des Edge Functions Supabase : la clé reste côté serveur, avec un cache et une limite de requêtes.", "Les contraintes strictes, comme les allergies, sont vérifiées deux fois : dans la consigne envoyée au modèle, puis sur sa réponse. Les données sont protégées par des règles RLS, et l'application continue de fonctionner hors ligne."] },
-      { title: 'Où en est le projet', body: ["Le MVP se construit en APK et AAB avec EAS, testé avec Jest et suivi avec Sentry et PostHog. Je suis son premier utilisateur : s'il ne me fait pas gagner de temps, il ne mérite pas d'exister."] },
+      { title: 'La technique', body: ["Les besoins caloriques sont calculés sur le téléphone, sans réseau. Les appels à Gemini passent par des Edge Functions Supabase : la clé reste côté serveur, avec un cache et une limite de requêtes.", "Les contraintes strictes, comme les allergies, sont vérifiées deux fois : dans la consigne envoyée au modèle, puis sur sa réponse. Les données sont protégées par des règles RLS, et l'application continue de fonctionner hors ligne."] },
+      { title: 'Où en est le projet', body: ["Le MVP se construit en APK et AAB avec EAS, testé avec Jest et suivi avec Sentry et PostHog. Je suis son premier utilisateur et je le teste sur mes propres repas."] },
     ],
     figures: [
       { type: 'phones', srcs: ['img/p/subforge/m2.webp', 'img/p/subforge/m3.webp', 'img/p/subforge/m4.webp'], caption: 'L’accueil : objectif, morphologie, activité' },
@@ -81,7 +81,7 @@ const projects = [
     team: 'Projet de Master', role: 'Développement Unity, interactions VR',
     stack: ['Unity 2022.3', 'C#', 'URP', 'XR Interaction Toolkit', 'OpenXR', 'Meta Quest'],
     links: [['Voir le code', 'https://github.com/Subdij/Project_VR']],
-    intro: "En réalité virtuelle, si la personne doit lire une consigne, c'est déjà raté. Le défi de Funfair VR : qu'on comprenne chaque jeu dès qu'on le prend en main, sans tutoriel.",
+    intro: "Cinq jeux de fête foraine en réalité virtuelle, conçus pour être compris dès qu'on les prend en main, sans tutoriel ni consigne à lire.",
     sections: [
       { title: 'Cinq attractions', list: [
         ['Chamboule-tout', 'Renverser des piles de conserves avec des balles.'],
@@ -102,7 +102,7 @@ const projects = [
     team: 'Équipe de 3', role: 'Développement Unity, énigmes et interactions',
     stack: ['Unity 6', 'C#', 'XR Interaction Toolkit 3', 'Audio spatialisé'],
     links: [['Voir le code', 'https://github.com/Subdij/Hotel-Murder-Escape-game_VR']],
-    intro: "On arrive dans un hôtel, quelqu'un est mort, et il faut comprendre ce qui s'est passé. Pas de flèche à l'écran : ce sont les objets, les sons et les portes qui guident l'enquête.",
+    intro: "On arrive dans un hôtel, quelqu'un est mort, et il faut comprendre ce qui s'est passé. Aucune indication n'est affichée à l'écran : on avance en fouillant les objets et en suivant les sons.",
     sections: [
       { title: 'Les énigmes', list: [
         ['Le levier', 'Un mécanisme physique monté sur une charnière (HingeJoint) qu’il faut vraiment tirer.'],
@@ -140,7 +140,7 @@ const projects = [
     team: 'Seul', role: 'Conception et développement',
     stack: ['Symfony 6', 'Doctrine', 'MySQL 8', 'Twig', 'Tailwind', 'Stripe', 'PayPal', 'Docker'],
     links: [], privateNote: 'Code privé.',
-    intro: "Une boutique en ligne pour une marque de cosmétiques naturels. Sur ce genre de site, chaque clic en trop coûte une vente : j'ai travaillé le parcours d'achat avant tout le reste.",
+    intro: "Une boutique en ligne pour une marque de cosmétiques naturels. J'ai commencé par le parcours d'achat, pour qu'une commande demande le moins de clics possible.",
     sections: [
       { title: 'Le parcours d’achat', body: ["Catalogue par catégories avec filtres et recherche, panier, adresses, livraison et paiement. Connexion possible avec Google, factures PDF générées automatiquement."] },
       { title: 'Côté boutique', body: ["Un espace d'administration pour gérer les produits, les catégories, les commandes et les clients, plus une inscription à la newsletter."] },
@@ -167,7 +167,7 @@ const projects = [
         ['Boutique', 'Le développement front-end et back-end sur Odoo, l’intégration du catalogue et des contenus.'],
         ['Référencement', 'Le travail sur le SEO pour que les produits soient trouvés.'],
       ] },
-      { title: 'Ce que j’en retiens', body: ["Concilier ce que veut le commercial, ce que comprend le client et ce que permet la technique. C'est souvent là que se joue un projet, bien avant la première ligne de code."] },
+      { title: 'Ce que j’en retiens', body: ["Une bonne partie du travail a consisté à accorder les demandes des commerciaux avec ce qu'Odoo permettait, puis à vérifier que les clients s'y retrouvaient."] },
     ],
     figures: [{ type: 'img', src: 'img/p/distri-sur-france/2.webp', alt: 'Catégorie bornes de recharge de la boutique Distri Sûr France', caption: 'La boutique en ligne aujourd’hui : une catégorie', wide: true },
       { type: 'img', src: 'img/p/distri-sur-france/3.webp', alt: 'Fiche produit de la boutique Distri Sûr France', caption: 'Une fiche produit' },
@@ -196,7 +196,7 @@ const projects = [
     team: 'Projet de Master', role: 'Développement',
     stack: ['Node.js', 'Express', 'Socket.IO', 'crypto-js', 'elliptic'],
     links: [['Voir le code', 'https://github.com/Subdij/BlockChain']],
-    intro: "Créer un portefeuille, signer une transaction, miner un bloc, et voir la chaîne se construire en direct. Le but : rendre visibles des notions qu'on comprend mal en lisant.",
+    intro: "Créer un portefeuille, signer une transaction, miner un bloc, et voir la chaîne se construire en direct. Le simulateur montre en direct des notions difficiles à saisir dans un cours écrit.",
     sections: [
       { title: 'Ce qu’on peut faire', list: [
         ['Portefeuilles', 'Générer une paire de clés sur courbe elliptique.'],
@@ -216,7 +216,7 @@ const projects = [
     team: 'Avec l’équipe marketing et communication', role: 'Design et développement',
     stack: ['WordPress', 'Figma', 'Photoshop', 'HTML', 'CSS', 'JavaScript', 'OVH'],
     links: [['Voir le site', 'https://reseausurfrance.fr']],
-    intro: "Trois mois de stage pour livrer le site vitrine de l'entreprise, dans sa charte graphique, avec des demandes qui ont évolué jusqu'au dernier moment. Livré à temps.",
+    intro: "Trois mois de stage pour livrer le site vitrine de l'entreprise dans sa charte graphique. Les demandes ont évolué jusqu'au dernier moment, et le site a été livré à temps.",
     sections: [
       { title: 'Le travail', body: ["Maquettes dans Figma, visuels dans Photoshop, intégration dans WordPress, mise en ligne chez OVH. J'ai travaillé chaque semaine avec l'équipe marketing pour ajuster les pages."] },
       { title: 'Ce qu’en dit ma tutrice', quote: ["Sa maîtrise des logiciels de conception graphique a été exceptionnelle […]. Malgré les modifications de dernière minute apportées à un projet, Ziyad a fait preuve d'une grande flexibilité.", 'Juliana Rebelo, assistante marketing et communication'] },
@@ -267,7 +267,7 @@ const projects = [
   },
   {
     slug: 'web-doc-artisans', device: 'laptop', screen: 'img/p/web-doc-artisans/1.webp', title: 'Web-documentaire artisans', color: C.foret, relief: { peaks: 4, rough: .6 },
-    kicker: 'Des artisans aux métiers rares, racontés par leurs propres mots.',
+    kicker: 'Des artisans aux métiers rares, racontés avec leurs propres mots.',
     kind: 'ecole', context: 'BUT Métiers du Multimédia et de l’Internet', org: 'IUT de Meaux', year: '2022', period: 'Novembre 2022',
     team: 'Équipe de 4', role: 'Interviews et design',
     stack: ['Figma', 'Premiere Pro', 'HTML', 'CSS', 'JavaScript'],
@@ -290,7 +290,7 @@ const projects = [
     team: 'Seul', role: 'Scénario, animation, montage',
     stack: ['After Effects', 'Media Encoder'],
     links: [['Voir sur YouTube', 'https://youtu.be/3-xCI2ds2RQ']],
-    intro: "Une annonce animée sous After Effects pour JoJo's Bizarre Adventure : Steel Ball Run, qui met en avant le manga et ses personnages. Un exercice de rythme : faire passer une ambiance en trente-cinq secondes.",
+    intro: "Une annonce animée sous After Effects pour JoJo's Bizarre Adventure : Steel Ball Run, qui met en avant le manga et ses personnages. Tout devait tenir en trente-cinq secondes, ce qui a surtout demandé un travail de rythme au montage.",
     sections: [],
     figures: [
       { type: 'video', src: 'media/pub-steel-ball-run.mp4', poster: 'img/p/pub-steel-ball-run/1.webp', caption: 'La publicité (avec le son)', sound: true },
@@ -336,20 +336,20 @@ const repos = [
   { n: 'Salaire brut en net', repo: 'Calculateur-de-salaire-brut-en-net', demo: 'https://subdij.github.io/Calculateur-de-salaire-brut-en-net/', z: 'web', y: '2023', d: 'Convertir un salaire brut en net, en direct.', s: ['JavaScript'] },
   { n: "Calculateur d'IMC", repo: 'Calculateur-d-IMC', demo: 'https://subdij.github.io/Calculateur-d-IMC/', z: 'web', y: '2023', d: "Calculer son indice de masse corporelle.", s: ['JavaScript'] },
   { n: 'Site Minecraft', repo: 'Minecraft', demo: 'https://subdij.github.io/Minecraft/', z: 'web', y: '2023', d: 'Un site de fan : constructions et redstone.', s: ['HTML', 'Bootstrap'] },
-  { n: 'Portfolio V2', repo: 'Portfolio-V2', demo: 'https://subdij.github.io/Portfolio-V2/', z: 'web', y: '2023', d: 'Un ancien portfolio, pour mesurer le chemin.', s: ['HTML', 'CSS'] },
+  { n: 'Portfolio V2', repo: 'Portfolio-V2', demo: 'https://subdij.github.io/Portfolio-V2/', z: 'web', y: '2023', d: 'Mon portfolio précédent, toujours en ligne.', s: ['HTML', 'CSS'] },
   { n: 'Portfolio Next.js', repo: 'portfolio-2.0.1', z: 'web', y: '2023', d: 'Une version de portfolio en Next.js.', s: ['Next.js', 'Tailwind'] },
   { n: 'Prénoms et Hadoop', repo: 'mini-projet-hadoop', z: 'data', y: '2025', d: 'Les prénoms les plus donnés par décennie, données INSEE, Hadoop Streaming et Pig.', s: ['Python', 'Hadoop', 'Pig'] },
   { n: 'QuizDown', repo: 'TP5_Quizz', z: 'data', y: '2024', d: "Un quiz en Pygame, à cinq. J'étais responsable de l'architecture.", s: ['Python', 'Pygame'] },
-  { n: 'Wifi auto', repo: 'wifi-connexion', z: 'data', y: '2025', d: 'Un script qui se reconnecte seul au portail wifi. Né d’une vraie frustration.', s: ['Python', 'Selenium'] },
+  { n: 'Wifi auto', repo: 'wifi-connexion', z: 'data', y: '2025', d: 'Un script Selenium qui se reconnecte au portail wifi toutes les 3 h 30, parce qu’il me déconnectait sans arrêt.', s: ['Python', 'Selenium'] },
 ];
 // Dépôts publics volontairement absents (doublons, tests vides, ce site).
 const skipRepos = ['Final-Portfolio-V.X', 'ziyad-chaabi.github.io', 'subdij', 'premierprojet_git', 'test_FPS', 'video', 'Hotel-Paiee'];
 
 const timeline = [
   { year: '2021', place: 'Troyes', coords: '48.30° N, 4.08° E', title: 'Le déclic', text: "Bac STI2D, option Systèmes d'information et numérique, au lycée Saint-Joseph La Salle. J'y écris mes premiers programmes, avec l'envie de comprendre ce qu'il y a derrière un écran." },
-  { year: '2021', place: 'Meaux', coords: '48.96° N, 2.88° E', title: 'Le détour par le design', img: 'img/parcours/iut-meaux.webp', alt: "L'IUT de Meaux", text: "Je pars trois ans à Meaux pour un BUT MMI : code, UX, vidéo, graphisme. J'y ai appris qu'une interface se teste sur les gens qui l'utilisent, pas sur soi." },
-  { year: '2022', place: 'Troyes', coords: '48.30° N, 4.08° E', title: 'Mon premier outil métier', text: "Un stage administratif chez Ophta Médical. En voyant le planning de l'équipe, j'ai construit un tableau qui calcule les heures et les heures supplémentaires de chacun. Je ne savais pas encore que c'était ça, mon métier." },
-  { year: '2023', place: 'Saint-André-les-Vergers', coords: '48.28° N, 4.05° E', title: 'Un vrai site, une vraie entreprise', img: 'img/p/reseau-sur-france/1.webp', alt: 'Le site Réseau Sûr France', text: "Trois mois chez Réseau Sûr France pour livrer leur nouveau site, avec l'équipe marketing et des demandes qui changent jusqu'au bout.", link: 'reseau-sur-france' },
+  { year: '2021', place: 'Meaux', coords: '48.96° N, 2.88° E', title: 'Le détour par le design', img: 'img/parcours/iut-meaux.webp', alt: "L'IUT de Meaux", text: "Je pars trois ans à Meaux pour un BUT MMI : code, UX, vidéo, graphisme. J'y ai appris à tester une interface avec les personnes qui vont s'en servir." },
+  { year: '2022', place: 'Troyes', coords: '48.30° N, 4.08° E', title: 'Mon premier outil métier', text: "Un stage administratif chez Ophta Médical. En voyant le planning de l'équipe, j'ai construit un tableau qui calcule les heures et les heures supplémentaires de chacun." },
+  { year: '2023', place: 'Saint-André-les-Vergers', coords: '48.28° N, 4.05° E', title: 'Premier site livré en entreprise', img: 'img/p/reseau-sur-france/1.webp', alt: 'Le site Réseau Sûr France', text: "Trois mois chez Réseau Sûr France pour livrer leur nouveau site, avec l'équipe marketing et des demandes qui changent jusqu'au bout.", link: 'reseau-sur-france' },
   { year: '2023', place: 'Troyes', coords: '48.30° N, 4.08° E', title: "Dix mois d'e-commerce", img: 'img/p/distri-sur-france/1.webp', alt: 'La boutique en ligne Distri Sûr France', text: "En alternance chez Distri Sûr France, j'ai conçu et développé la boutique en ligne, des maquettes Figma à la mise en ligne sur Odoo.", link: 'distri-sur-france' },
   { year: '2024', place: 'Valenciennes', coords: '50.36° N, 3.52° E', title: 'Cap sur le métavers', img: 'img/ziyad-vr.webp', alt: 'Ziyad en présentation de projet VR, un Meta Quest 3 sur le bureau', text: "Master Sciences et Technologies du Métavers à l'INSA Hauts-de-France : réalité virtuelle, IA, mobile, blockchain, big data. Et l'équipe e-sport de l'école entre deux rendus.", link: 'funfair-vr' },
   { year: '2026', place: 'Troyes', coords: '48.30° N, 4.08° E', title: 'BTP-360, seul aux commandes', img: 'img/p/btp-360/1.webp', alt: 'Écran Documents de BTP-360', text: "Sept mois pour remplacer les fichiers Excel de quatre sociétés par une seule application, web et Android, en production sur AWS.", link: 'btp-360' },
@@ -387,8 +387,8 @@ const skills = [
 ];
 
 const notes = [
-  ['Les agents de code, oui, mais tenus en laisse', "J'ai codé BTP-360 avec Claude Code et Codex. Ce qui a marché : des règles projet écrites, des tests partout et une relecture de chaque changement. Sans garde-fous, un agent va vite, mais pas forcément dans la bonne direction."],
-  ['MCP change la façon de brancher les outils', "Un protocole commun pour donner à un modèle l'accès à une base, un navigateur ou un outil métier. Je l'utilise tous les jours et je regarde comment l'appliquer à des logiciels d'entreprise."],
+  ['Les agents de code, oui, mais tenus en laisse', "J'ai codé BTP-360 avec Claude Code et Codex. Ce qui a marché : des règles projet écrites, des tests partout et une relecture de chaque changement."],
+  ['MCP pour brancher des outils à un modèle', "Un protocole commun pour donner à un modèle l'accès à une base, un navigateur ou un outil métier. Je l'utilise tous les jours et je regarde comment l'appliquer à des logiciels d'entreprise."],
   ['L’IA propose, l’humain valide', "Dans SubForge, rien n'est enregistré sans l'accord de la personne, et un plan de repli sans IA prend le relais quand le modèle échoue. Pour moi, c'est la bonne façon de mettre de l'IA dans un produit."],
 ];
 
