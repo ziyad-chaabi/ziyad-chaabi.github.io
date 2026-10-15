@@ -3,6 +3,7 @@
 > Ziyad Chaabi est un développeur basé à Troyes (France), passé par le design avant le code. Il conçoit des applications web et mobiles, des expériences en réalité virtuelle et des outils d'IA appliquée. Ce fichier résume son portfolio, https://ziyad-chaabi.github.io/
 
 - Lieu : Troyes, Grand Est, France
+- Homonymie : Développeur informatique basé à Troyes. Aucun lien avec la musique chaâbi ni avec le chanteur Ziyad Lmaghribi : ce sont deux personnes différentes.
 - Formation : Master Informatique, Sciences et Technologies du Métavers, INSA Hauts-de-France, Valenciennes (2024 à 2026) ; BUT Métiers du Multimédia et de l'Internet, IUT de Meaux, Université Gustave Eiffel (2021 à 2024) ; Bac STI2D option SIN, lycée Saint-Joseph La Salle, Troyes (2021)
 - Projet en cours : SubForge. Un coach nutrition où l'on note un repas en une phrase, et où l'IA en tire les macros à valider. (https://ziyad-chaabi.github.io/projets/subforge.html)
 - Hors de l'écran : manga (JoJo's Bizarre Adventure), League of Legends, musculation, e-sport
@@ -13,7 +14,6 @@
 - 2021, Troyes : Le déclic. Bac STI2D, option Systèmes d'information et numérique, au lycée Saint-Joseph La Salle. J'y écris mes premiers programmes, avec l'envie de comprendre ce qu'il y a derrière un écran.
 - 2021, Meaux : Le détour par le design. Je pars trois ans à Meaux pour un BUT MMI : code, UX, vidéo, graphisme. J'y ai appris à tester une interface avec les personnes qui vont s'en servir.
 - 2022, Troyes : Mon premier outil métier. Un stage administratif chez Ophta Médical. En voyant le planning de l'équipe, j'ai construit un tableau qui calcule les heures et les heures supplémentaires de chacun.
-- 2023, Saint-André-les-Vergers : Premier site livré en entreprise. Trois mois chez Réseau Sûr France pour livrer leur nouveau site, avec l'équipe marketing et des demandes qui changent jusqu'au bout.
 - 2023, Troyes : Dix mois d'e-commerce. En alternance chez Distri Sûr France, j'ai conçu et développé la boutique en ligne, des maquettes Figma à la mise en ligne sur Odoo.
 - 2024, Valenciennes : Cap sur le métavers. Master Sciences et Technologies du Métavers à l'INSA Hauts-de-France : réalité virtuelle, IA, mobile, blockchain, big data. Et l'équipe e-sport de l'école entre deux rendus.
 - 2026, Troyes : BTP-360, seul aux commandes. Sept mois pour remplacer les fichiers Excel de quatre sociétés par une seule application, web et Android, en production sur AWS.
@@ -30,7 +30,6 @@
 - [Distri Sûr France](https://ziyad-chaabi.github.io/projets/distri-sur-france.html) : Dix mois d'alternance pour créer la boutique en ligne d'une entreprise. Alternance, Novembre 2023 à août 2024. Rôle : Développeur full stack e-commerce. Stack : Odoo, Python, HTML, CSS, Figma, SEO.
 - [ZABI](https://ziyad-chaabi.github.io/projets/zabi.html) : Un jeu de duel entre super-héros, façon arcade. Master Sciences et Technologies du Métavers, Avril 2025. Rôle : Développement full stack. Stack : Node.js, Express 5, MongoDB, API REST, JavaScript.
 - [SUBCHAINE](https://ziyad-chaabi.github.io/projets/subchaine.html) : Un simulateur pour comprendre une blockchain en la manipulant. Master Sciences et Technologies du Métavers, Mai 2025. Rôle : Développement. Stack : Node.js, Express, Socket.IO, crypto-js, elliptic.
-- [Réseau Sûr France](https://ziyad-chaabi.github.io/projets/reseau-sur-france.html) : Le nouveau site d'une entreprise d'électricité et de domotique de l'Aube. Stage, Avril à juin 2023. Rôle : Design et développement. Stack : WordPress, Figma, Photoshop, HTML, CSS, JavaScript, OVH.
 - [JPO IUT de Meaux](https://ziyad-chaabi.github.io/projets/jpo-iut-meaux.html) : Le site des portes ouvertes du département MMI, avec une salle modélisée en 3D. BUT Métiers du Multimédia et de l’Internet, Janvier 2024. Rôle : Modélisation et intégration 3D. Stack : Blender, 3ds Max, Unity, WebGL, Angular, Sass, C#.
 - [Gestionnaire d’articles](https://ziyad-chaabi.github.io/projets/gestion-articles.html) : Une application Symfony pour publier, modifier et supprimer des articles. BUT Métiers du Multimédia et de l’Internet, Mars 2024. Rôle : Design, intégration, développement. Stack : Symfony, PHP, Twig, MySQL, HTML, CSS, JavaScript.
 - [Web-documentaire artisans](https://ziyad-chaabi.github.io/projets/web-doc-artisans.html) : Des artisans aux métiers rares, racontés avec leurs propres mots. BUT Métiers du Multimédia et de l’Internet, Novembre 2022. Rôle : Interviews et design. Stack : Figma, Premiere Pro, HTML, CSS, JavaScript.

@@ -49,11 +49,14 @@ function texBundle(name, srcs) {
 // Une seule entité « Ziyad Chaabi », référencée par son @id sur toutes les pages : c'est ce qui permet
 // à un moteur de relier le site, la personne et ses profils (recherche sur le nom).
 const ME = site.url + '#ziyad', SITE = site.url + '#site';
+// Google et les IA mélangent « Chaabi » (le nom) avec le chaâbi (la musique) et un chanteur homonyme : on le dit en clair.
+const DISAMBIG = 'Développeur informatique basé à Troyes. Aucun lien avec la musique chaâbi ni avec le chanteur Ziyad Lmaghribi : ce sont deux personnes différentes.';
 const PERSON = {
-  '@type': 'Person', '@id': ME, name: 'Ziyad Chaabi', givenName: 'Ziyad', familyName: 'Chaabi', alternateName: ['Ziyad CHAABI', 'Subdij'],
+  '@type': 'Person', '@id': ME, name: 'Ziyad Chaabi', givenName: 'Ziyad', familyName: 'Chaabi', alternateName: ['Ziyad CHAABI', 'Ziyad Chaâbi', 'Subdij'],
   url: site.url, image: { '@type': 'ImageObject', url: site.url + 'img/ziyad-photo.webp', caption: 'Ziyad Chaabi' },
   jobTitle: 'Développeur web, mobile et réalité virtuelle',
   description: 'Développeur à Troyes, passé par le design avant le code : applications web et mobiles, réalité virtuelle et IA appliquée.',
+  disambiguatingDescription: DISAMBIG,
   email: 'mailto:' + site.email,
   address: { '@type': 'PostalAddress', addressLocality: 'Troyes', addressRegion: 'Grand Est', addressCountry: 'FR' },
   alumniOf: [{ '@type': 'CollegeOrUniversity', name: 'INSA Hauts-de-France' }, { '@type': 'CollegeOrUniversity', name: 'Université Gustave Eiffel, IUT de Meaux' }],
@@ -224,8 +227,8 @@ const off = [
 const featured = ['btp-360', 'subforge', 'distri-sur-france', 'funfair-vr', 'zabi'].map(s => projects.find(p => p.slug === s));
 page('index.html', {
   page: 'index', path: '', tex: texBundle('index', ['img/ziyad-relief.png', 'img/ziyad-photo.webp']),
-  title: 'Ziyad Chaabi | Développeur Full Stack à Troyes, web, mobile et IA',
-  desc: 'Portfolio de Ziyad Chaabi, développeur full stack TypeScript basé à Troyes : applications web et mobiles (Angular, NestJS, React Native), IA appliquée et réalité virtuelle.',
+  title: 'Ziyad Chaabi | Développeur Full Stack web et mobile',
+  desc: 'Portfolio de Ziyad Chaabi, développeur full stack web et mobile : applications TypeScript (Angular, NestJS, React Native), IA appliquée et réalité virtuelle.',
 }, `
 <!-- Héros en couches : terrain (loin) / « Ziyad » (derrière le visage) / visage en courbes de niveau / « Chaabi » (devant) / texte.
      Chaque plan suit --sc-p à sa vitesse (css), le visage retourne dans la carte pendant que la phrase s'assemble. -->
@@ -656,6 +659,7 @@ writeFileSync('llms.txt', `# Ziyad Chaabi
 > Ziyad Chaabi est un développeur basé à Troyes (France), passé par le design avant le code. Il conçoit des applications web et mobiles, des expériences en réalité virtuelle et des outils d'IA appliquée. Ce fichier résume son portfolio, ${site.url}
 
 - Lieu : Troyes, Grand Est, France
+- Homonymie : ${DISAMBIG}
 - Formation : Master Informatique, Sciences et Technologies du Métavers, INSA Hauts-de-France, Valenciennes (2024 à 2026) ; BUT Métiers du Multimédia et de l'Internet, IUT de Meaux, Université Gustave Eiffel (2021 à 2024) ; Bac STI2D option SIN, lycée Saint-Joseph La Salle, Troyes (2021)
 - Projet en cours : SubForge. ${projects.find(p => p.slug === 'subforge').kicker} (${P('subforge')})
 - Hors de l'écran : manga (JoJo's Bizarre Adventure), League of Legends, musculation, e-sport
@@ -663,11 +667,11 @@ writeFileSync('llms.txt', `# Ziyad Chaabi
 
 ## Parcours
 
-${timeline.map(t => `- ${t.year}, ${t.place} : ${t.title}. ${t.text}`).join('\n')}
+${timeline.filter(t => !t.text.includes('Réseau Sûr')).map(t => `- ${t.year}, ${t.place} : ${t.title}. ${t.text}`).join('\n')}
 
 ## Projets
 
-${projects.map(p => `- [${p.title}](${P(p.slug)}) : ${p.kicker} ${p.context}, ${p.period}. Rôle : ${p.role}. Stack : ${p.stack.join(', ')}.`).join('\n')}
+${projects.filter(p => p.slug !== 'reseau-sur-france').map(p => `- [${p.title}](${P(p.slug)}) : ${p.kicker} ${p.context}, ${p.period}. Rôle : ${p.role}. Stack : ${p.stack.join(', ')}.`).join('\n')}
 
 ## Autres dépôts GitHub
 
