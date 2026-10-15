@@ -1,10 +1,10 @@
 # Relève GitHub Trending (semaine) pour la page Veille : la page n'a ni API ni CORS, on la lit côté serveur.
-# Toutes les 3 h, et à la demande (onglet Actions > « Relever la veille » > Run workflow).
+# Une fois par jour (6 h 23 UTC, après la synchro des dépôts), et à la demande (onglet Actions > « Relever la veille » > Run workflow).
 name: Relever la veille
 
 on:
   schedule:
-    - cron: '23 */3 * * *'
+    - cron: '23 6 * * *'
   workflow_dispatch:
 
 permissions:

@@ -1,5 +1,5 @@
 (() => {
-// Veille : la vraie page GitHub Trending (relevée toutes les 3 h par .github/workflows/veille.yml dans js/veille-data.js),
+// Veille : la vraie page GitHub Trending (relevée chaque jour par .github/workflows/veille.yml dans js/veille-data.js),
 // plus les API publiques GitHub (recherche) et Hacker News (Algolia), lues en direct.
 // Rechargée toutes les 5 minutes tant que la page est ouverte, et au retour sur l'onglet.
 // Ce qui est apparu depuis le dernier passage est marqué « Nouveau ».
@@ -36,7 +36,7 @@ window.ZC_PAGE = function ({ $, $$ }) {
   const ghErr = 'GitHub limite les requêtes anonymes. La liste se recharge toute seule dans quelques minutes.';
   const time = new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-  // le relevé GitHub Trending : on recharge le fichier (il change toutes les 3 h côté serveur)
+  // le relevé GitHub Trending : on recharge le fichier (il change une fois par jour côté serveur)
   const trending = () => new Promise(ok => {
     const sc = document.createElement('script'); sc.src = `${document.body.dataset.base || ''}js/veille-data.js?t=${Date.now()}`;
     sc.onload = sc.onerror = () => { sc.remove(); ok(window.ZC_VEILLE); }; document.head.append(sc);

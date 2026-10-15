@@ -35,7 +35,7 @@ Pour écrire une description à la main pour un dépôt, ajoutez-le dans `repos`
 ## Veille
 
 La colonne « Tendances GitHub de la semaine » vient de la vraie page GitHub Trending, qui n'a pas d'API :
-`.github/workflows/veille.yml` la relève toutes les 3 h avec `node scripts/veille.mjs` et publie `js/veille-data.js`.
+`.github/workflows/veille.yml` la relève une fois par jour avec `node scripts/veille.mjs` et publie `js/veille-data.js`.
 Les deux autres colonnes (dépôts IA, Hacker News) sont lues en direct, et la page se recharge seule toutes les 5 minutes.
 
 ## Photos des recommandations
