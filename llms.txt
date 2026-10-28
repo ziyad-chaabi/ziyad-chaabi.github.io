@@ -37,25 +37,21 @@
 
 ## Autres dépôts GitHub
 
-- [Prénoms et Hadoop](https://ziyad-chaabi.github.io/projets/mini-projet-hadoop.html) : Les prénoms les plus donnés par décennie, données INSEE, Hadoop Streaming et Pig. (Python, Hadoop, Pig)
-- [JoJo Maze](https://ziyad-chaabi.github.io/projets/jojo-maze.html) : Un labyrinthe 3D sous Unity, clin d'œil à JoJo's Bizarre Adventure. (Unity, C#)
-- [Wifi auto](https://ziyad-chaabi.github.io/projets/wifi-connexion.html) : Un script Selenium qui se reconnecte au portail wifi toutes les 3 h 30, parce qu’il me déconnectait sans arrêt. (Python, Selenium)
-- [Portfolio Next.js](https://ziyad-chaabi.github.io/projets/portfolio-2-0-1.html) : Une version de portfolio en Next.js. (Next.js, Tailwind)
-- [Hôtel : gestion et paie](https://ziyad-chaabi.github.io/projets/hotel-paie.html) : Gestion hôtelière et paie des employés, à trois. (PHP, MySQL, Tailwind)
-- [QuizDown](https://ziyad-chaabi.github.io/projets/tp5-quizz.html) : Un quiz en Pygame, à cinq. J'étais responsable de l'architecture. (Python, Pygame)
+- [SAE Cookies Clicker](https://ziyad-chaabi.github.io/projets/sae-cookies-clicker.html) : Stars Clicker · clicker à thème spatial avec améliorations et classement (équipe, BUT MMI 1re année) · JavaScript (CSS, HTML, JavaScript)
+- [SAEH203](https://ziyad-chaabi.github.io/projets/saeh203.html) : Réservation de matériel informatique avec espace admin (équipe, BUT MMI 1re année) · PHP, MySQL (PHP, CSS, JavaScript)
+- [SAE 501](https://ziyad-chaabi.github.io/projets/sae-501.html) : Site de présentation d'une formation : projets, quiz, statistiques, espace admin, visite virtuelle 3D (équipe, BUT MMI) · Angular, TypeScript, API PHP, WebGL (TypeScript, PHP, SCSS, HTML)
 - [Scène 3D foot](https://ziyad-chaabi.github.io/projets/base-3d-foot-ref.html) : Base d'une scène 3D web servie par Node. (three.js, Node.js)
-- [FPS en three.js](https://ziyad-chaabi.github.io/projets/test-fps-three-js.html) : Un jeu de tir à la première personne dans le navigateur. (three.js, WebGL)
+- [Hôtel : gestion et paie](https://ziyad-chaabi.github.io/projets/hotel-paie.html) : Gestion hôtelière et paie des employés, à trois. (PHP, MySQL, Tailwind)
+- [Prénoms et Hadoop](https://ziyad-chaabi.github.io/projets/mini-projet-hadoop.html) : Les prénoms les plus donnés par décennie, données INSEE, Hadoop Streaming et Pig. (Python, Hadoop, Pig)
+- [Wifi auto](https://ziyad-chaabi.github.io/projets/wifi-connexion.html) : Un script Selenium qui se reconnecte au portail wifi toutes les 3 h 30, parce qu’il me déconnectait sans arrêt. (Python, Selenium)
+- [QuizDown](https://ziyad-chaabi.github.io/projets/tp5-quizz.html) : Un quiz en Pygame, à cinq. J'étais responsable de l'architecture. (Python, Pygame)
 - [Facture Android](https://ziyad-chaabi.github.io/projets/android-facture.html) : Mes débuts en Kotlin, autour de la facturation. (Kotlin, Android)
 - [Livre d'or](https://ziyad-chaabi.github.io/projets/guest-book.html) : Un livre d'or en PHP. (PHP)
-- [Bouton WebGL](https://ziyad-chaabi.github.io/projets/webgl-button.html) : Une scène Unity exportée en WebGL. (Unity, WebGL)
 - [Gestion académique](https://ziyad-chaabi.github.io/projets/academic-management-system-ts.html) : Étudiants, cours, notes et moyennes pondérées. (TypeScript)
 - [API REST employés](https://ziyad-chaabi.github.io/projets/api-rest-employee-management.html) : Une API REST en PHP. (PHP)
 - [AppScol](https://ziyad-chaabi.github.io/projets/app-scol.html) : Une application scolaire en Angular 17. (Angular, TypeScript)
 - [Salaire brut en net](https://ziyad-chaabi.github.io/projets/calculateur-de-salaire-brut-en-net.html) : Convertir un salaire brut en net, en direct. (JavaScript)
-- [Calculateur d'IMC](https://ziyad-chaabi.github.io/projets/calculateur-d-imc.html) : Calculer son indice de masse corporelle. (JavaScript)
-- [Portfolio V2](https://ziyad-chaabi.github.io/projets/portfolio-v2.html) : Mon portfolio précédent, toujours en ligne. (HTML, CSS)
 - [Mini Twitter](https://ziyad-chaabi.github.io/projets/twitter.html) : Un clone simplifié de Twitter. (PHP, MySQL)
-- [Site Minecraft](https://ziyad-chaabi.github.io/projets/minecraft.html) : Un site de fan : constructions et redstone. (HTML, Bootstrap)
 
 ## Pages
 

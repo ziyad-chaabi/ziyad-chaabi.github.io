@@ -1,29 +1,343 @@
 [
   {
-    "repo": "Hotel-Murder-Escape-game_VR",
-    "slug": "hotel-murder-escape-game-vr",
-    "title": "Hotel Murder Escape game VR",
-    "description": "",
+    "repo": "BlockChain",
+    "slug": "blockchain",
+    "title": "BlockChain",
+    "description": "SubChaine · simulateur de blockchain temps réel : wallets, minage PoW, Merkle · Node.js, Socket.IO",
     "paras": [],
     "bullets": [],
+    "stack": [
+      "HTML",
+      "JavaScript"
+    ],
+    "topics": [
+      "blockchain",
+      "merkle-tree",
+      "nodejs",
+      "proof-of-work",
+      "socket-io"
+    ],
+    "zone": "web",
+    "stars": 0,
+    "created": "2025-05-22T12:36:55Z",
+    "pushed": "2026-10-28T10:45:04Z",
+    "year": "2025",
+    "url": "https://github.com/Subdij/BlockChain",
+    "live": "",
+    "source": "lancé en local",
+    "images": [
+      "img/auto/blockchain/local-desktop.jpg",
+      "img/auto/blockchain/local-mobile.jpg"
+    ]
+  },
+  {
+    "repo": "SAE-Cookies-Clicker",
+    "slug": "sae-cookies-clicker",
+    "title": "SAE Cookies Clicker",
+    "description": "Stars Clicker · clicker à thème spatial avec améliorations et classement (équipe, BUT MMI 1re année) · JavaScript",
+    "paras": [
+      "Le but de ce projet est de concevoir un cookie clicker sur un thème de notre choix, nous avons donc choisi de partir sur un thème spatial. L'objectif de la SAE était de développer ce jeu avec un thème original. Les joueurs ont le choix entre deux planètes : la Terre et Jupiter. En collectant des étoiles, ils peuvent acheter des améliorations qui leur permettent de gagner des étoiles plus rapidement. Il n'y a pas d'améliorations cachées et le jeu a été testé sur le navigateur Opera GX et Google Chrome."
+    ],
+    "bullets": [],
+    "stack": [
+      "CSS",
+      "HTML",
+      "JavaScript"
+    ],
+    "topics": [
+      "clicker-game",
+      "game",
+      "javascript"
+    ],
+    "zone": "jeux",
+    "stars": 0,
+    "created": "2026-10-28T09:59:04Z",
+    "pushed": "2026-10-28T10:03:04Z",
+    "year": "2026",
+    "url": "https://github.com/Subdij/SAE-Cookies-Clicker",
+    "live": "",
+    "source": "lancé en local",
+    "images": [
+      "img/auto/sae-cookies-clicker/local-desktop.jpg",
+      "img/auto/sae-cookies-clicker/local-mobile.jpg"
+    ]
+  },
+  {
+    "repo": "SAEH203",
+    "slug": "saeh203",
+    "title": "SAEH203",
+    "description": "Réservation de matériel informatique avec espace admin (équipe, BUT MMI 1re année) · PHP, MySQL",
+    "paras": [],
+    "bullets": [],
+    "stack": [
+      "PHP",
+      "CSS",
+      "JavaScript"
+    ],
+    "topics": [
+      "mysql",
+      "php"
+    ],
+    "zone": "web",
+    "stars": 0,
+    "created": "2026-10-28T09:58:53Z",
+    "pushed": "2026-10-28T10:02:54Z",
+    "year": "2026",
+    "url": "https://github.com/Subdij/SAEH203",
+    "live": "",
+    "source": "",
+    "images": []
+  },
+  {
+    "repo": "SAE-501",
+    "slug": "sae-501",
+    "title": "SAE 501",
+    "description": "Site de présentation d'une formation : projets, quiz, statistiques, espace admin, visite virtuelle 3D (équipe, BUT MMI) · Angular, TypeScript, API PHP, WebGL",
+    "paras": [
+      "Projet d'équipe de BUT MMI (3e année) : un site Angular qui présente une formation (organisation, projets, parcours, insertion, échanges), avec quiz, sondage, statistiques, espace d'administration et visite virtuelle 3D. Le back-end est une API PHP (PDO, MySQL) documentée ci-dessous.",
+      "Ce dépôt contient la version finale du projet.",
+      "Stack : Angular, TypeScript, PHP, MySQL, Unity WebGL."
+    ],
+    "bullets": [
+      "- Modélisation d'une salle de l'école (salle 317, projecteur 3D compris) sous Unity",
+      "- Export WebGL (sae501/src/assets/Build/) et intégration dans la page Angular visite-virtuelle",
+      "- Front : cd sae501 && npm install && npx ng serve",
+      "- API : importer la base MySQL sae501, servir le dossier api/ avec PHP, renseigner api/class/Database.php",
+      "- Informations",
+      "- Inscription",
+      "- Connexion",
+      "- Quiz"
+    ],
+    "stack": [
+      "TypeScript",
+      "PHP",
+      "SCSS",
+      "HTML"
+    ],
+    "topics": [
+      "angular",
+      "php",
+      "typescript",
+      "unity",
+      "webgl"
+    ],
+    "zone": "web",
+    "stars": 0,
+    "created": "2026-10-28T09:58:33Z",
+    "pushed": "2026-10-28T10:02:49Z",
+    "year": "2026",
+    "url": "https://github.com/Subdij/SAE-501",
+    "live": "",
+    "source": "",
+    "images": []
+  },
+  {
+    "repo": "Gestion_Recettes",
+    "slug": "gestion-recettes",
+    "title": "Gestion Recettes",
+    "description": "Gestion de recettes · Symfony, Doctrine, MySQL",
+    "paras": [],
+    "bullets": [],
+    "stack": [
+      "PHP",
+      "CSS",
+      "Twig",
+      "JavaScript"
+    ],
+    "topics": [],
+    "zone": "web",
+    "stars": 1,
+    "created": "2024-03-28T12:19:37Z",
+    "pushed": "2026-10-28T09:44:35Z",
+    "year": "2024",
+    "url": "https://github.com/Subdij/Gestion_Recettes",
+    "live": "",
+    "source": "",
+    "images": []
+  },
+  {
+    "repo": "base_3D_foot_ref",
+    "slug": "base-3d-foot-ref",
+    "title": "base 3D foot ref",
+    "description": "Jeu de foot avec scores enregistrés en temps réel · Node.js, Express, Socket.IO, MongoDB",
+    "paras": [],
+    "bullets": [],
+    "stack": [
+      "HTML",
+      "JavaScript"
+    ],
+    "topics": [],
+    "zone": "web",
+    "stars": 1,
+    "created": "2024-10-03T12:55:12Z",
+    "pushed": "2026-10-28T09:44:19Z",
+    "year": "2024",
+    "url": "https://github.com/Subdij/base_3D_foot_ref",
+    "live": "",
+    "source": "",
+    "images": []
+  },
+  {
+    "repo": "ZABI",
+    "slug": "zabi",
+    "title": "ZABI",
+    "description": "Jeu de duel de super-héros multijoueur (équipe de 4) · Node.js, Express, MongoDB, API REST",
+    "paras": [
+      "Bienvenue dans Les Superhéros qui se battent dans le jeu qu'on a développé, un jeu de duel dynamique entre deux super-héros avec une ambiance arcade rétro ! Obtenez un héros, attaquez, défendez et utilisez vos pouvoirs spéciaux.",
+      "Pour rendre le combat plus stratégique, chaque type d'attaque peut exploiter une faiblesse de l’adversaire. Cela permet de réaliser des coups critiques qui infligent plus de dégâts.",
+      "Voici un tableau simple des correspondances :"
+    ],
+    "bullets": [
+      "- Interface typée arcade avec barres de vie en haut à gauche/droite",
+      "- Entrée des pseudos Joueur 1 & Joueur 2",
+      "- Sélection aléatoire de superhéros avec images et stats dynamiques",
+      "- Système d’attaque/défense avec effets visuels (animations de dégâts/soins)",
+      "- Matchmaking équilibré avec analyse du duel",
+      "- Bonus de soin limité pendant le combat",
+      "- Design rétro avec police Press Start 2P",
+      "- Système de Faiblesses"
+    ],
+    "stack": [
+      "JavaScript",
+      "CSS",
+      "HTML"
+    ],
+    "topics": [
+      "express",
+      "game",
+      "mongodb",
+      "nodejs",
+      "rest-api"
+    ],
+    "zone": "jeux",
+    "stars": 0,
+    "created": "2025-04-02T06:27:28Z",
+    "pushed": "2026-10-28T09:44:16Z",
+    "year": "2025",
+    "url": "https://github.com/Subdij/ZABI",
+    "live": "",
+    "source": "",
+    "images": []
+  },
+  {
+    "repo": "Hotel-Paie",
+    "slug": "hotel-paie",
+    "title": "Hotel Paie",
+    "description": "Réservation de chambres d'hôtel (équipe de 3) · PHP, MySQL, Tailwind · requêtes en paramètres liés",
+    "paras": [
+      "Application web de réservation d'hôtel, projet de BUT MMI en équipe de 3 : recherche de chambres libres par dates, réservation avec options, paiement, espace client et tableau de bord d'administration.",
+      "Toutes les requêtes passent par des paramètres liés (mysqli::executequery) : aucune donnée envoyée par l'utilisateur n'est concaténée dans le SQL.",
+      "Prérequis : PHP 8.2 ou plus, MySQL (XAMPP par exemple), Node.js pour Tailwind."
+    ],
+    "bullets": [
+      "- Chambres : recherche des chambres libres entre deux dates, filtre par nombre de voyageurs et par type, tri par prix",
+      "- Réservation : options, calcul du prix total, paiement",
+      "- Espace client : inscription et connexion (mots de passe hachés), profil, changement de mot de passe, demande d'annulation",
+      "- Tableau de bord : gestion des clients et des réservations, validation ou refus des annulations",
+      "- L'API PHP (Pages/API.php) : clients, réservations, annulations et calcul du prix",
+      "- L'authentification : hachage des mots de passe, sessions",
+      "- Le schéma de la base (hotel.sql) : clés primaires, auto-incréments, clés étrangères",
+      "- La page profil, le changement de mot de passe et la gestion des annulations dans le tableau de bord"
+    ],
+    "stack": [
+      "PHP",
+      "CSS",
+      "JavaScript"
+    ],
+    "topics": [
+      "hotel-booking",
+      "mysql",
+      "php",
+      "tailwindcss"
+    ],
+    "zone": "web",
+    "stars": 0,
+    "created": "2024-11-17T18:03:31Z",
+    "pushed": "2026-10-28T09:44:13Z",
+    "year": "2024",
+    "url": "https://github.com/Subdij/Hotel-Paie",
+    "live": "",
+    "source": "",
+    "images": []
+  },
+  {
+    "repo": "mini-projet-hadoop",
+    "slug": "mini-projet-hadoop",
+    "title": "mini projet hadoop",
+    "description": "Prénoms les plus donnés en France (INSEE) · MapReduce Python, Hadoop Streaming, Pig",
+    "paras": [
+      "Les prénoms les plus donnés en France, par année et par sexe, calculés sur le fichier des naissances de l'INSEE avec Hadoop.",
+      "La version Hadoop Streaming en Python 2 se lance avec python2/runstreamingP2.sh.",
+      "Stack : Python, Hadoop Streaming, HDFS, Pig, matplotlib."
+    ],
+    "bullets": [],
+    "stack": [
+      "Python",
+      "HTML",
+      "Shell",
+      "PigLatin"
+    ],
+    "topics": [
+      "big-data",
+      "hadoop",
+      "mapreduce",
+      "pig",
+      "python"
+    ],
+    "zone": "data",
+    "stars": 0,
+    "created": "2025-05-06T07:59:29Z",
+    "pushed": "2026-10-28T09:23:24Z",
+    "year": "2025",
+    "url": "https://github.com/Subdij/mini-projet-hadoop",
+    "live": "",
+    "source": "README",
+    "images": [
+      "img/auto/mini-projet-hadoop/readme-1.png"
+    ]
+  },
+  {
+    "repo": "Project_VR",
+    "slug": "project-vr",
+    "title": "Project VR",
+    "description": "Funfair VR · 5 mini-jeux de fête foraine en réalité virtuelle · Unity, C#, XR Interaction Toolkit, OpenXR",
+    "paras": [
+      "Bienvenue dans Funfair VR, une collection immersive de mini-jeux de fête foraine en réalité virtuelle, plongés dans une ambiance médiévale low-poly. Ce projet a été développé sous Unity avec le XR Interaction Toolkit.",
+      "Le projet comprend 5 attractions principales accessibles depuis le hub central :",
+      "--- Projet réalisé dans le cadre d'un développement VR étudiant/personnel."
+    ],
+    "bullets": [
+      "Moteur : Unity 2022.3+ (Recommandé)",
+      "Pipeline de Rendu : Universal Render Pipeline (URP) pour des performances optimales en VR.",
+      "Framework VR :",
+      "Unity XR Interaction Toolkit (2.6.4)",
+      "OpenXR Plugin",
+      "Oculus XR Plugin",
+      "Assets Graphiques : Pack Polygon Medieval (Low-Poly).",
+      "Assets/Scenes : Contient les scènes des différents mini-jeux (Chamboule-tout, FruitNinja, Piscine, Shooter, punchingball)."
+    ],
     "stack": [
       "C#",
       "ShaderLab",
       "Wolfram Language",
       "HLSL"
     ],
-    "topics": [],
+    "topics": [
+      "csharp",
+      "openxr",
+      "unity",
+      "vr",
+      "xr-interaction-toolkit"
+    ],
     "zone": "xr",
-    "stars": 2,
-    "created": "2026-02-04T16:41:49Z",
-    "pushed": "2026-02-11T17:21:59Z",
-    "year": "2026",
-    "url": "https://github.com/Subdij/Hotel-Murder-Escape-game_VR",
+    "stars": 1,
+    "created": "2025-04-07T10:07:58Z",
+    "pushed": "2026-10-28T09:23:10Z",
+    "year": "2025",
+    "url": "https://github.com/Subdij/Project_VR",
     "live": "",
-    "source": "dépôt",
-    "images": [
-      "img/auto/hotel-murder-escape-game-vr/repo-1.png"
-    ]
+    "source": "",
+    "images": []
   },
   {
     "repo": "lolop",
@@ -60,149 +374,6 @@
     "images": []
   },
   {
-    "repo": "Project_VR",
-    "slug": "project-vr",
-    "title": "Project VR",
-    "description": "Bienvenue dans Funfair VR, une collection immersive de mini-jeux de fête foraine en réalité virtuelle, plongés dans une ambiance médiévale low-poly. Ce projet a été développé sous Unity avec le XR Interaction Toolkit.",
-    "paras": [
-      "Bienvenue dans Funfair VR, une collection immersive de mini-jeux de fête foraine en réalité virtuelle, plongés dans une ambiance médiévale low-poly. Ce projet a été développé sous Unity avec le XR Interaction Toolkit.",
-      "Le projet comprend 5 attractions principales accessibles depuis le hub central :",
-      "--- Projet réalisé dans le cadre d'un développement VR étudiant/personnel."
-    ],
-    "bullets": [
-      "Moteur : Unity 2022.3+ (Recommandé)",
-      "Pipeline de Rendu : Universal Render Pipeline (URP) pour des performances optimales en VR.",
-      "Framework VR :",
-      "Unity XR Interaction Toolkit (2.6.4)",
-      "OpenXR Plugin",
-      "Oculus XR Plugin",
-      "Assets Graphiques : Pack Polygon Medieval (Low-Poly).",
-      "Assets/Scenes : Contient les scènes des différents mini-jeux (Chamboule-tout, FruitNinja, Piscine, Shooter, punchingball)."
-    ],
-    "stack": [
-      "C#",
-      "ShaderLab",
-      "Mathematica",
-      "HLSL"
-    ],
-    "topics": [],
-    "zone": "xr",
-    "stars": 1,
-    "created": "2025-04-07T10:07:58Z",
-    "pushed": "2026-01-03T20:37:05Z",
-    "year": "2025",
-    "url": "https://github.com/Subdij/Project_VR",
-    "live": "",
-    "source": "",
-    "images": []
-  },
-  {
-    "repo": "BlockChain",
-    "slug": "blockchain",
-    "title": "BlockChain",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "HTML",
-      "JavaScript"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2025-05-22T12:36:55Z",
-    "pushed": "2025-05-22T13:01:48Z",
-    "year": "2025",
-    "url": "https://github.com/Subdij/BlockChain",
-    "live": "",
-    "source": "lancé en local",
-    "images": [
-      "img/auto/blockchain/local-desktop.jpg",
-      "img/auto/blockchain/local-mobile.jpg"
-    ]
-  },
-  {
-    "repo": "mini-projet-hadoop",
-    "slug": "mini-projet-hadoop",
-    "title": "mini projet hadoop",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "Python",
-      "HTML",
-      "Shell",
-      "PigLatin"
-    ],
-    "topics": [],
-    "zone": "data",
-    "stars": 0,
-    "created": "2025-05-06T07:59:29Z",
-    "pushed": "2025-05-12T10:33:43Z",
-    "year": "2025",
-    "url": "https://github.com/Subdij/mini-projet-hadoop",
-    "live": "",
-    "source": "",
-    "images": []
-  },
-  {
-    "repo": "JOJO_MAZE",
-    "slug": "jojo-maze",
-    "title": "JOJO MAZE",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "ASP.NET"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2025-04-29T11:17:55Z",
-    "pushed": "2025-04-29T18:04:15Z",
-    "year": "2025",
-    "url": "https://github.com/Subdij/JOJO_MAZE",
-    "live": "",
-    "source": "",
-    "images": []
-  },
-  {
-    "repo": "ZABI",
-    "slug": "zabi",
-    "title": "ZABI",
-    "description": "Bienvenue dans Les Superhéros qui se battent dans le jeu qu'on a développé, un jeu de duel dynamique entre deux super-héros avec une ambiance arcade rétro ! Obtenez un héros, attaquez, défendez et utilisez vos pouvoirs spéciaux.",
-    "paras": [
-      "Bienvenue dans Les Superhéros qui se battent dans le jeu qu'on a développé, un jeu de duel dynamique entre deux super-héros avec une ambiance arcade rétro ! Obtenez un héros, attaquez, défendez et utilisez vos pouvoirs spéciaux.",
-      "Pour rendre le combat plus stratégique, chaque type d'attaque peut exploiter une faiblesse de l’adversaire. Cela permet de réaliser des coups critiques qui infligent plus de dégâts.",
-      "Voici un tableau simple des correspondances :"
-    ],
-    "bullets": [
-      "- Interface typée arcade avec barres de vie en haut à gauche/droite",
-      "- Entrée des pseudos Joueur 1 & Joueur 2",
-      "- Sélection aléatoire de superhéros avec images et stats dynamiques",
-      "- Système d’attaque/défense avec effets visuels (animations de dégâts/soins)",
-      "- Matchmaking équilibré avec analyse du duel",
-      "- Bonus de soin limité pendant le combat",
-      "- Design rétro avec police Press Start 2P",
-      "- Système de Faiblesses"
-    ],
-    "stack": [
-      "JavaScript",
-      "CSS",
-      "HTML"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2025-04-02T06:27:28Z",
-    "pushed": "2025-04-23T15:07:03Z",
-    "year": "2025",
-    "url": "https://github.com/Subdij/ZABI",
-    "live": "",
-    "source": "",
-    "images": []
-  },
-  {
     "repo": "wifi-connexion",
     "slug": "wifi-connexion",
     "title": "wifi connexion",
@@ -234,61 +405,6 @@
     "images": []
   },
   {
-    "repo": "portfolio-2.0.1",
-    "slug": "portfolio-2-0-1",
-    "title": "portfolio 2.0.1",
-    "description": "This is a Next.js project bootstrapped with create-next-app.",
-    "paras": [
-      "This is a Next.js project bootstrapped with create-next-app.",
-      "Open http://localhost:3000 with your browser to see the result.",
-      "You can start editing the page by modifying app/page.js. The page auto-updates as you edit the file."
-    ],
-    "bullets": [
-      "- Next.js Documentation - learn about Next.js features and API.",
-      "- Learn Next.js - an interactive Next.js tutorial."
-    ],
-    "stack": [
-      "JavaScript",
-      "CSS"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2023-10-28T19:57:15Z",
-    "pushed": "2025-01-17T22:42:59Z",
-    "year": "2023",
-    "url": "https://github.com/Subdij/portfolio-2.0.1",
-    "live": "",
-    "source": "lancé en local",
-    "images": [
-      "img/auto/portfolio-2-0-1/local-desktop.jpg",
-      "img/auto/portfolio-2-0-1/local-mobile.jpg"
-    ]
-  },
-  {
-    "repo": "Hotel-Paie",
-    "slug": "hotel-paie",
-    "title": "Hotel Paie",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "PHP",
-      "CSS",
-      "JavaScript"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2024-11-17T18:03:31Z",
-    "pushed": "2024-12-20T20:05:04Z",
-    "year": "2024",
-    "url": "https://github.com/Subdij/Hotel-Paie",
-    "live": "",
-    "source": "",
-    "images": []
-  },
-  {
     "repo": "TP5_Quizz",
     "slug": "tp5-quizz",
     "title": "TP5 Quizz",
@@ -315,78 +431,6 @@
     "pushed": "2024-11-28T08:09:51Z",
     "year": "2024",
     "url": "https://github.com/Subdij/TP5_Quizz",
-    "live": "",
-    "source": "",
-    "images": []
-  },
-  {
-    "repo": "base_3D_foot_ref",
-    "slug": "base-3d-foot-ref",
-    "title": "base 3D foot ref",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "HTML",
-      "JavaScript"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 1,
-    "created": "2024-10-03T12:55:12Z",
-    "pushed": "2024-11-25T20:38:06Z",
-    "year": "2024",
-    "url": "https://github.com/Subdij/base_3D_foot_ref",
-    "live": "",
-    "source": "",
-    "images": []
-  },
-  {
-    "repo": "Test_FPS_three.js",
-    "slug": "test-fps-three-js",
-    "title": "Test FPS three.js",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "JavaScript",
-      "HTML",
-      "G-code",
-      "Roff",
-      "SCSS",
-      "CSS"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2024-09-27T18:55:32Z",
-    "pushed": "2024-09-27T18:57:29Z",
-    "year": "2024",
-    "url": "https://github.com/Subdij/Test_FPS_three.js",
-    "live": "",
-    "source": "",
-    "images": []
-  },
-  {
-    "repo": "Gestion_Recettes",
-    "slug": "gestion-recettes",
-    "title": "Gestion Recettes",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "PHP",
-      "CSS",
-      "Twig",
-      "JavaScript"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 1,
-    "created": "2024-03-28T12:19:37Z",
-    "pushed": "2024-04-15T13:46:05Z",
-    "year": "2024",
-    "url": "https://github.com/Subdij/Gestion_Recettes",
     "live": "",
     "source": "",
     "images": []
@@ -438,30 +482,6 @@
     "images": [
       "img/auto/guest-book/local-desktop.jpg",
       "img/auto/guest-book/local-mobile.jpg"
-    ]
-  },
-  {
-    "repo": "Webgl-Button",
-    "slug": "webgl-button",
-    "title": "Webgl Button",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "HTML",
-      "CSS"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2024-01-03T16:05:11Z",
-    "pushed": "2024-01-03T16:05:23Z",
-    "year": "2024",
-    "url": "https://github.com/Subdij/Webgl-Button",
-    "live": "https://subdij.github.io/Webgl-Button/",
-    "source": "site en ligne",
-    "images": [
-      "img/auto/webgl-button/live-desktop.jpg"
     ]
   },
   {
@@ -578,58 +598,6 @@
     ]
   },
   {
-    "repo": "Calculateur-d-IMC",
-    "slug": "calculateur-d-imc",
-    "title": "Calculateur d IMC",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "JavaScript",
-      "CSS",
-      "HTML"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2023-11-14T20:00:45Z",
-    "pushed": "2023-11-14T20:00:50Z",
-    "year": "2023",
-    "url": "https://github.com/Subdij/Calculateur-d-IMC",
-    "live": "https://subdij.github.io/Calculateur-d-IMC/",
-    "source": "site en ligne",
-    "images": [
-      "img/auto/calculateur-d-imc/live-desktop.jpg",
-      "img/auto/calculateur-d-imc/live-mobile.jpg"
-    ]
-  },
-  {
-    "repo": "Portfolio-V2",
-    "slug": "portfolio-v2",
-    "title": "Portfolio V2",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "HTML",
-      "CSS",
-      "JavaScript"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2023-07-03T13:09:31Z",
-    "pushed": "2023-07-07T12:54:18Z",
-    "year": "2023",
-    "url": "https://github.com/Subdij/Portfolio-V2",
-    "live": "https://subdij.github.io/Portfolio-V2/",
-    "source": "site en ligne",
-    "images": [
-      "img/auto/portfolio-v2/live-desktop.jpg",
-      "img/auto/portfolio-v2/live-mobile.jpg"
-    ]
-  },
-  {
     "repo": "twitter",
     "slug": "twitter",
     "title": "twitter",
@@ -673,32 +641,6 @@
     "source": "site en ligne",
     "images": [
       "img/auto/web-documentaire-artisant/live-desktop.jpg"
-    ]
-  },
-  {
-    "repo": "Minecraft",
-    "slug": "minecraft",
-    "title": "Minecraft",
-    "description": "",
-    "paras": [],
-    "bullets": [],
-    "stack": [
-      "HTML",
-      "CSS",
-      "JavaScript"
-    ],
-    "topics": [],
-    "zone": "web",
-    "stars": 0,
-    "created": "2023-07-03T12:54:22Z",
-    "pushed": "2023-07-03T13:05:30Z",
-    "year": "2023",
-    "url": "https://github.com/Subdij/Minecraft",
-    "live": "https://subdij.github.io/Minecraft/",
-    "source": "site en ligne",
-    "images": [
-      "img/auto/minecraft/live-desktop.jpg",
-      "img/auto/minecraft/live-mobile.jpg"
     ]
   }
 ]
