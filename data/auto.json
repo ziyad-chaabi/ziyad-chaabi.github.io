@@ -1,5 +1,46 @@
 [
   {
+    "repo": "Rockfeller_MagasinVR",
+    "slug": "rockfeller-magasinvr",
+    "title": "Rockfeller MagasinVR",
+    "description": "Rockfeller · magasin en VR : PNJ, négociation, inventaire, ordinateur jouable avec quiz d'entretien (équipe, Master STM) · Unity 6, C#, XR Interaction Toolkit",
+    "paras": [
+      "Projet d'équipe du Master Sciences et Technologies du Métavers (INSA Hauts-de-France), sous Unity 6. Le joueur évolue dans un magasin et des bureaux en VR : clients non joueurs, dialogues et négociation, inventaire, et un ordinateur utilisable dans la scène.",
+      "Unity 6 (6000.0), C, XR Interaction Toolkit 3, XR Hands, OpenXR."
+    ],
+    "bullets": [
+      "- Mise en place de l'environnement VR (XR Interaction Toolkit) et portage des scènes",
+      "- Un ordinateur jouable en VR (Assets/Script pc/) : bureau avec icônes, fenêtres d'application, curseur piloté à la main",
+      "- Un quiz d'entretien sur cet ordinateur : questions chargées depuis des données, logique de réponse et interface (QuizLoaderAndManager, QuizUI)",
+      "- Le système d'inventaire : une ceinture qui suit le joueur (VRBeltFollower), avec ses objets et textures"
+    ],
+    "stack": [
+      "C#",
+      "ShaderLab",
+      "Wolfram Language",
+      "HLSL"
+    ],
+    "topics": [
+      "csharp",
+      "openxr",
+      "unity",
+      "vr",
+      "xr-interaction-toolkit"
+    ],
+    "zone": "xr",
+    "stars": 0,
+    "created": "2026-10-28T11:11:43Z",
+    "pushed": "2026-10-28T11:12:10Z",
+    "year": "2026",
+    "url": "https://github.com/Subdij/Rockfeller_MagasinVR",
+    "live": "",
+    "source": "dépôt",
+    "images": [
+      "img/auto/rockfeller-magasinvr/repo-1.png",
+      "img/auto/rockfeller-magasinvr/repo-2.png"
+    ]
+  },
+  {
     "repo": "BlockChain",
     "slug": "blockchain",
     "title": "BlockChain",
