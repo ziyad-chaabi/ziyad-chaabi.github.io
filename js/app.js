@@ -64,97 +64,117 @@ const paperC = css('--paper'), darkPaper = hexLum(paperC) < .5;
 const LIGHT = { paper: paperC, ink: css('--ink'), accent: '#D2602A', dark: darkPaper ? 1 : 0 };
 const NIGHT = { paper: css('--night'), ink: '#E9EBE6', accent: '#D2602A', dark: 1 };
 const seen = el => { const s = { on: false }; new IntersectionObserver(([e]) => (s.on = e.isIntersecting)).observe(el); return s; };
+const load = src => new Promise((ok, ko) => { const im = new Image(); im.onload = () => ok(im); im.onerror = ko; im.src = src; });
 
-function map(c, o) {
+// Une carte vivante : la traînée du curseur soulève le terrain partout où il passe ; si une image est donnée (portrait, emblème),
+// sa carte de hauteur plie le terrain et la traînée la révèle palier par palier. Sans souris, une traînée parcourt seule l'image,
+// et un toucher lance une onde. Rendu seulement à l'écran ; au repos, une image sur deux.
+function scene(c, o) {
   let r; try { r = window.Relief?.createRelief(c, o); } catch {}
-  if (!r) return;
-  const px = spring(.5, 90, 18), py = spring(.5, 90, 18), pz = spring(0, 60, 16), vis = seen(c), t0 = performance.now();
-  const draw = () => r.render({ time: calm ? 14 : (performance.now() - t0) / 1000, pointer: [px.x, py.x, pz.x] });
-  new ResizeObserver(() => { r.resize(); draw(); }).observe(c);
-  if (calm) return draw();
-  const host = c.parentElement;
-  if (fine) {
-    host.addEventListener('pointermove', e => { const b = c.getBoundingClientRect(); px.to = (e.clientX - b.left) / b.width; py.to = 1 - (e.clientY - b.top) / b.height; pz.to = 1; });
-    host.addEventListener('pointerleave', () => (pz.to = 0));
-  }
-  let odd = false;
-  ticks.add(dt => {
-    px.step(dt); py.step(dt); pz.step(dt);
-    // le terrain dérive lentement : une image sur deux suffit, sauf quand le curseur le déforme
-    if (vis.on && ((odd = !odd) || pz.x > .01)) draw();
-  });
-}
-const wm = $('.work-map'); if (wm) map(wm, { ...NIGHT, seed: window.Relief?.seedOf('projets'), peaks: 6, rough: .9, levels: 15 });
-const cm = $('.cs-map'); if (cm) map(cm, { ...LIGHT, seed: window.Relief?.seedOf(location.pathname.split('/').pop()), peaks: 4, rough: .6, levels: 14 });
-
-/* ---------- Hero : le portrait en courbes de niveau, la traînée du curseur révèle la photo ---------- */
-const hero = $('.hero'), face = $('.hero-face'), hc = $('.hero-map');
-if (hero && face && hc && window.Relief) {
-  let r; try { r = Relief.createRelief(hc, { ...LIGHT, seed: Relief.seedOf('ziyad-chaabi'), peaks: 5, rough: .8, levels: 16, maxDpr: innerWidth > 1100 ? 1.5 : 2 }); } catch {}
-  if (r) heroFace(r);
-}
-function heroFace(r) {
-  // la traînée : une petite toile en niveaux de gris, dans le repère du portrait, qui s'efface doucement
-  const TW = 96, TH = 120, tc = document.createElement('canvas'); tc.width = TW; tc.height = TH;
-  const tx = tc.getContext('2d'); tx.fillStyle = '#000'; tx.fillRect(0, 0, TW, TH);
-  const stamp = (x, y, rad, a) => {
-    const g = tx.createRadialGradient(x, y, 0, x, y, rad);
-    g.addColorStop(0, `rgba(255,255,255,${a})`); g.addColorStop(1, 'rgba(255,255,255,0)');
-    tx.globalCompositeOperation = 'lighter'; tx.fillStyle = g; tx.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+  if (!r) return null;
+  const host = o.host || c.parentElement, el = o.image?.el;
+  let TW = 1, TH = 1, rect = [0, 0, 1, 1], ready = !el, amt = el ? 0 : 1;
+  const tc = document.createElement('canvas'), tx = tc.getContext('2d');
+  const clear = () => { tx.globalCompositeOperation = 'source-over'; tx.fillStyle = '#000'; tx.fillRect(0, 0, TW, TH); };
+  const measure = () => {
+    r.resize();
+    TW = 160; TH = Math.max(40, Math.min(220, Math.round(160 * c.clientHeight / Math.max(1, c.clientWidth)))); tc.width = TW; tc.height = TH; clear();
+    if (el) { const a = c.getBoundingClientRect(), b = el.getBoundingClientRect(); rect = [(b.left - a.left) / a.width, 1 - (b.bottom - a.top) / a.height, b.width / a.width, b.height / a.height]; }
   };
-  let rect = [0, 0, 1, 1];
-  const measure = () => { r.resize(); const a = hc.getBoundingClientRect(), b = face.getBoundingClientRect(); rect = [(b.left - a.left) / a.width, 1 - (b.bottom - a.top) / a.height, b.width / a.width, b.height / a.height]; };
-  measure(); new ResizeObserver(() => { measure(); if (calm && ready) draw(); }).observe(hero);
-  const img = $('img', face), load = src => new Promise((ok, ko) => { const im = new Image(); im.onload = () => ok(im); im.onerror = ko; im.src = src; });
-  let amt = 0, ready = false;
-  const vis = seen(hc), t0 = performance.now();
-  const sx = spring(.5, 120, 20), sy = spring(.5, 120, 20), sz = spring(0, 50, 14);
-  let active = false, speed = 0, lx = .5, ly = .5, T = 0, idle = 0, skip = false;
-  const waves = [];
+  const stamp = (x, y, rad, al) => { // x, y en uv de la carte, y vers le bas
+    const X = x * TW, Y = y * TH, R = rad * TH, g = tx.createRadialGradient(X, Y, 0, X, Y, R);
+    g.addColorStop(0, `rgba(255,255,255,${al})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+    tx.globalCompositeOperation = 'lighter'; tx.fillStyle = g; tx.fillRect(X - R, Y - R, R * 2, R * 2);
+  };
+  const vis = seen(c), t0 = performance.now();
   const draw = (extra = {}) => {
-    const s = calm ? 0 : scrollY, H = hc.clientHeight || 1;
-    r.render({ time: calm ? 14 : (performance.now() - t0) / 1000, imgAmt: amt, cam: [0, s / H * .45], imgRect: [rect[0], rect[1] - s / H * .15, rect[2], rect[3]], ...extra });
+    r.setImage(tc, 2);
+    const s = o.parallax && !calm ? scrollY / (c.clientHeight || 1) : 0;
+    r.render({ time: calm ? 14 : (performance.now() - t0) / 1000, imgAmt: amt, cam: [0, s * .45], imgRect: [rect[0], rect[1] - s * .15, rect[2], rect[3]], ...extra });
+    o.onDraw?.(s);
   };
-  Promise.all([load(face.dataset.height), load(img.currentSrc || img.src)]).then(([hm, ph]) => {
-    try { r.setImage(hm, 0); r.setImage(ph, 1); } catch { return; } // ouvert en file:// : WebGL refuse les images du disque, la photo reste affichée
-    ready = true; root.classList.add('face-gl');
-    if (calm) { // mouvement réduit : portrait à moitié révélé, fixe
-      const g = tx.createLinearGradient(0, 0, TW, 0); g.addColorStop(0, '#fff'); g.addColorStop(.42, '#fff'); g.addColorStop(.62, '#000');
-      tx.fillStyle = g; tx.fillRect(0, 0, TW, TH); r.setImage(tc, 2); amt = 1; draw();
+  measure();
+  new ResizeObserver(() => { measure(); if (calm) draw(); }).observe(host);
+  if (el) Promise.all([load(o.image.height), load(o.image.photo)]).then(([hm, ph]) => {
+    try { r.setImage(hm, 0); r.setImage(ph, 1); } catch { return; } // ouvert en file:// : WebGL refuse les images du disque, l'image reste affichée
+    ready = true; o.onReady?.();
+    if (calm) { // mouvement réduit : image à moitié révélée, fixe
+      const g = tx.createLinearGradient(rect[0] * TW, 0, (rect[0] + rect[2]) * TW, 0);
+      g.addColorStop(0, '#fff'); g.addColorStop(.45, '#fff'); g.addColorStop(.62, '#000');
+      tx.fillStyle = g; tx.fillRect(0, 0, TW, TH); amt = 1; draw();
     }
   }).catch(() => {});
   if (calm) return draw();
 
+  const sx = spring(.5, 110, 20), sy = spring(.5, 110, 20), waves = [];
+  let active = false, speed = 0, lx = .5, ly = .5, T = Math.random() * 9, idle = 9, skip = false;
   if (fine) {
-    hero.addEventListener('pointermove', e => { const b = face.getBoundingClientRect(); sx.to = (e.clientX - b.left) / b.width; sy.to = (e.clientY - b.top) / b.height; active = true; });
-    hero.addEventListener('pointerleave', () => (active = false));
+    host.addEventListener('pointermove', e => { const a = c.getBoundingClientRect(); sx.to = (e.clientX - a.left) / a.width; sy.to = (e.clientY - a.top) / a.height; if (!active) { sx.x = sx.to; sy.x = sy.to; } active = true; });
+    host.addEventListener('pointerleave', () => (active = false));
   }
-  // au toucher, une onde part du doigt, révèle la photo puis se referme
-  face.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') return; const b = face.getBoundingClientRect(); waves.push({ x: (e.clientX - b.left) / b.width * TW, y: (e.clientY - b.top) / b.height * TH, t: 0 }); });
-  const name = $('.hero-name');
+  host.addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') return; const a = c.getBoundingClientRect(); waves.push({ x: (e.clientX - a.left) / a.width, y: (e.clientY - a.top) / a.height, t: 0 }); });
   ticks.add(dt => {
     if (!ready || !vis.on) return;
-    amt = Math.min(1, amt + dt / 1.2);
+    if (el && amt < 1) amt = Math.min(1, amt + dt / 1.2);
     tx.globalCompositeOperation = 'source-over'; tx.fillStyle = `rgba(0,0,0,${1 - Math.pow(.955, dt * 60)})`; tx.fillRect(0, 0, TW, TH);
-    let x, y, on;
+    let x = lx, y = ly, on = false;
     if (fine) { x = sx.step(dt); y = sy.step(dt); on = active; }
-    else { T += dt; x = .5 + .27 * Math.sin(T * .45); y = .44 + .26 * Math.sin(T * .29 + 1); on = true; } // sans survol, la traînée parcourt seule le visage
-    speed += (Math.hypot(x - lx, y - ly) / Math.max(dt, 1e-3) - speed) * Math.min(1, dt * 8); lx = x; ly = y;
-    if (on && x > -.15 && x < 1.15 && y > -.15 && y < 1.15) stamp(x * TW, y * TH, (fine ? .09 + Math.min(speed * .06, .22) : .11) * TH, fine ? .5 : .32); // le masque grandit avec la vitesse, se resserre à l'arrêt
+    else if (el) { // sans survol, la traînée parcourt seule l'image
+      T += dt; on = true;
+      x = rect[0] + rect[2] * (.5 + .3 * Math.sin(T * .45));
+      y = 1 - rect[1] - rect[3] * (.55 + .28 * Math.sin(T * .29 + 1));
+    }
+    if (on) {
+      speed += (Math.hypot(x - lx, y - ly) / Math.max(dt, 1e-3) - speed) * Math.min(1, dt * 8);
+      stamp(x, y, (o.brush || .07) + Math.min(speed * .06, .18), fine ? .55 : .35); // le masque grandit avec la vitesse du geste, se resserre à l'arrêt
+    }
+    lx = x; ly = y;
     for (let i = waves.length; i--;) {
       const w = waves[i]; w.t += dt;
       if (w.t > 1.1) { waves.splice(i, 1); continue; }
-      tx.globalCompositeOperation = 'lighter'; tx.strokeStyle = `rgba(255,255,255,${.5 * (1 - w.t / 1.1)})`; tx.lineWidth = .16 * TH;
-      tx.beginPath(); tx.arc(w.x, w.y, w.t * TH, 0, 7); tx.stroke();
+      tx.globalCompositeOperation = 'lighter'; tx.strokeStyle = `rgba(255,255,255,${.45 * (1 - w.t / 1.1)})`; tx.lineWidth = .12 * TH;
+      tx.beginPath(); tx.arc(w.x * TW, w.y * TH, w.t * .6 * TH, 0, 7); tx.stroke();
     }
-    sz.to = on || waves.length ? 1 : 0; sz.step(dt);
     idle = on || waves.length ? 0 : idle + dt;
-    if (idle > 2 && (skip = !skip)) return; // au repos : une image sur deux
-    r.setImage(tc, 2);
-    draw({ pointer: [rect[0] + x * rect[2], rect[1] + (1 - y) * rect[3], sz.x] });
-    if (name) name.style.translate = `0 ${-Math.min(scrollY, innerHeight) * .12}px`; // le nom avance plus vite que le terrain : vraie profondeur
+    if (idle > 2.5 && (skip = !skip)) return; // au repos, le terrain dérive à peine : une image sur deux
+    draw();
   });
+  return r;
 }
+
+const wm = $('.work-map'); if (wm) scene(wm, { ...NIGHT, seed: window.Relief?.seedOf('projets'), peaks: 6, rough: .9, levels: 15, lift: .3 });
+
+// hero : le portrait, la traînée révèle la photo ; le nom avance plus vite que le terrain (vraie profondeur)
+const hero = $('.hero'), face = $('.hero-face'), hc = $('.hero-map');
+if (hero && face && hc) {
+  const img = $('img', face), name = $('.hero-name');
+  scene(hc, { ...LIGHT, seed: window.Relief?.seedOf('ziyad-chaabi'), peaks: 5, rough: .8, levels: 16, lift: .4, brush: .09, maxDpr: innerWidth > 1100 ? 1.5 : 2, host: hero, parallax: true,
+    image: { el: face, height: face.dataset.height, photo: img.currentSrc || img.src },
+    onReady: () => root.classList.add('face-gl'),
+    onDraw: s => { if (name) name.style.translate = `0 ${(-s * innerHeight * .12).toFixed(1)}px`; } });
+}
+
+// étude de cas : l'emblème arrive (transition de page), puis se fond dans la carte et se révèle à la traînée
+const cm = $('.cs-map'), emb = $('.cs-emblem img');
+if (cm) {
+  const go = () => scene(cm, { ...LIGHT, seed: window.Relief?.seedOf(location.pathname.split('/').pop()), peaks: 4, rough: .6, levels: 14, lift: .3, edge: .02, host: cm.parentElement,
+    ...(emb?.dataset.height ? { image: { el: emb, height: emb.dataset.height, photo: emb.dataset.photo }, onReady: () => emb.closest('.cs-emblem').classList.add('is-gl') } : {}) });
+  // pendant la transition, l'emblème vole au-dessus de tout : on attend qu'il soit posé avant de le fondre dans la carte
+  let started = false; const start = () => { if (!started) { started = true; go(); } };
+  addEventListener('pagereveal', e => (e.viewTransition ? e.viewTransition.finished.then(start, start) : start()), { once: true });
+  setTimeout(start, 900);
+}
+
+/* ---------- Étincelles d'étoiles, de temps en temps ---------- */
+if (!calm) $$('[data-stars]').forEach(box => {
+  const n = +box.dataset.stars || 10, frag = document.createDocumentFragment();
+  for (let i = 0; i < n; i++) {
+    const sp = document.createElement('i'); sp.className = 'spark'; sp.setAttribute('aria-hidden', 'true');
+    sp.style.cssText = `left:${(Math.random() * 96 + 2).toFixed(1)}%;top:${(Math.random() * 92 + 4).toFixed(1)}%;--s:${(6 + Math.random() * 10).toFixed(0)}px;--d:${(Math.random() * 14).toFixed(1)}s;--t:${(7 + Math.random() * 9).toFixed(1)}s`;
+    frag.append(sp);
+  }
+  box.append(frag);
+});
 
 /* ---------- Premier passage : monogramme, puis les objets se rangent dans la bande ---------- */
 function intro() {
@@ -200,15 +220,20 @@ if (mqs.length && !calm) {
 }
 
 /* ---------- Aperçu qui suit le curseur sur les listes ---------- */
-const peek = $('.peek'), rows = $$('[data-peek]');
+// chaque ligne a son aperçu : la vraie capture quand elle existe, sinon une carte avec le nom du projet
+const peek = $('.peek'), rows = $$('.idx-item');
 if (peek && rows.length && fine && !calm) {
-  const pimg = $('img', peek), px = spring(0, 110, 20), py = spring(0, 110, 20);
+  const pimg = $('img', peek), ptitle = $('.peek-title', peek), psub = $('.peek-sub', peek), px = spring(0, 110, 20), py = spring(0, 110, 20);
   let on = false, tilt = 0, mx = 0, my = 0;
   const hide = () => { on = false; peek.classList.remove('is-on'); };
   rows.forEach(row => {
     row.addEventListener('pointerenter', e => {
       if (row.closest('[data-view="grid"]')) return;
-      if (pimg.getAttribute('src') !== row.dataset.peek) pimg.src = row.dataset.peek;
+      mx = e.clientX; my = e.clientY;
+      const src = row.dataset.peek;
+      peek.classList.toggle('is-card', !src);
+      if (src && pimg.getAttribute('src') !== src) pimg.src = src;
+      if (!src) { ptitle.textContent = $('.idx-title', row)?.textContent.trim() || ''; psub.textContent = [$('.idx-zone', row)?.textContent, $('.idx-year', row)?.textContent].filter(Boolean).join(', '); }
       if (!peek.classList.contains('is-on')) { px.x = px.to = e.clientX + 28; py.x = py.to = e.clientY - 120; px.v = py.v = 0; }
       on = true; peek.classList.add('is-on');
     });
@@ -216,7 +241,7 @@ if (peek && rows.length && fine && !calm) {
   });
   addEventListener('pointermove', e => { mx = e.clientX; my = e.clientY; px.to = mx + 28; py.to = my - peek.offsetHeight * .6; }, { passive: true });
   // la page défile sous le curseur immobile : on vérifie qu'il est encore sur une ligne
-  addEventListener('scroll', () => { if (on && !document.elementFromPoint(mx, my)?.closest('[data-peek]')) hide(); }, { passive: true });
+  addEventListener('scroll', () => { if (on && !document.elementFromPoint(mx, my)?.closest('.idx-item')) hide(); }, { passive: true });
   ticks.add(dt => {
     if (!on && !peek.classList.contains('is-on')) return;
     px.step(dt); py.step(dt);

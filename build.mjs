@@ -1,5 +1,6 @@
 // Génère le site statique : français à la racine, anglais dans /en/.
-// Sources : js/data.js (contenu écrit à la main), data/art.json (œuvres CC0), data/auto.json (dépôts GitHub synchronisés).
+// Sources : js/data.js (contenu écrit à la main), data/space.json (images NASA, domaine public), data/icons.json (logos de la stack),
+// data/auto.json (dépôts GitHub synchronisés).
 // Usage : node build.mjs   (aucune dépendance)
 import { writeFileSync, mkdirSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { posix } from 'node:path';
@@ -9,7 +10,10 @@ import { imgSize } from './scripts/img-size.mjs';
 const sb = { window: {} };
 vm.runInNewContext(readFileSync('js/data.js', 'utf8'), sb);
 const Z = sb.window.ZC, { site } = Z;
-const ART = Object.fromEntries(JSON.parse(readFileSync('data/art.json', 'utf8')).map(a => [a.slug, a]));
+const ART = Object.fromEntries(JSON.parse(readFileSync('data/space.json', 'utf8')).map(a => [a.slug, a]));
+const ICONS = JSON.parse(readFileSync('data/icons.json', 'utf8'));
+// les logos en un seul fichier, mis en cache une fois pour tout le site
+writeFileSync('img/icons.svg', `<svg xmlns="http://www.w3.org/2000/svg">${Object.entries(ICONS).map(([k, d]) => `<symbol id="${k}" viewBox="0 0 24 24"><path d="${d}"/></symbol>`).join('')}</svg>\n`);
 const auto = existsSync('data/auto.json') ? JSON.parse(readFileSync('data/auto.json', 'utf8')) : [];
 const LANGS = ['fr', 'en'];
 
@@ -33,10 +37,10 @@ const T = {
     selected: 'Projets choisis', selectedNote: 'Quatre projets racontés en détail : le problème, ma part, les décisions, le résultat.',
     kinds: { pro: 'Pro', perso: 'Perso', ecole: 'École' },
     xp: 'Expérience', edu: 'Formation',
-    stack: 'Stack', stackNote: 'Chaque outil renvoie au projet qui le prouve.', lvl: { prod: 'En production', projet: 'Sur des projets' },
+    stack: 'Stack', stackNote: 'Chaque outil mène au projet qui le prouve. Plein : utilisé en production. Contour : utilisé sur des projets.', lvl: { prod: 'en production', projet: 'sur des projets' }, provenBy: 'prouvé par',
     others: 'Autres projets', toArchive: n => `Toute l’archive, ${n} projets`, view: 'Affichage', list: 'Liste', grid: 'Grille', privateCode: 'Code privé',
     contactTitle: 'Écrivons-nous.', contactNote: 'Pour un poste en CDI ou une question sur un projet, écrivez-moi.',
-    copy: 'Copier l’adresse', copied: 'Adresse copiée', creditsLead: 'Œuvres', creditsTail: 'Cleveland Museum of Art, domaine public (CC0).',
+    copy: 'Copier l’adresse', copied: 'Adresse copiée', readCase: 'Lire l’étude de cas',
     rights: '© 2026 Ziyad Chaabi, Troyes', top: 'Revenir en haut',
     cs: { crumb: 'Projets', brief: 'En bref', context: 'Le contexte', problem: 'Le problème', built: 'Ce que j’ai construit', decisions: 'Les décisions techniques',
       result: 'Le résultat', lessons: 'Ce que j’en retiens', next: 'Projet suivant', setting: 'Cadre', org: 'Où', period: 'Période', team: 'Équipe', role: 'Mon rôle', code: 'Code' },
@@ -57,10 +61,10 @@ const T = {
     selected: 'Selected work', selectedNote: 'Four projects told in detail: the problem, my part, the decisions, the result.',
     kinds: { pro: 'Work', perso: 'Personal', ecole: 'School' },
     xp: 'Experience', edu: 'Education',
-    stack: 'Stack', stackNote: 'Each tool links to the project that proves it.', lvl: { prod: 'In production', projet: 'In projects' },
+    stack: 'Stack', stackNote: 'Each tool leads to the project that proves it. Filled: used in production. Outlined: used in projects.', lvl: { prod: 'in production', projet: 'in projects' }, provenBy: 'proven by',
     others: 'Other projects', toArchive: n => `The whole archive, ${n} projects`, view: 'View', list: 'List', grid: 'Grid', privateCode: 'Private code',
     contactTitle: 'Let’s talk.', contactNote: 'For a permanent role or a question about a project, write to me.',
-    copy: 'Copy address', copied: 'Address copied', creditsLead: 'Artworks', creditsTail: 'Cleveland Museum of Art, public domain (CC0).',
+    copy: 'Copy address', copied: 'Address copied', readCase: 'Read the case study',
     rights: '© 2026 Ziyad Chaabi, Troyes, France', top: 'Back to top',
     cs: { crumb: 'Work', brief: 'In short', context: 'Context', problem: 'The problem', built: 'What I built', decisions: 'Technical decisions',
       result: 'The result', lessons: 'What I took away', next: 'Next project', setting: 'Setting', org: 'Where', period: 'Period', team: 'Team', role: 'My role', code: 'Code' },
@@ -109,16 +113,19 @@ const words = s => s.split(/(\*[^*]+\*)/).filter(Boolean).flatMap(part => {
 }).reduce((a, w) => (/^[,.;:!?]/.test(w) && a.length ? (a[a.length - 1] += w, a) : [...a, w]), []) // la ponctuation reste collée au mot d'avant
   .map((w, i) => `<span class="w" style="--i:${i}">${w}</span>`).join(' ');
 
-function art(slug, P, { cls = '', sizes = '(max-width: 760px) 60vw, 28vw', eager = false, vt = '' } = {}) {
-  const a = ART[slug]; P.credits.add(slug);
-  const src = (n, ext) => P.a(`img/art/${a.file}-${n}.${ext}`);
+// une image de la série spatiale (NASA, domaine public) : astre détouré (is-obj) ou photo fondue sur ses bords (is-photo)
+function art(slug, P, { cls = '', sizes = '(max-width: 760px) 60vw, 28vw', eager = false, vt = '', relief = false } = {}) {
+  const a = ART[slug];
+  const src = (n, ext) => P.a(`img/space/${a.file}-${n}.${ext}`);
   const set = ext => a.sizes.map(([n, w]) => `${src(n, ext)} ${w}w`).join(', ');
   const [, w, h] = a.sizes[1];
-  return `<picture class="art${a.kind === 'object' ? ' is-cut' : ' is-photo'}${cls ? ' ' + cls : ''}"><source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><img src="${src(1200, 'webp')}" srcset="${set('webp')}" sizes="${sizes}" width="${w}" height="${h}" alt=""${vt ? ` style="view-transition-name:${vt}"` : ''} ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+  const gl = relief && a.height ? ` data-height="${P.a('img/space/' + a.height)}" data-photo="${src(1200, 'webp')}"` : '';
+  return `<picture class="art ${a.kind === 'object' ? 'is-obj' : 'is-photo'}${cls ? ' ' + cls : ''}"><source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><img src="${src(1200, 'webp')}" srcset="${set('webp')}" sizes="${sizes}" width="${w}" height="${h}" alt=""${vt ? ` style="view-transition-name:${vt}"` : ''}${gl} ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 }
-function shot(s, P, { cls = '', eager = false, alt = true } = {}) {
+const isPhone = s => { const [w, h] = imgSize(s.src); return s.phone || h > w; };
+function shot(s, P, { cls = '', eager = false, alt = true, style = '' } = {}) {
   const [w, h] = imgSize(s.src);
-  return `<img class="shot${s.phone || h > w ? ' is-phone' : ''}${cls ? ' ' + cls : ''}" src="${P.a(s.src)}" width="${w}" height="${h}" alt="${alt ? esc(s.alt) : ''}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
+  return `<img class="shot${isPhone(s) ? ' is-phone' : ''}${cls ? ' ' + cls : ''}" src="${P.a(s.src)}" width="${w}" height="${h}" alt="${alt ? esc(s.alt) : ''}"${style ? ` style="${style}"` : ''} ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async">`;
 }
 const chips = (list, label) => `<ul class="chips"${label ? ` aria-label="${esc(label)}"` : ''}>${list.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
 const ext = (label, url) => `<a class="arrow-link" href="${esc(url)}" target="_blank" rel="noopener">${esc(label)}</a>`;
@@ -127,10 +134,12 @@ function stackBlock(P, id = 'stack') {
   const { t } = P, skills = loc(Z.skills, P.l);
   return `
 <section class="stack wrap" id="${id}" aria-labelledby="${id}-h">
-  <header class="sec-head"><h2 class="h2" id="${id}-h" data-lines>${lines([t.stack])}</h2>
-    <p class="sec-note">${t.stackNote}<span class="legend"><span class="lv lv-prod">${t.lvl.prod}</span><span class="lv lv-projet">${t.lvl.projet}</span></span></p></header>
-  <div class="stack-groups">${skills.map(g => `
-    <section class="sg" data-reveal><h3>${esc(g.group)}</h3><ul>${g.items.map(([n, lv, ps]) => `<li class="sk lv-${lv}"><span class="sk-name">${esc(n)}<span class="sr"> (${t.lvl[lv]})</span></span><span class="sk-proof">${ps.map(s => `<a href="${proofHref(s, P)}">${esc(proofName(s, P.l))}</a>`).join(', ')}</span></li>`).join('')}</ul></section>`).join('')}
+  <header class="sec-head"><h2 class="h2" id="${id}-h" data-lines>${lines([t.stack])}</h2><p class="sec-note">${t.stackNote}</p></header>
+  <div class="stack-rows">${skills.map(g => `
+    <section class="sg"><h3>${esc(g.group)}</h3><ul class="tools">${g.items.map(([n, lv, ps, ico]) => {
+      const proofs = ps.map(s => proofName(s, P.l)).join(', ');
+      return `<li><a class="tool lv-${lv}" href="${proofHref(ps[0], P)}">${ico ? `<svg class="tool-ico" aria-hidden="true"><use href="${P.a('img/icons.svg')}#${ico}"/></svg>` : '<span class="tool-dot" aria-hidden="true"></span>'}<span class="tool-name">${esc(n)}</span><span class="tool-proof">${t.provenBy} ${esc(proofs)}</span><span class="sr">, ${t.lvl[lv]}</span></a></li>`;
+    }).join('')}</ul></section>`).join('')}
   </div>
 </section>`;
 }
@@ -170,7 +179,7 @@ const person = l => ({
 
 function page(key, l, { title, desc, type = 'WebPage', image, jsonld, lcp, crumbs = [] }, body) {
   const file = fileOf(key, l), other = LANGS.find(x => x !== l), t = T[l];
-  const P = { l, t, file, key, credits: new Set(), a: p => rel(file, p), url: (k, hash = '') => rel(file, fileOf(k, l)) + hash };
+  const P = { l, t, file, key, a: p => rel(file, p), url: (k, hash = '') => rel(file, fileOf(k, l)) + hash };
   const main = body(P);
   const url = canon(file), img = image ? site.url + image : site.url + 'img/og.jpg';
   const [ow, oh] = imgSize(image || 'img/og.jpg');
@@ -179,7 +188,6 @@ function page(key, l, { title, desc, type = 'WebPage', image, jsonld, lcp, crumb
   const ld = { '@context': 'https://schema.org', '@graph': [{ '@type': 'WebSite', '@id': SITE, url: site.url, name: 'Ziyad Chaabi', inLanguage: ['fr-FR', 'en'], publisher: { '@id': ME } }, person(l), pageNode, ...(jsonld ? [jsonld] : [])] };
   const nav = [['projects', 'home', '#projets'], ['about', 'about'], ['archive', 'archive'], ['veille', 'veille']]
     .map(([n, k, h = '']) => `<a href="${P.url(k, h)}"${(k === key && !h) || (n === 'projects' && key.startsWith('case:')) ? ' aria-current="page"' : ''}>${t.nav[n]}</a>`).join('');
-  const credits = [...P.credits].map(s => ART[s]).map(a => `<a href="${a.url}" target="_blank" rel="noopener">${esc(a.title)}</a> (${esc(a.artist.split(' (')[0])})`);
   const html = `<!doctype html>
 <html lang="${l}">
 <head>
@@ -192,7 +200,7 @@ function page(key, l, { title, desc, type = 'WebPage', image, jsonld, lcp, crumb
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#EEF0EB" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#111316" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0D1016" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="${url}">
 ${LANGS.map(x => `<link rel="alternate" hreflang="${x}" href="${canon(fileOf(key, x))}">`).join('\n')}
 <link rel="alternate" hreflang="x-default" href="${canon(fileOf(key, 'fr'))}">
@@ -236,25 +244,30 @@ ${lcp ? `<link rel="preload" as="image" href="${P.a(lcp)}" fetchpriority="high">
 <main id="main">
 ${main}
 </main>
-<footer class="foot" id="contact" aria-labelledby="foot-h">
-  <div class="wrap">
+<footer class="foot" id="contact" aria-labelledby="foot-h" data-stars="18">
+  ${art('terre', P, { cls: 'foot-earth', sizes: '(max-width: 760px) 90vw, 50vw' })}
+  <div class="foot-in wrap">
     <h2 class="foot-title" id="foot-h" data-lines>${lines([t.contactTitle])}</h2>
-    <p class="foot-note">${t.contactNote}</p>
-    <div class="foot-mail">
-      <a class="foot-addr" href="mailto:${site.email}">${site.email}</a>
-      <button class="btn btn-line" type="button" data-copy="${site.email}" data-done="${t.copied}">${t.copy}</button>
-      <span class="copy-msg" role="status"></span>
+    <div class="foot-grid">
+      <div>
+        <p class="foot-note">${t.contactNote}</p>
+        <div class="foot-mail">
+          <a class="foot-addr" href="mailto:${site.email}">${site.email}</a>
+          <button class="btn btn-line" type="button" data-copy="${site.email}" data-done="${t.copied}">${t.copy}</button>
+          <span class="copy-msg" role="status"></span>
+        </div>
+      </div>
+      <ul class="foot-links">
+        <li><a class="arrow-link" href="${site.linkedin}" target="_blank" rel="me noopener">LinkedIn</a></li>
+        <li><a class="arrow-link" href="${site.github}" target="_blank" rel="me noopener">GitHub</a></li>
+        <li><a class="arrow-link" href="${P.a(site.cv)}" download>${t.cv}</a></li>
+      </ul>
+      <p class="foot-status"><span class="live" aria-hidden="true"></span>${esc(loc(Z.profile.status, l))}<span>${esc(loc(Z.profile.place, l))}</span></p>
     </div>
-    <ul class="foot-links">
-      <li><a class="arrow-link" href="${site.linkedin}" target="_blank" rel="me noopener">LinkedIn</a></li>
-      <li><a class="arrow-link" href="${site.github}" target="_blank" rel="me noopener">GitHub</a></li>
-      <li><a class="arrow-link" href="${P.a(site.cv)}" download>${t.cvFull}</a></li>
-    </ul>
-    ${credits.length ? `<p class="foot-credits">${t.creditsLead} : ${credits.join(', ')}. ${t.creditsTail}</p>` : ''}
-    <div class="foot-bottom"><p>${t.rights}</p><a href="#main">${t.top}</a></div>
   </div>
+  <div class="foot-bottom wrap"><p>${t.rights}</p><a href="#main">${t.top}</a></div>
 </footer>
-<div class="peek" aria-hidden="true"><img alt=""></div>
+<div class="peek" aria-hidden="true"><img alt=""><p class="peek-card"><b class="peek-title"></b><span class="peek-sub"></span></p></div>
 <script src="${P.a('js/vendor/lenis.min.js')}" defer></script>
 <script src="${P.a('js/relief.js')}" defer></script>
 ${key === 'veille' ? `<script src="${P.a('js/veille-data.js')}" defer></script>\n<script src="${P.a('js/veille.js')}" defer></script>` : ''}
@@ -268,13 +281,13 @@ ${key === 'veille' ? `<script src="${P.a('js/veille-data.js')}" defer></script>\
 }
 
 /* ================= Accueil ================= */
-const BAND = ['casque-visiere', 'gantelet', 'vase-vagues', 'casque-ferme', 'nautile', 'gant-maille', 'sphere', 'pot-noir', 'gantelet-poing', 'cadran', 'vase-motifs', 'horloge'];
+const BAND = ['terre', 'lune', 'mars', 'neptune', 'uranus', 'venus', 'mercure', 'pluton', 'io', 'saturne-dessus'];
 const home = P => {
   const { t, l } = P, pr = loc(Z.profile, l), cases = loc(Z.cases, l), band = BAND.map(s => art(s, P, { cls: 'band-item', sizes: '180px' })).join('');
   const others = loc(Z.others, l).sort((a, b) => b.year - a.year);
   const xp = loc(Z.experience, l), edu = loc(Z.education, l);
   return `
-<section class="hero" aria-labelledby="hero-name">
+<section class="hero" aria-labelledby="hero-name" data-stars="14">
   <canvas class="hero-map" aria-hidden="true"></canvas>
   <div class="hero-band" aria-hidden="true"><div class="band-track">${band}${band.replace(/class="art /g, 'class="art is-dup ')}</div></div>
   <figure class="hero-face" data-height="${P.a('img/ziyad-relief.png')}">
@@ -299,18 +312,28 @@ const home = P => {
   <p class="manifesto wrap">${words(pr.manifesto)}</p>
 </section>
 
-<section class="work" id="projets" data-night aria-labelledby="work-h">
+<section class="work" id="projets" data-night aria-labelledby="work-h" data-stars="22">
   <canvas class="work-map" aria-hidden="true"></canvas>
   <div class="wrap">
     <header class="sec-head"><h2 class="h2" id="work-h" data-lines>${lines([t.selected])}</h2><p class="sec-note">${t.selectedNote}</p></header>
-    <ol class="cases">${cases.map(c => `
-      <li class="case" data-reveal>
-        <div class="case-stage" data-wipe>${art(c.emblem, P, { cls: 'case-emblem', vt: 'em-' + c.slug, sizes: '(max-width: 760px) 70vw, 30vw' })}${shot(c.cover, P, { cls: 'case-shot', alt: false })}</div>
-        <h3 class="case-title"><a class="case-link" href="${P.url('case:' + c.slug)}">${esc(c.title)}</a></h3>
-        <p class="case-meta"><span>${esc(c.setting)}</span><span>${c.year}</span></p>
-        <p class="case-kicker">${esc(c.kicker)}</p>
-        <p class="case-outcome">${esc(c.outcome)}</p>
-      </li>`).join('')}
+    <ol class="cases">${cases.map((c, i) => {
+      const shots = c.shots.map(src => ({ src })), desk = shots.filter(x => !isPhone(x)), phones = shots.filter(isPhone);
+      return `
+      <li class="case${i % 2 ? ' is-flip' : ''}">
+        <div class="case-media${desk.length ? '' : ' is-phones'}" data-wipe>
+          ${art(c.emblem, P, { cls: 'case-emblem', vt: 'em-' + c.slug, sizes: '(max-width: 760px) 60vw, 30vw' })}
+          ${desk.map(x => shot(x, P, { cls: 'case-shot', alt: false })).join('')}
+          ${phones.map((x, j) => shot(x, P, { cls: 'case-phone', alt: false, style: `--j:${j}` })).join('')}
+        </div>
+        <div class="case-body">
+          <p class="case-meta">${esc(c.setting)}, ${c.year}</p>
+          <h3 class="case-title"><a class="case-link" href="${P.url('case:' + c.slug)}">${esc(c.title)}</a></h3>
+          <p class="case-kicker">${esc(c.kicker)}</p>
+          <p class="case-outcome">${esc(c.outcome)}</p>
+          ${chips(c.stack.slice(0, 5))}
+          <p class="case-cta" aria-hidden="true">${t.readCase}</p>
+        </div>
+      </li>`; }).join('')}
     </ol>
   </div>
 </section>
@@ -349,7 +372,7 @@ const caseBody = (c, next) => P => {
   const paras = list => list.map(p => `<p>${esc(p)}</p>`).join('');
   return `
 <article class="cs">
-  <header class="cs-hero">
+  <header class="cs-hero" data-stars="10">
     <canvas class="cs-map" aria-hidden="true"></canvas>
     <div class="cs-hero-in wrap">
       <p class="cs-crumb"><a href="${P.url('home', '#projets')}">${cs.crumb}</a><span aria-hidden="true"> / </span>${esc(c.year)}</p>
@@ -358,7 +381,7 @@ const caseBody = (c, next) => P => {
       <dl class="cs-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
       <p class="cs-links">${c.links.map(([lb, u]) => ext(lb, u)).join('')}${c.private ? `<span class="note">${esc(c.private)}</span>` : ''}</p>
     </div>
-    <div class="cs-emblem">${art(c.emblem, P, { vt: 'em-' + c.slug, eager: true, sizes: '(max-width: 760px) 70vw, 36vw' })}</div>
+    <div class="cs-emblem">${art(c.emblem, P, { vt: 'em-' + c.slug, eager: true, relief: true, sizes: '(max-width: 760px) 70vw, 36vw' })}</div>
   </header>
   <figure class="cs-cover wrap" data-wipe>${shot(c.cover, P)}<figcaption>${esc(c.cover.alt)}</figcaption></figure>
   <section class="cs-brief wrap" aria-labelledby="brief-h"><h2 class="cs-h" id="brief-h">${cs.brief}</h2>
@@ -383,8 +406,8 @@ const caseBody = (c, next) => P => {
 };
 
 /* ================= À propos ================= */
-const METHOD_ART = ['gantelet', 'age-du-bronze', 'buste'];
-const PATH_ART = { 1: 'rue-paris', 3: 'dunes', 5: 'montagne', 6: 'nympheas' };
+const METHOD_ART = ['terre', 'empreinte', 'mccandless'];
+const PATH_ART = { 1: 'earthrise', 3: 'sourire' };
 const aboutBody = P => {
   const { t, l } = P, a = t.about, avis = loc(Z.avis, l);
   return `
@@ -424,7 +447,7 @@ const archiveBody = P => {
 <section class="page-head wrap" aria-labelledby="ar-h">
   <h1 class="display" id="ar-h" data-lines>${lines([a.title])}</h1>
   <p class="lede">${a.lede(items.length)} ${a.main} <a href="${P.url('home', '#projets')}">${a.mainLink}</a>.</p>
-  <div class="plate" aria-hidden="true" data-wipe>${['vase-noir', 'pot-noir', 'vase-motifs'].map(s => art(s, P, { sizes: '(max-width: 760px) 30vw, 16vw', eager: s === 'pot-noir' })).join('')}</div>
+  <div class="plate" aria-hidden="true" data-wipe>${['pluton', 'io', 'mercure'].map(s => art(s, P, { sizes: '(max-width: 760px) 30vw, 16vw', eager: s === 'io' })).join('')}</div>
 </section>
 <section class="index wrap" aria-label="${a.title}">
   <header class="sec-head idx-head"><p class="idx-cols" aria-hidden="true">${a.cols.map(c => `<span>${c}</span>`).join('')}</p>${viewToggle(P)}</header>
@@ -442,7 +465,7 @@ const veilleBody = P => {
   <div><h1 class="display" id="vs-h" data-lines>${lines([v.title])}</h1>
   <p class="lede">${v.lede}</p>
   <p class="vs-status" aria-live="polite"><span class="live" aria-hidden="true"></span><span class="veille-time">${v.loading}</span> <span class="vs-next"></span> <span class="vs-new"></span></p></div>
-  ${art('cadran', P, { cls: 'vs-art', sizes: '(max-width: 760px) 40vw, 20vw', eager: true })}
+  ${art('lune', P, { cls: 'vs-art', sizes: '(max-width: 760px) 40vw, 22vw', eager: true })}
 </section>
 <section class="vs wrap">
   <div class="vs-show" role="group" aria-label="${v.show}">${[['all', v.all], ['gh', 'GitHub'], ['ai', P.l === 'fr' ? 'IA' : 'AI'], ['hn', 'Hacker News']].map(([k, lb], i) => `<button type="button" aria-pressed="${!i}" data-show="${k}">${lb}</button>`).join('')}</div>
@@ -450,9 +473,9 @@ const veilleBody = P => {
     ${panel('gh', v.gh, 'https://github.com/trending?since=weekly')}
     ${panel('ai', v.ai, 'https://github.com/search?q=llm+OR+agent+OR+mcp&type=repositories&s=stars')}
     ${panel('hn', v.hn, 'https://news.ycombinator.com/')}
-    <aside class="vs-notes" aria-labelledby="vs-notes-h">${art('horloge', P, { cls: 'vs-notes-art', sizes: '120px' })}<h2 id="vs-notes-h">${v.notes}</h2>${notes.map(([k, d]) => `<article><h3>${esc(k)}</h3><p>${esc(d)}</p></article>`).join('')}</aside>
+    <aside class="vs-notes" aria-labelledby="vs-notes-h">${art('neptune', P, { cls: 'vs-notes-art', sizes: '140px' })}<h2 id="vs-notes-h">${v.notes}</h2>${notes.map(([k, d]) => `<article><h3>${esc(k)}</h3><p>${esc(d)}</p></article>`).join('')}</aside>
   </div>
-  <figure class="vs-wide" aria-hidden="true">${art('abstraction', P, { sizes: '92vw' })}</figure>
+  <figure class="vs-wide" aria-hidden="true">${art('bennu', P, { sizes: '92vw' })}</figure>
   <form class="vs-ask" role="search" action="https://hn.algolia.com/" method="get" target="_blank">
     <label class="vs-ask-label h3" for="vs-q">${v.ask}</label>
     <div class="vs-ask-row"><input id="vs-q" name="query" type="search" placeholder="${v.askPh}" autocomplete="off" required><button class="btn" type="submit">${v.askBtn}</button></div>

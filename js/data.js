@@ -33,7 +33,7 @@ const profile = {
    story : contexte → problème → ce que j'ai construit (un écran par étape) → décisions → résultat → ce que j'en retiens. */
 const cases = [
   {
-    slug: 'btp-360', title: 'BTP-360', emblem: 'morion', year: '2026', kind: 'pro',
+    slug: 'btp-360', title: 'BTP-360', emblem: 'iss', shots: ['img/p/btp-360/1.webp', 'img/p/btp-360/m4.webp'], year: '2026', kind: 'pro',
     kicker: L("L'application qui a remplacé les fichiers Excel de quatre sociétés du bâtiment.", 'The app that replaced the Excel files of four building companies.'),
     outcome: L('En production sur AWS, sur le web et sur Android.', 'In production on AWS, on the web and on Android.'),
     brief: [
@@ -108,7 +108,7 @@ const cases = [
     },
   },
   {
-    slug: 'subforge', title: 'SubForge', emblem: 'bol-blanc', year: '2026', kind: 'perso',
+    slug: 'subforge', title: 'SubForge', emblem: 'jupiter', shots: ['img/p/subforge/m1.webp', 'img/p/subforge/m3.webp', 'img/p/subforge/m5.webp'], year: '2026', kind: 'perso',
     kicker: L("Un prototype de coach nutrition : on décrit un repas en une phrase, l'IA propose les macros, on valide.", 'A nutrition coach prototype: describe a meal in one sentence, the AI suggests the macros, you confirm.'),
     outcome: L('Un prototype Android, construit pour apprendre.', 'An Android prototype, built to learn.'),
     brief: [
@@ -160,7 +160,7 @@ const cases = [
     },
   },
   {
-    slug: 'distri-sur-france', title: 'Distri Sûr France', emblem: 'lampe-glycine', year: '2024', kind: 'pro',
+    slug: 'distri-sur-france', title: 'Distri Sûr France', emblem: 'sun', shots: ['img/p/distri-sur-france/2.webp', 'img/p/distri-sur-france/m1.webp'], year: '2024', kind: 'pro',
     kicker: L("Dix mois d'alternance pour créer la boutique en ligne d'une entreprise.", 'Ten months of work-study to build a company’s online shop.'),
     outcome: L('Le site e-commerce officiel de l’entreprise, en ligne.', 'The company’s official e-commerce site, live.'),
     brief: [
@@ -201,7 +201,7 @@ const cases = [
     },
   },
   {
-    slug: 'realite-virtuelle', title: L('Réalité virtuelle', 'Virtual reality'), emblem: 'armure', year: '2026', kind: 'ecole',
+    slug: 'realite-virtuelle', title: L('Réalité virtuelle', 'Virtual reality'), emblem: 'saturne', shots: ['img/ziyad-vr.webp'], year: '2026', kind: 'ecole',
     kicker: L('Funfair VR et Hotel Murder VR, deux projets du Master. Ma part : des attractions, un menu à portails, le son, et une scène d’enquête.', 'Funfair VR and Hotel Murder VR, two Master’s projects. My part: attractions, a portal menu, the sound, and an investigation scene.'),
     outcome: L('Deux projets d’équipe, code public sur GitHub.', 'Two team projects, code public on GitHub.'),
     brief: [
@@ -314,34 +314,34 @@ const education = [
 ];
 
 /* ---------- Stack : chaque outil relié aux projets qui le prouvent (étude de cas ou archive) ---------- */
-// level : prod (utilisé en production) | projet (utilisé sur des projets)
+// [nom, level, preuves, logo] : level prod (utilisé en production) | projet (sur des projets) ; logo = nom Simple Icons (scripts/icons.mjs)
 const skills = [
   { group: L('Front et mobile', 'Front end and mobile'), items: [
-    ['Angular', 'prod', ['btp-360']], ['Ionic', 'prod', ['btp-360']], ['NgRx', 'prod', ['btp-360']], ['Capacitor', 'prod', ['btp-360']],
-    ['TypeScript', 'prod', ['btp-360', 'subforge']], ['RxJS', 'prod', ['btp-360']], ['React Native', 'projet', ['subforge']], ['Expo', 'projet', ['subforge']],
-    ['Next.js', 'projet', ['portfolio-2-0-1']], ['Tailwind', 'projet', ['turaty-naturels']], [L('Android (Java)', 'Android (Java)'), 'projet', ['lolop']], ['Kotlin', 'projet', ['android-facture']],
+    ['Angular', 'prod', ['btp-360'], 'angular'], ['Ionic', 'prod', ['btp-360'], 'ionic'], ['NgRx', 'prod', ['btp-360'], 'ngrx'], ['Capacitor', 'prod', ['btp-360'], 'capacitor'],
+    ['TypeScript', 'prod', ['btp-360', 'subforge'], 'typescript'], ['RxJS', 'prod', ['btp-360'], 'reactivex'], ['React Native', 'projet', ['subforge'], 'react'], ['Expo', 'projet', ['subforge'], 'expo'],
+    ['Next.js', 'projet', ['portfolio-2-0-1'], 'nextdotjs'], ['Tailwind', 'projet', ['turaty-naturels'], 'tailwindcss'], [L('Android (Java)', 'Android (Java)'), 'projet', ['lolop'], 'android'], ['Kotlin', 'projet', ['android-facture'], 'kotlin'],
   ] },
   { group: L('Back-end et données', 'Back end and data'), items: [
-    ['NestJS', 'prod', ['btp-360']], ['Prisma', 'prod', ['btp-360']], ['PostgreSQL', 'prod', ['btp-360', 'subforge']], ['Socket.IO', 'prod', ['btp-360', 'subchaine']],
-    ['Supabase', 'projet', ['subforge']], ['Node.js', 'projet', ['zabi', 'subchaine']], ['MongoDB', 'projet', ['zabi']],
-    ['Symfony', 'projet', ['turaty-naturels', 'gestion-articles']], ['MySQL', 'projet', ['turaty-naturels', 'gestion-articles']], ['Odoo', 'prod', ['distri-sur-france']], ['Python', 'projet', ['mini-projet-hadoop', 'wifi-connexion']],
+    ['NestJS', 'prod', ['btp-360'], 'nestjs'], ['Prisma', 'prod', ['btp-360'], 'prisma'], ['PostgreSQL', 'prod', ['btp-360', 'subforge'], 'postgresql'], ['Socket.IO', 'prod', ['btp-360', 'subchaine'], 'socketdotio'],
+    ['Supabase', 'projet', ['subforge'], 'supabase'], ['Node.js', 'projet', ['zabi', 'subchaine'], 'nodedotjs'], ['MongoDB', 'projet', ['zabi'], 'mongodb'],
+    ['Symfony', 'projet', ['turaty-naturels', 'gestion-articles'], 'symfony'], ['MySQL', 'projet', ['turaty-naturels', 'gestion-articles'], 'mysql'], ['Odoo', 'prod', ['distri-sur-france'], 'odoo'], ['Python', 'projet', ['mini-projet-hadoop', 'wifi-connexion'], 'python'],
   ] },
   { group: L('IA appliquée', 'Applied AI'), items: [
-    [L('Agents de code (Claude Code, Codex)', 'Coding agents (Claude Code, Codex)'), 'prod', ['btp-360']], [L('Revue du code généré par IA', 'Reviewing AI-generated code'), 'prod', ['btp-360']],
+    [L('Agents de code (Claude Code, Codex)', 'Coding agents (Claude Code, Codex)'), 'prod', ['btp-360'], 'claude'], [L('Revue du code généré par IA', 'Reviewing AI-generated code'), 'prod', ['btp-360']],
     [L('Workflow multi-agents', 'Multi-agent workflow'), 'prod', ['btp-360']], ['MCP', 'prod', ['btp-360']], [L('OCR local (ML Kit, PaddleOCR, Tesseract.js)', 'Local OCR (ML Kit, PaddleOCR, Tesseract.js)'), 'prod', ['btp-360']],
-    [L('Intégration de LLM (Gemini)', 'LLM integration (Gemini)'), 'projet', ['subforge']],
+    [L('Intégration de LLM (Gemini)', 'LLM integration (Gemini)'), 'projet', ['subforge'], 'googlegemini'],
   ] },
   { group: L('Mise en production et qualité', 'Shipping and quality'), items: [
-    ['Docker', 'prod', ['btp-360', 'turaty-naturels']], ['AWS', 'prod', ['btp-360']], ['Terraform', 'prod', ['btp-360']], ['GitHub Actions', 'prod', ['btp-360']],
-    ['Playwright', 'prod', ['btp-360']], ['Jest', 'projet', ['subforge']], ['Sentry', 'prod', ['btp-360', 'subforge']], ['Azure', 'projet', ['hotel-paie']],
+    ['Docker', 'prod', ['btp-360', 'turaty-naturels'], 'docker'], ['AWS', 'prod', ['btp-360'], 'amazonwebservices'], ['Terraform', 'prod', ['btp-360'], 'terraform'], ['GitHub Actions', 'prod', ['btp-360'], 'githubactions'],
+    ['Playwright', 'prod', ['btp-360']], ['Jest', 'projet', ['subforge'], 'jest'], ['Sentry', 'prod', ['btp-360', 'subforge'], 'sentry'], ['Azure', 'projet', ['hotel-paie']],
   ] },
   { group: L('Réalité virtuelle et 3D', 'VR and 3D'), items: [
-    ['Unity', 'projet', ['realite-virtuelle', 'jpo-iut-meaux']], ['C#', 'projet', ['realite-virtuelle']], ['XR Interaction Toolkit', 'projet', ['realite-virtuelle']],
-    ['OpenXR', 'projet', ['realite-virtuelle']], ['Blender', 'projet', ['jpo-iut-meaux']],
+    ['Unity', 'projet', ['realite-virtuelle', 'jpo-iut-meaux'], 'unity'], ['C#', 'projet', ['realite-virtuelle']], ['XR Interaction Toolkit', 'projet', ['realite-virtuelle']],
+    ['OpenXR', 'projet', ['realite-virtuelle']], ['Blender', 'projet', ['jpo-iut-meaux'], 'blender'],
   ] },
   { group: L('Design et méthode', 'Design and method'), items: [
-    [L('UX et UI', 'UX and UI'), 'prod', ['btp-360', 'subforge', 'distri-sur-france']], ['Figma', 'prod', ['distri-sur-france', 'reseau-sur-france']],
-    [L('Suite Adobe', 'Adobe suite'), 'prod', ['reseau-sur-france', 'pub-steel-ball-run']], [L('RGPD', 'GDPR'), 'prod', ['btp-360']], ['SEO', 'prod', ['distri-sur-france']],
+    [L('UX et UI', 'UX and UI'), 'prod', ['btp-360', 'subforge', 'distri-sur-france']], ['Figma', 'prod', ['distri-sur-france', 'reseau-sur-france'], 'figma'],
+    [L('Suite Adobe', 'Adobe suite'), 'prod', ['reseau-sur-france', 'pub-steel-ball-run'], 'adobe'], [L('RGPD', 'GDPR'), 'prod', ['btp-360']], ['SEO', 'prod', ['distri-sur-france']],
   ] },
 ];
 
