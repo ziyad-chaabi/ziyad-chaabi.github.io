@@ -82,10 +82,8 @@ shows.forEach(b => b.addEventListener('click', () => {
 
 // votre propre veille, en direct sur les mêmes sources
 const form = $('.vs-ask'), out = $('.vs-results');
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  const q = $('#vs-q').value.trim();
-  if (!q) return;
+// à l'arrivée, un exemple déjà cherché (« agents ») : la section montre ce qu'elle fait au lieu d'un cadre vide
+function ask(q) {
   out.hidden = false;
   $('#ask-hn').innerHTML = $('#ask-gh').innerHTML = `<li class="wait">${S.search}</li>`;
   const list = (id, items, msg) => { $('#' + id).innerHTML = items.length ? items.map(i => `<li>${item(i)}</li>`).join('') : `<li class="err">${msg}</li>`; };
@@ -95,5 +93,7 @@ form.addEventListener('submit', e => {
   fetch(`https://api.github.com/search/repositories?q=${encodeURIComponent(q)}&sort=stars&order=desc&per_page=6`).then(r => (r.ok ? r.json() : Promise.reject()))
     .then(d => list('ask-gh', gh(d), S.noGH))
     .catch(() => list('ask-gh', [], S.ghErr));
-});
+}
+form.addEventListener('submit', e => { e.preventDefault(); const q = $('#vs-q').value.trim(); if (q) ask(q); });
+ask('agents');
 })();

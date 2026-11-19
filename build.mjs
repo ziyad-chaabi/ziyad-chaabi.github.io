@@ -113,14 +113,11 @@ const words = s => s.split(/(\*[^*]+\*)/).filter(Boolean).flatMap(part => {
 }).reduce((a, w) => (/^[,.;:!?]/.test(w) && a.length ? (a[a.length - 1] += w, a) : [...a, w]), []) // la ponctuation reste collée au mot d'avant
   .map((w, i) => `<span class="w" style="--i:${i}">${w}</span>`).join(' ');
 
-// une image de la série spatiale (NASA, domaine public) : astre détouré (is-obj) ou photo fondue sur ses bords (is-photo)
-function art(slug, P, { cls = '', sizes = '(max-width: 760px) 60vw, 28vw', eager = false, vt = '', relief = false } = {}) {
-  const a = ART[slug];
-  const src = (n, ext) => P.a(`img/space/${a.file}-${n}.${ext}`);
-  const set = ext => a.sizes.map(([n, w]) => `${src(n, ext)} ${w}w`).join(', ');
-  const [, w, h] = a.sizes[1];
-  const gl = relief && a.height ? ` data-height="${P.a('img/space/' + a.height)}" data-photo="${src(1200, 'webp')}"` : '';
-  return `<picture class="art ${a.kind === 'object' ? 'is-obj' : 'is-photo'}${cls ? ' ' + cls : ''}"><source type="image/avif" srcset="${set('avif')}" sizes="${sizes}"><img src="${src(1200, 'webp')}" srcset="${set('webp')}" sizes="${sizes}" width="${w}" height="${h}" alt=""${vt ? ` style="view-transition-name:${vt}"` : ''}${gl} ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
+// une astre de la série spatiale, dessiné au trait (scripts/ill.mjs) : objet seul (is-obj) ou scène fondue sur ses bords (is-photo)
+function art(slug, P, { cls = '', eager = false, vt = '', relief = false } = {}) {
+  const a = ART[slug], file = `img/ill/${slug}.svg`, src = P.a(file), [w, h] = imgSize(file);
+  const gl = relief ? ` data-photo="${src}"` : ''; // l'emblème se fond dans la carte (app.js tire sa silhouette du dessin)
+  return `<picture class="art ${a.kind === 'object' ? 'is-obj' : 'is-photo'}${cls ? ' ' + cls : ''}"><img src="${src}" width="${w}" height="${h}" alt=""${vt ? ` style="view-transition-name:${vt}"` : ''}${gl} ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 }
 const isPhone = s => { const [w, h] = imgSize(s.src); return s.phone || h > w; };
 function shot(s, P, { cls = '', eager = false, alt = true, style = '' } = {}) {
@@ -245,7 +242,7 @@ ${lcp ? `<link rel="preload" as="image" href="${P.a(lcp)}" fetchpriority="high">
 ${main}
 </main>
 <footer class="foot" id="contact" aria-labelledby="foot-h" data-stars="18">
-  ${art('terre', P, { cls: 'foot-earth', sizes: '(max-width: 760px) 90vw, 50vw' })}
+  ${art('terre', P, { cls: 'foot-earth' })}
   <div class="foot-in wrap">
     <h2 class="foot-title" id="foot-h" data-lines>${lines([t.contactTitle])}</h2>
     <div class="foot-grid">
@@ -283,7 +280,7 @@ ${key === 'veille' ? `<script src="${P.a('js/veille-data.js')}" defer></script>\
 /* ================= Accueil ================= */
 const BAND = ['terre', 'lune', 'mars', 'neptune', 'uranus', 'venus', 'mercure', 'pluton', 'io', 'saturne-dessus'];
 const home = P => {
-  const { t, l } = P, pr = loc(Z.profile, l), cases = loc(Z.cases, l), band = BAND.map(s => art(s, P, { cls: 'band-item', sizes: '180px' })).join('');
+  const { t, l } = P, pr = loc(Z.profile, l), cases = loc(Z.cases, l), band = BAND.map(s => art(s, P, { cls: 'band-item' })).join('');
   const others = loc(Z.others, l).sort((a, b) => b.year - a.year);
   const xp = loc(Z.experience, l), edu = loc(Z.education, l);
   return `
@@ -321,7 +318,7 @@ const home = P => {
       return `
       <li class="case${i % 2 ? ' is-flip' : ''}">
         <div class="case-media${desk.length ? '' : ' is-phones'}" data-wipe>
-          ${art(c.emblem, P, { cls: 'case-emblem', vt: 'em-' + c.slug, sizes: '(max-width: 760px) 60vw, 30vw' })}
+          ${art(c.emblem, P, { cls: 'case-emblem', vt: 'em-' + c.slug })}
           ${desk.map(x => shot(x, P, { cls: 'case-shot', alt: false })).join('')}
           ${phones.map((x, j) => shot(x, P, { cls: 'case-phone', alt: false, style: `--j:${j}` })).join('')}
         </div>
@@ -381,7 +378,7 @@ const caseBody = (c, next) => P => {
       <dl class="cs-facts">${facts.map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
       <p class="cs-links">${c.links.map(([lb, u]) => ext(lb, u)).join('')}${c.private ? `<span class="note">${esc(c.private)}</span>` : ''}</p>
     </div>
-    <div class="cs-emblem">${art(c.emblem, P, { vt: 'em-' + c.slug, eager: true, relief: true, sizes: '(max-width: 760px) 70vw, 36vw' })}</div>
+    <div class="cs-emblem">${art(c.emblem, P, { vt: 'em-' + c.slug, eager: true, relief: true })}</div>
   </header>
   <figure class="cs-cover wrap" data-wipe>${shot(c.cover, P)}<figcaption>${esc(c.cover.alt)}</figcaption></figure>
   <section class="cs-brief wrap" aria-labelledby="brief-h"><h2 class="cs-h" id="brief-h">${cs.brief}</h2>
@@ -400,7 +397,7 @@ const caseBody = (c, next) => P => {
   ${s.lessons.length ? sec(cs.lessons, paras(s.lessons)) : ''}
   <section class="cs-sec wrap" data-reveal><h2 class="cs-h">${t.stack}</h2><div class="cs-text">${chips(c.stack)}</div></section>
   <nav class="cs-next wrap" aria-label="${cs.next}">
-    <a href="${P.url('case:' + next.slug)}"><span class="cs-next-label">${cs.next}</span><span class="cs-next-title">${esc(next.title)}</span>${art(next.emblem, P, { cls: 'cs-next-art', sizes: '200px' })}</a>
+    <a href="${P.url('case:' + next.slug)}"><span class="cs-next-label">${cs.next}</span><span class="cs-next-title">${esc(next.title)}</span>${art(next.emblem, P, { cls: 'cs-next-art' })}</a>
   </nav>
 </article>`;
 };
@@ -420,7 +417,7 @@ const aboutBody = P => {
 </section>
 <section class="method wrap" aria-labelledby="m-h">
   <header class="sec-head"><h2 class="h2" id="m-h" data-lines>${lines([a.method])}</h2></header>
-  <ol class="method-list">${loc(Z.method, l).map(([k, v], i) => `<li data-reveal>${art(METHOD_ART[i], P, { cls: 'method-art', sizes: '(max-width: 760px) 40vw, 18vw' })}<h3>${esc(k)}</h3><p>${esc(v)}</p></li>`).join('')}</ol>
+  <ol class="method-list">${loc(Z.method, l).map(([k, v], i) => `<li data-reveal>${art(METHOD_ART[i], P, { cls: 'method-art' })}<h3>${esc(k)}</h3><p>${esc(v)}</p></li>`).join('')}</ol>
 </section>
 <section class="path wrap" aria-labelledby="p-h">
   <header class="sec-head"><h2 class="h2" id="p-h" data-lines>${lines([a.path])}</h2></header>
@@ -430,7 +427,7 @@ const aboutBody = P => {
       <div class="path-body"><h3>${esc(s.title)}</h3><p>${esc(s.text)}</p>
       ${s.avis ? `<blockquote class="quote"><p>« ${esc(avis[s.avis].text)} »</p><footer><b>${esc(avis[s.avis].name)}</b>, ${esc(avis[s.avis].role)}</footer></blockquote>` : ''}
       ${s.link ? `<a class="arrow-link" href="${proofHref(s.link, P)}">${esc(proofName(s.link, l))}</a>` : ''}</div>
-    </li>${PATH_ART[i] ? `<li class="path-art" aria-hidden="true" data-wipe>${art(PATH_ART[i], P, { sizes: '(max-width: 760px) 92vw, 60vw' })}</li>` : ''}`).join('')}
+    </li>${PATH_ART[i] ? `<li class="path-art" aria-hidden="true" data-wipe>${art(PATH_ART[i], P)}</li>` : ''}`).join('')}
   </ol>
 </section>
 <section class="ab-more wrap" aria-labelledby="lg-h">
@@ -447,7 +444,7 @@ const archiveBody = P => {
 <section class="page-head wrap" aria-labelledby="ar-h">
   <h1 class="display" id="ar-h" data-lines>${lines([a.title])}</h1>
   <p class="lede">${a.lede(items.length)} ${a.main} <a href="${P.url('home', '#projets')}">${a.mainLink}</a>.</p>
-  <div class="plate" aria-hidden="true" data-wipe>${['pluton', 'io', 'mercure'].map(s => art(s, P, { sizes: '(max-width: 760px) 30vw, 16vw', eager: s === 'io' })).join('')}</div>
+  <div class="plate" aria-hidden="true" data-wipe>${['pluton', 'io', 'mercure'].map(s => art(s, P, { eager: s === 'io' })).join('')}</div>
 </section>
 <section class="index wrap" aria-label="${a.title}">
   <header class="sec-head idx-head"><p class="idx-cols" aria-hidden="true">${a.cols.map(c => `<span>${c}</span>`).join('')}</p>${viewToggle(P)}</header>
@@ -465,7 +462,7 @@ const veilleBody = P => {
   <div><h1 class="display" id="vs-h" data-lines>${lines([v.title])}</h1>
   <p class="lede">${v.lede}</p>
   <p class="vs-status" aria-live="polite"><span class="live" aria-hidden="true"></span><span class="veille-time">${v.loading}</span> <span class="vs-next"></span> <span class="vs-new"></span></p></div>
-  ${art('lune', P, { cls: 'vs-art', sizes: '(max-width: 760px) 40vw, 22vw', eager: true })}
+  ${art('lune', P, { cls: 'vs-art', eager: true })}
 </section>
 <section class="vs wrap">
   <div class="vs-show" role="group" aria-label="${v.show}">${[['all', v.all], ['gh', 'GitHub'], ['ai', P.l === 'fr' ? 'IA' : 'AI'], ['hn', 'Hacker News']].map(([k, lb], i) => `<button type="button" aria-pressed="${!i}" data-show="${k}">${lb}</button>`).join('')}</div>
@@ -473,9 +470,9 @@ const veilleBody = P => {
     ${panel('gh', v.gh, 'https://github.com/trending?since=weekly')}
     ${panel('ai', v.ai, 'https://github.com/search?q=llm+OR+agent+OR+mcp&type=repositories&s=stars')}
     ${panel('hn', v.hn, 'https://news.ycombinator.com/')}
-    <aside class="vs-notes" aria-labelledby="vs-notes-h">${art('neptune', P, { cls: 'vs-notes-art', sizes: '140px' })}<h2 id="vs-notes-h">${v.notes}</h2>${notes.map(([k, d]) => `<article><h3>${esc(k)}</h3><p>${esc(d)}</p></article>`).join('')}</aside>
+    <aside class="vs-notes" aria-labelledby="vs-notes-h">${art('neptune', P, { cls: 'vs-notes-art' })}<h2 id="vs-notes-h">${v.notes}</h2>${notes.map(([k, d]) => `<article><h3>${esc(k)}</h3><p>${esc(d)}</p></article>`).join('')}</aside>
   </div>
-  <figure class="vs-wide" aria-hidden="true">${art('bennu', P, { sizes: '92vw' })}</figure>
+  <figure class="vs-wide" aria-hidden="true">${art('bennu', P)}</figure>
   <form class="vs-ask" role="search" action="https://hn.algolia.com/" method="get" target="_blank">
     <label class="vs-ask-label h3" for="vs-q">${v.ask}</label>
     <div class="vs-ask-row"><input id="vs-q" name="query" type="search" placeholder="${v.askPh}" autocomplete="off" required><button class="btn" type="submit">${v.askBtn}</button></div>

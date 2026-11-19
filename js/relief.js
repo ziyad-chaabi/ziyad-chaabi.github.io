@@ -1,8 +1,8 @@
 (() => {
 // « Relief » : un champ de hauteur (bruit + sommets) dessiné en courbes de niveau, en WebGL2.
 // Sert au hero (terrain + portrait), au fond de la section des projets et aux études de cas (terrain + emblème).
-// La traînée du curseur (uTrail) soulève le terrain partout ; sur l'image, elle fait « monter l'eau »
-// et la vraie image apparaît palier par palier, du plus bas au plus haut. Au bord de l'eau, les courbes passent en orange.
+// La traînée du curseur (uTrail) pousse les courbes de côté, d'autant plus fort que le geste est rapide, puis elles reviennent.
+// Sur l'image, la même traînée ouvre une fenêtre au bord irrégulier sur la vraie image ; ce bord est tracé en orange.
 
 const VERT = `#version 300 es
 in vec2 p; out vec2 vUv;
@@ -11,16 +11,18 @@ void main(){ vUv = p * .5 + .5; gl_Position = vec4(p, 0., 1.); }`;
 const FRAG = `#version 300 es
 precision highp float;
 in vec2 vUv; out vec4 o;
-uniform vec2 uRes; uniform float uTime, uSeed, uPeaks, uRough, uLevels, uDark, uLift, uEdge;
+uniform vec2 uRes; uniform float uTime, uSeed, uPeaks, uRough, uLevels, uDark, uWarp, uEdge, uBlur;
 uniform vec2 uCam;       // décalage du terrain (profondeur au défilement)
 uniform vec3 uInk, uPaper, uAccent;
 // uTrail : la traînée du curseur sur toute la carte (R) ; uImg : R + B = hauteur de l'image sur 16 bits, G = silhouette ;
 // uPhoto : l'image elle-même (alpha compris) ; uImgRect : sa place en uv (x, y, l, h)
-uniform sampler2D uImg, uPhoto, uTrail; uniform float uImgAmt; uniform vec4 uImgRect;
+uniform sampler2D uImg, uPhoto, uTrail; uniform float uImgAmt, uPhotoOn; uniform vec4 uImgRect;
 
 vec2 imgUv(vec2 uv){ return (uv - uImgRect.xy) / uImgRect.zw; }
 float imgMask(vec2 q){ return smoothstep(0., uEdge, q.x) * smoothstep(1., 1. - uEdge, q.x) * smoothstep(0., uEdge * .8, q.y) * smoothstep(1., 1. - uEdge * .8, q.y) * uImgAmt; }
+// R : la traînée nette (la fenêtre sur l'image) ; G : la même, large et douce (elle pousse les courbes sans les plier en boucles)
 float trail(vec2 uv){ return clamp((texture(uTrail, vec2(uv.x, 1. - uv.y)).r - .05) / .95, 0., 1.); }
+float push(vec2 uv){ return texture(uTrail, vec2(uv.x, 1. - uv.y)).g; }
 
 float h21(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
 float noise(vec2 p){
@@ -43,15 +45,27 @@ float height(vec2 uv){
     h += (.55 + .45 * h21(vec2(float(i) * 7., uSeed))) * exp(-dot(p - c * asp, p - c * asp) / (r * r));
   }
   vec2 q = imgUv(uv); float m = imgMask(q);
-  vec4 px = texture(uImg, vec2(q.x, 1. - q.y));
-  return mix(h, h * .45, px.g * m) + dot(px.rb, vec2(65280., 255.)) / 65535. * 1.2 * m;
+  vec2 st = vec2(q.x, 1. - q.y);
+  vec4 px = texture(uImg, st);
+  float sil = px.g, hm = dot(px.rb, vec2(65280., 255.)) / 65535.;
+  if(uBlur > 0. && m > 0.){ // emblème : seule la silhouette, lissée en dôme ; ses courbes suivent le contour, sans le grain de la photo
+    for(int i = 0; i < 16; i++){
+      vec2 o = vec2(cos(float(i) * .3927), sin(float(i) * .3927)) * uBlur * (i % 2 == 0 ? 1. : 2.2);
+      sil += texture(uImg, st + o).g;
+    }
+    sil = smoothstep(.05, .95, sil / 17.); // pleine dedans, vide dehors : un dôme sans bosses
+    return mix(h, h * .06, sil * m) + sil * .8 * m;
+  }
+  return mix(h, h * .45, sil * m) + hm * 1.2 * m;
 }
 
 void main(){
   float tr = trail(vUv);
-  float hb = height(vUv);
-  float h = hb + tr * uLift;                    // la traînée soulève le terrain : les courbes s'écartent autour du geste
-  float v = h * uLevels;
+  // les courbes fuient la traînée : on lit le terrain un peu plus loin, le long de sa pente
+  vec2 e = vec2(.008, 0.);
+  vec2 g = vec2(push(vUv + e) - push(vUv - e), push(vUv + e.yx) - push(vUv - e.yx));
+  float hb = height(vUv - g * uWarp);
+  float v = hb * uLevels;
   float f = abs(fract(v - .5) - .5) / max(fwidth(v), 1e-4);
   bool major = mod(floor(v + .5), 5.) == 0.;
   float line = 1. - smoothstep(0., major ? 1.6 : .9, f);
@@ -60,13 +74,12 @@ void main(){
 
   vec2 q = imgUv(vUv); float m = imgMask(q);
   if(m > 0.){
-    // l'eau monte avec la traînée : l'image apparaît palier par palier, des plus bas aux plus hauts
-    float lvl = smoothstep(0., .5, tr) * 2.4;    // la moitié de la traînée suffit à tout noyer ; en s'effaçant, l'eau redescend palier par palier
-    float tier = (floor(hb * uLevels) + 1.) / uLevels;
+    // la fenêtre : la traînée, rongée par un bruit qui bouge, laisse voir l'image ; son bord est un trait orange
+    float k = tr + (fbm(vUv * vec2(uRes.x / uRes.y, 1.) * 4.5 + uTime * .35) - .5) * .55;
+    float fw = fwidth(k) * 1.2 + 1e-4;
     vec4 ph = texture(uPhoto, vec2(q.x, 1. - q.y));
-    o.rgb = mix(o.rgb, ph.rgb, smoothstep(tier - .012, tier + .012, lvl) * m * ph.a);
-    float shore = (1. - smoothstep(0., 1.4 / uLevels, abs(hb - lvl))) * smoothstep(.02, .1, tr) * m;
-    o.rgb = mix(o.rgb, uAccent, line * shore);   // au bord de l'eau, les courbes passent en orange
+    o.rgb = mix(o.rgb, ph.rgb, smoothstep(.34 - fw, .34 + fw, k) * m * ph.a * uPhotoOn);
+    o.rgb = mix(o.rgb, uAccent, (1. - smoothstep(0., fw * 1.6, abs(k - .34))) * m * .9 * step(.5, uPhotoOn));
   }
 }`;
 
@@ -82,10 +95,10 @@ function createRelief(canvas, o = {}) {
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
   const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
-  const U = {}; for (const n of ['uRes', 'uTime', 'uSeed', 'uPeaks', 'uRough', 'uLevels', 'uDark', 'uLift', 'uEdge', 'uCam', 'uInk', 'uPaper', 'uAccent', 'uImg', 'uPhoto', 'uTrail', 'uImgAmt', 'uImgRect']) U[n] = gl.getUniformLocation(prog, n);
+  const U = {}; for (const n of ['uRes', 'uTime', 'uSeed', 'uPeaks', 'uRough', 'uLevels', 'uDark', 'uWarp', 'uEdge', 'uBlur', 'uCam', 'uInk', 'uPaper', 'uAccent', 'uImg', 'uPhoto', 'uTrail', 'uImgAmt', 'uImgRect', 'uPhotoOn']) U[n] = gl.getUniformLocation(prog, n);
   gl.uniform1i(U.uImg, 0); gl.uniform1i(U.uPhoto, 1); gl.uniform1i(U.uTrail, 2);
 
-  const state = { time: 0, seed: 3.3, peaks: 3, rough: .6, levels: 14, dark: 0, lift: .35, edge: .1, cam: [0, 0], imgAmt: 0, imgRect: [0, 0, 1, 1], ink: '#121417', paper: '#EEF0EB', accent: '#D2602A', ...o };
+  const state = { time: 0, seed: 3.3, peaks: 3, rough: .6, levels: 14, dark: 0, warp: .012, edge: .1, blur: 0, cam: [0, 0], imgAmt: 0, photoOn: 1, imgRect: [0, 0, 1, 1], ink: '#121417', paper: '#EEF0EB', accent: '#D2602A', ...o };
   const dpr = Math.min(devicePixelRatio || 1, o.maxDpr || 1.5);
   // une texture par unité, réutilisée (la traînée est envoyée à chaque image)
   const tex = [];
@@ -111,8 +124,8 @@ function createRelief(canvas, o = {}) {
     gl.uniform2f(U.uRes, canvas.width, canvas.height);
     gl.uniform1f(U.uTime, state.time); gl.uniform1f(U.uSeed, state.seed); gl.uniform1f(U.uPeaks, state.peaks);
     gl.uniform1f(U.uRough, state.rough); gl.uniform1f(U.uLevels, state.levels); gl.uniform1f(U.uDark, state.dark);
-    gl.uniform1f(U.uLift, state.lift); gl.uniform1f(U.uEdge, state.edge); gl.uniform2fv(U.uCam, state.cam);
-    gl.uniform1f(U.uImgAmt, state.imgAmt); gl.uniform4fv(U.uImgRect, state.imgRect);
+    gl.uniform1f(U.uWarp, state.warp); gl.uniform1f(U.uEdge, state.edge); gl.uniform1f(U.uBlur, state.blur); gl.uniform2fv(U.uCam, state.cam);
+    gl.uniform1f(U.uImgAmt, state.imgAmt); gl.uniform1f(U.uPhotoOn, state.photoOn); gl.uniform4fv(U.uImgRect, state.imgRect);
     gl.uniform3fv(U.uInk, hex(state.ink)); gl.uniform3fv(U.uPaper, hex(state.paper)); gl.uniform3fv(U.uAccent, hex(state.accent));
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }

@@ -65,46 +65,60 @@ const LIGHT = { paper: paperC, ink: css('--ink'), accent: '#D2602A', dark: darkP
 const NIGHT = { paper: css('--night'), ink: '#E9EBE6', accent: '#D2602A', dark: 1 };
 const seen = el => { const s = { on: false }; new IntersectionObserver(([e]) => (s.on = e.isIntersecting)).observe(el); return s; };
 const load = src => new Promise((ok, ko) => { const im = new Image(); im.onload = () => ok(im); im.onerror = ko; im.src = src; });
+// silhouette d'un dessin au trait (emblèmes) : réduit puis agrandi, c'est un flou qui marche partout ; l'opacité, normalisée, passe dans le vert
+const silhouette = im => {
+  const W = 256, H = Math.round(W * im.naturalHeight / im.naturalWidth), s = document.createElement('canvas'), b = document.createElement('canvas');
+  s.width = 36; s.height = Math.max(4, Math.round(36 * H / W)); s.getContext('2d').drawImage(im, 0, 0, s.width, s.height);
+  b.width = W; b.height = H; const x = b.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(s, 0, 0, W, H);
+  const d = x.getImageData(0, 0, W, H), p = d.data; let mx = 1;
+  for (let i = 3; i < p.length; i += 4) mx = Math.max(mx, p[i]);
+  for (let i = 0; i < p.length; i += 4) { p[i + 1] = Math.min(255, p[i + 3] * 1100 / mx); p[i] = p[i + 2] = 0; p[i + 3] = 255; }
+  x.putImageData(d, 0, 0); return b;
+};
 
-// Une carte vivante : la traînée du curseur soulève le terrain partout où il passe ; si une image est donnée (portrait, emblème),
-// sa carte de hauteur plie le terrain et la traînée la révèle palier par palier. Sans souris, une traînée parcourt seule l'image,
+// Une carte vivante : la traînée du curseur écarte les courbes sur son passage, plus fort quand le geste est rapide ; si une image
+// est donnée (portrait, emblème), sa carte de hauteur plie le terrain et la traînée l'ouvre en fenêtre. Sans souris, une traînée parcourt seule l'image,
 // et un toucher lance une onde. Rendu seulement à l'écran ; au repos, une image sur deux.
 function scene(c, o) {
   let r; try { r = window.Relief?.createRelief(c, o); } catch {}
   if (!r) return null;
   const host = o.host || c.parentElement, el = o.image?.el;
   let TW = 1, TH = 1, rect = [0, 0, 1, 1], ready = !el, amt = el ? 0 : 1;
+  if (!el) r.state.photoOn = 0; // une carte sans image : la traînée ne fait que pousser les courbes, aucune fenêtre (sinon un trou noir)
   const tc = document.createElement('canvas'), tx = tc.getContext('2d');
   const clear = () => { tx.globalCompositeOperation = 'source-over'; tx.fillStyle = '#000'; tx.fillRect(0, 0, TW, TH); };
   const measure = () => {
     r.resize();
-    TW = 160; TH = Math.max(40, Math.min(220, Math.round(160 * c.clientHeight / Math.max(1, c.clientWidth)))); tc.width = TW; tc.height = TH; clear();
+    TW = 256; TH = Math.max(64, Math.min(1024, Math.round(256 * c.clientHeight / Math.max(1, c.clientWidth)))); tc.width = TW; tc.height = TH; clear();
     if (el) { const a = c.getBoundingClientRect(), b = el.getBoundingClientRect(); rect = [(b.left - a.left) / a.width, 1 - (b.bottom - a.top) / a.height, b.width / a.width, b.height / a.height]; }
   };
-  const stamp = (x, y, rad, al) => { // x, y en uv de la carte, y vers le bas
+  const stamp = (x, y, rad, al, rgb = '255,255,255') => { // x, y en uv de la carte, y vers le bas
     const X = x * TW, Y = y * TH, R = rad * TH, g = tx.createRadialGradient(X, Y, 0, X, Y, R);
-    g.addColorStop(0, `rgba(255,255,255,${al})`); g.addColorStop(1, 'rgba(255,255,255,0)');
+    g.addColorStop(0, `rgba(${rgb},${al})`); g.addColorStop(1, `rgba(${rgb},0)`);
     tx.globalCompositeOperation = 'lighter'; tx.fillStyle = g; tx.fillRect(X - R, Y - R, R * 2, R * 2);
   };
-  const vis = seen(c), t0 = performance.now();
+  const vis = seen(c), t0 = performance.now(); let shown = false;
   const draw = (extra = {}) => {
     r.setImage(tc, 2);
     const s = o.parallax && !calm ? scrollY / (c.clientHeight || 1) : 0;
     r.render({ time: calm ? 14 : (performance.now() - t0) / 1000, imgAmt: amt, cam: [0, s * .45], imgRect: [rect[0], rect[1] - s * .15, rect[2], rect[3]], ...extra });
     o.onDraw?.(s);
+    if (!shown) { shown = true; c.classList.add('is-on'); } // la carte apparaît en fondu à sa première image, pas d'un coup
   };
   measure();
   new ResizeObserver(() => { measure(); if (calm) draw(); }).observe(host);
-  if (el) Promise.all([load(o.image.height), load(o.image.photo)]).then(([hm, ph]) => {
-    try { r.setImage(hm, 0); r.setImage(ph, 1); } catch { return; } // ouvert en file:// : WebGL refuse les images du disque, l'image reste affichée
+  addEventListener('zc:layout', () => { measure(); if (calm) draw(); }); // une image déplacée sans changer de taille (portrait recentré)
+  if (el) Promise.all([o.image.height && load(o.image.height), load(o.image.photo)]).then(([hm, ph]) => {
+    // un emblème (sans carte de hauteur) reste dessiné par-dessus : rien à révéler, seulement sa silhouette dans le terrain
+    try { r.setImage(hm || silhouette(ph), 0); if (hm) r.setImage(ph, 1); else r.state.photoOn = 0; } catch { return o.onFail?.(); } // ouvert en file:// : WebGL refuse les images du disque, l'image reste affichée
     ready = true; o.onReady?.();
     if (calm) { // mouvement réduit : image à moitié révélée, fixe
       const g = tx.createLinearGradient(rect[0] * TW, 0, (rect[0] + rect[2]) * TW, 0);
       g.addColorStop(0, '#fff'); g.addColorStop(.45, '#fff'); g.addColorStop(.62, '#000');
       tx.fillStyle = g; tx.fillRect(0, 0, TW, TH); amt = 1; draw();
     }
-  }).catch(() => {});
-  if (calm) return draw();
+  }).catch(() => o.onFail?.());
+  if (calm) { draw(); return r; }
 
   const sx = spring(.5, 110, 20), sy = spring(.5, 110, 20), waves = [];
   let active = false, speed = 0, lx = .5, ly = .5, T = Math.random() * 9, idle = 9, skip = false;
@@ -116,7 +130,7 @@ function scene(c, o) {
   ticks.add(dt => {
     if (!ready || !vis.on) return;
     if (el && amt < 1) amt = Math.min(1, amt + dt / 1.2);
-    tx.globalCompositeOperation = 'source-over'; tx.fillStyle = `rgba(0,0,0,${1 - Math.pow(.955, dt * 60)})`; tx.fillRect(0, 0, TW, TH);
+    tx.globalCompositeOperation = 'source-over'; tx.fillStyle = `rgba(0,0,0,${1 - Math.pow(.93, dt * 60)})`; tx.fillRect(0, 0, TW, TH);
     let x = lx, y = ly, on = false;
     if (fine) { x = sx.step(dt); y = sy.step(dt); on = active; }
     else if (el) { // sans survol, la traînée parcourt seule l'image
@@ -124,9 +138,16 @@ function scene(c, o) {
       x = rect[0] + rect[2] * (.5 + .3 * Math.sin(T * .45));
       y = 1 - rect[1] - rect[3] * (.55 + .28 * Math.sin(T * .29 + 1));
     }
-    if (on) {
-      speed += (Math.hypot(x - lx, y - ly) / Math.max(dt, 1e-3) - speed) * Math.min(1, dt * 8);
-      stamp(x, y, (o.brush || .07) + Math.min(speed * .06, .18), fine ? .55 : .35); // le masque grandit avec la vitesse du geste, se resserre à l'arrêt
+    if (on) { // une traînée continue : des tampons rapprochés le long du geste ; plus il est rapide, plus elle est large et marquée
+      // tout en pixels : la même taille de pinceau sur un hero de 900 px et sur une section de 4000 px
+      const ch = c.clientHeight || 1, dpx = Math.hypot((x - lx) * (c.clientWidth || 1), (y - ly) * ch);
+      speed += (dpx / Math.max(dt, 1e-3) - speed) * Math.min(1, dt * 10);
+      const radPx = (o.brush || 34) + Math.min(speed * .05, o.brushMax || 40), rad = radPx / ch;
+      const al = (fine ? .2 : .14) + Math.min(speed * .0006, .35), n = Math.min(32, Math.ceil(dpx / (radPx * .4)));
+      for (let i = 1; i <= n; i++) {
+        const px = lx + (x - lx) * i / n, py = ly + (y - ly) * i / n;
+        stamp(px, py, rad, al / Math.sqrt(n), '255,0,0'); stamp(px, py, rad * 2.2, al * .7 / Math.sqrt(n), '0,255,0');
+      }
     }
     lx = x; ly = y;
     for (let i = waves.length; i--;) {
@@ -142,23 +163,31 @@ function scene(c, o) {
   return r;
 }
 
-const wm = $('.work-map'); if (wm) scene(wm, { ...NIGHT, seed: window.Relief?.seedOf('projets'), peaks: 6, rough: .9, levels: 15, lift: .3 });
+const wm = $('.work-map'); if (wm) scene(wm, { ...NIGHT, seed: window.Relief?.seedOf('projets'), peaks: 6, rough: .9, levels: 15, warp: .1 });
 
 // hero : le portrait, la traînée révèle la photo ; le nom avance plus vite que le terrain (vraie profondeur)
 const hero = $('.hero'), face = $('.hero-face'), hc = $('.hero-map');
 if (hero && face && hc) {
   const img = $('img', face), name = $('.hero-name');
-  scene(hc, { ...LIGHT, seed: window.Relief?.seedOf('ziyad-chaabi'), peaks: 5, rough: .8, levels: 16, lift: .4, brush: .09, maxDpr: innerWidth > 1100 ? 1.5 : 2, host: hero, parallax: true,
+  // le portrait se cale au milieu de l'espace entre « Ziyad » et « Chaabi » (les deux mots n'ont pas la même largeur)
+  const centre = () => {
+    const w = $$('.ln', name);
+    if (w.length < 2 || getComputedStyle(face).position !== 'absolute') return (face.style.left = '');
+    const h = hero.getBoundingClientRect(), a = w[0].getBoundingClientRect(), b = w[1].getBoundingClientRect();
+    face.style.left = `${((a.right + b.left) / 2 - h.left).toFixed(1)}px`; dispatchEvent(new Event('zc:layout'));
+  };
+  centre(); addEventListener('resize', centre); document.fonts?.ready.then(centre);
+  if (!scene(hc, { ...LIGHT, seed: window.Relief?.seedOf('ziyad-chaabi'), peaks: 5, rough: .8, levels: 16, warp: .08, brush: 64, brushMax: 70, maxDpr: innerWidth > 1100 ? 1.5 : 2, host: hero, parallax: true,
     image: { el: face, height: face.dataset.height, photo: img.currentSrc || img.src },
-    onReady: () => root.classList.add('face-gl'),
-    onDraw: s => { if (name) name.style.translate = `0 ${(-s * innerHeight * .12).toFixed(1)}px`; } });
+    onReady: () => root.classList.add('face-gl'), onFail: () => root.classList.add('face-plain'),
+    onDraw: s => { if (name) name.style.translate = `0 ${(-s * innerHeight * .12).toFixed(1)}px`; } })) root.classList.add('face-plain'); // sans WebGL, la photo
 }
 
 // étude de cas : l'emblème arrive (transition de page), puis se fond dans la carte et se révèle à la traînée
 const cm = $('.cs-map'), emb = $('.cs-emblem img');
 if (cm) {
-  const go = () => scene(cm, { ...LIGHT, seed: window.Relief?.seedOf(location.pathname.split('/').pop()), peaks: 4, rough: .6, levels: 14, lift: .3, edge: .02, host: cm.parentElement,
-    ...(emb?.dataset.height ? { image: { el: emb, height: emb.dataset.height, photo: emb.dataset.photo }, onReady: () => emb.closest('.cs-emblem').classList.add('is-gl') } : {}) });
+  const go = () => scene(cm, { ...LIGHT, seed: window.Relief?.seedOf(location.pathname.split('/').pop()), peaks: 4, rough: .6, levels: 14, warp: .1, edge: .02, blur: .03, host: cm.parentElement,
+    ...(emb?.dataset.photo ? { image: { el: emb, photo: emb.dataset.photo } } : {}) });
   // pendant la transition, l'emblème vole au-dessus de tout : on attend qu'il soit posé avant de le fondre dans la carte
   let started = false; const start = () => { if (!started) { started = true; go(); } };
   addEventListener('pagereveal', e => (e.viewTransition ? e.viewTransition.finished.then(start, start) : start()), { once: true });
@@ -195,7 +224,7 @@ function intro() {
       box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 260, easing: 'ease-out', fill: 'forwards' });
       items.forEach(it => {
         const b = it.getBoundingClientRect();
-        it.animate([{ translate: `${cx - b.left - b.width / 2}px ${cy - b.top - b.height / 2}px`, scale: c.height / b.height }, { translate: '0 0', scale: 1 }], { duration: 420, easing: 'cubic-bezier(.16,1,.3,1)' });
+        it.animate([{ translate: `${cx - b.left - b.width / 2}px ${cy - b.top - b.height / 2}px`, scale: b.height ? c.height / b.height : 1 }, { translate: '0 0', scale: 1 }], { duration: 420, easing: 'cubic-bezier(.16,1,.3,1)' });
       });
       setTimeout(end, 260);
     }, start + imgs.length * flick);

@@ -1,8 +1,9 @@
 import { readFileSync } from 'node:fs';
 
-// largeur et hauteur lues dans l'en-tête du fichier (PNG, WebP, JPEG) : aucune image sans dimensions
+// largeur et hauteur lues dans l'en-tête du fichier (PNG, WebP, JPEG, SVG) : aucune image sans dimensions
 export function imgSize(f) {
   const b = readFileSync(f);
+  if (f.endsWith('.svg')) { const m = /<svg[^>]*?\swidth="([\d.]+)"[^>]*?\sheight="([\d.]+)"/.exec(b); if (m) return [+m[1], +m[2]]; }
   if (b.toString('ascii', 1, 4) === 'PNG') return [b.readUInt32BE(16), b.readUInt32BE(20)];
   if (b.toString('ascii', 0, 4) === 'RIFF') {
     const t = b.toString('ascii', 12, 16);
