@@ -1,6 +1,9 @@
-// Source unique du contenu : lue par build.mjs (pages statiques) et par le navigateur (labo, covers).
-// Script classique (pas de module ES) pour que le site marche aussi ouvert en double-clic (file://).
-// Pour ajouter un projet : complète `projects`, puis lance `node build.mjs`.
+// Source unique du contenu, lue par build.mjs (pages FR et EN) et par scripts/sync.mjs (skipRepos).
+// Script classique qui pose window.ZC : les deux scripts Node l'exécutent dans un bac à sable.
+// Un texte bilingue s'écrit L('français', 'english') ; build.mjs choisit la langue de chaque page.
+// Les dimensions des images sont lues dans les fichiers par build.mjs. Après une modification : node build.mjs
+
+const L = (fr, en) => ({ fr, en });
 
 const site = {
   name: 'Ziyad Chaabi',
@@ -9,387 +12,390 @@ const site = {
   github: 'https://github.com/Subdij',
   linkedin: 'https://www.linkedin.com/in/ziyad-chaabi/',
   instagram: 'https://www.instagram.com/ziyad_chb/',
+  cv: 'CV-Ziyad-Chaabi.pdf',
 };
 
-// Couleurs des reliefs (une par projet), tirées des cartes topographiques.
-const C = { orange: '#D2602A', eau: '#2F5BEA', foret: '#4F7F45', ocre: '#B8892A', prune: '#7E4A78', lagon: '#1F8A8A', brique: '#A8402E', ardoise: '#46546E' };
+// Ce qu'un recruteur doit lire en dix secondes (faits du CV).
+const profile = {
+  manifesto: L('Je pense d’abord aux gens qui vont se servir de l’outil, *sur un chantier* ou *un casque VR sur la tête*, et seulement ensuite à la stack.', 'I think first about the people who will use the tool, *on a building site* or *with a VR headset on*, and only then about the stack.'),
+  xp: L('21 mois d’expérience en stages et alternance', '21 months of experience in internships and work-study'),
+  role: L('Ingénieur développeur Full Stack', 'Full Stack Software Engineer'),
+  status: L('Disponible immédiatement, en CDI', 'Available now for a permanent role'),
+  place: L('Basé à Troyes, prêt à déménager, hybride ou télétravail', 'Based in Troyes, open to relocating, hybrid or remote'),
+  pitch: L(
+    "J'ai livré seul une application métier en production (Angular, NestJS, AWS) pour quatre entreprises du BTP, et je viens du design.",
+    'On my own, I built and shipped a business application now in production (Angular, NestJS, AWS) for four construction companies. I came to code from design.'),
+  coords: '48°18′ N, 4°05′ E',
+};
 
-const projects = [
+/* ---------- Les quatre études de cas ----------
+   emblem : l'œuvre (data/art.json) qui donne l'idée du projet ; shots : les vraies captures, la preuve.
+   story : contexte → problème → ce que j'ai construit (un écran par étape) → décisions → résultat → ce que j'en retiens. */
+const cases = [
   {
-    slug: 'btp-360', device: 'duo', screen: 'img/p/btp-360/1.webp', screenM: 'img/p/btp-360/m2.webp', title: 'BTP-360', color: C.orange, relief: { peaks: 4, rough: .55 },
-    kicker: "L'application qui a remplacé les fichiers Excel de quatre entreprises du BTP.",
-    kind: 'pro', context: 'Stage de fin d’études', org: 'Groupe Sûr France, Troyes', year: '2026', period: 'Mars à septembre 2026',
-    team: 'Seul, avec la direction et les équipes terrain', role: 'Conception, développement, mise en production',
+    slug: 'btp-360', title: 'BTP-360', emblem: 'iss', shots: ['img/p/btp-360/1.webp', 'img/p/btp-360/m4.webp'], year: '2026', kind: 'pro',
+    kicker: L("L'application qui a remplacé les fichiers Excel de quatre sociétés du bâtiment.", 'The app that replaced the Excel files of four building companies.'),
+    outcome: L('En production sur AWS, sur le web et sur Android.', 'In production on AWS, on the web and on Android.'),
+    brief: [
+      [L('Le problème', 'The problem'), L('Quatre sociétés géraient RH, chantiers et finance dans des fichiers Excel envoyés par mail.', 'Four companies ran HR, sites and finance on Excel files sent by email.')],
+      [L('Ma part', 'My part'), L('Tout, seul : conception, application web et Android qui marche hors ligne, API, base de données, mise en production.', 'All of it, solo: design, a web and Android app that works offline, API, database, deployment.')],
+      [L('Le résultat', 'The result'), L('En production sur AWS. 380 commits, 255 fichiers de tests unitaires, 54 suites de bout en bout.', 'In production on AWS. 380 commits, 255 unit test files, 54 end-to-end suites.')],
+    ],
+    setting: L('Stage de fin d’études, développeur principal', 'Final-year internship, lead developer'), org: 'Iso Sûr France, Troyes',
+    period: L('Mars à octobre 2026', 'March to October 2026'),
+    team: L('Seul, avec la direction et les équipes terrain', 'Solo, with management and field teams'),
+    role: L('Conception, développement, mise en production', 'Design, development, deployment'),
     stack: ['Ionic 8', 'Angular 20', 'NgRx', 'Capacitor', 'NestJS 11', 'Prisma 7', 'PostgreSQL 16', 'Socket.IO', 'Docker', 'Terraform', 'AWS', 'GitHub Actions', 'Playwright', 'Sentry'],
-    links: [], privateNote: 'Code privé, propriété du groupe.',
-    intro: "Le Groupe Sûr France réunit quatre sociétés : Iso, Climat, Réseau et Distri. Recrutement, contrats, matériel, notes de frais, planning : tout passait par des fichiers Excel envoyés par mail. J'avais sept mois pour les remplacer par un seul outil, utilisable au bureau comme sur un chantier sans réseau.",
-    stats: [['4', 'sociétés dans une seule application'], ['47', 'modèles de données'], ['255', 'fichiers de tests unitaires'], ['54', 'suites de tests de bout en bout']],
-    sections: [
-      { title: 'Le point de départ', body: ["Les chefs d'équipe pointaient sur papier, les contrats étaient recopiés depuis un modèle Word, et personne ne savait vraiment quel outil se trouvait sur quel chantier.", "Pour être adoptée, l'application devait être plus rapide qu'Excel, et utilisable avec des gants, en plein soleil, dans une cave sans 4G."] },
-      { title: 'Ce que j’ai construit', list: [
-        ['RH et contrats', 'Contrats générés en PDF et DOCX à partir de modèles (convention collective, grille de classification BTP), dossiers salariés, absences validées en deux temps, habilitations avec alerte avant expiration.'],
-        ['Terrain', 'Pointage géolocalisé à l’entrée et à la sortie du chantier, un QR code par outil, bons de remise signés à l’écran.'],
-        ['Finance', 'Notes de frais lues par OCR directement sur le téléphone, même hors ligne, et demandes d’achat validées par la direction.'],
-        ['Chantiers', 'Planning au jour, à la semaine ou au mois, et gestion documentaire rangée par société et par chantier.'],
+    links: [], private: L('Code privé, propriété de l’entreprise. Démonstration sur demande.', 'Private code, owned by the company. Demo on request.'),
+    cover: { src: 'img/p/btp-360/1.webp', alt: L('L’écran Documents de BTP-360 (données de test)', 'The Documents screen of BTP-360 (test data)') },
+    story: {
+      context: [
+        L("Iso Sûr France et ses trois sociétés sœurs (Climat, Réseau et Distri Sûr France) travaillent dans le bâtiment. RH, contrats, logistique, finance, chantiers, planning, pointage : tout passait par des fichiers Excel envoyés par mail.",
+          'Iso Sûr France and its three sister companies (Climat, Réseau and Distri Sûr France) work in construction. HR, contracts, logistics, finance, sites, scheduling, time tracking: everything went through Excel files sent by email.'),
+        L("Les chefs d'équipe pointaient sur papier, les contrats étaient recopiés depuis un modèle Word, et personne ne savait vraiment quel outil se trouvait sur quel chantier.",
+          'Team leads clocked in on paper, contracts were copied from a Word template, and nobody really knew which tool was on which site.'),
+      ],
+      problem: [
+        L("Le cahier des charges demandait une seule application, ouverte par un simple lien sur PC comme sur téléphone, et qui marche hors ligne : en sous-sol, sur un chantier, il n'y a souvent pas de réseau.",
+          'The brief asked for one app, opened from a plain link on a PC or a phone, that works offline: in a basement or on a building site there is often no signal.'),
+        L("La stack était imposée : Angular, NestJS, Prisma et PostgreSQL, que je n'avais jamais utilisés. Je les ai appris pendant le stage.",
+          'The stack was set by the company: Angular, NestJS, Prisma and PostgreSQL, none of which I had used before. I learned them during the internship.'),
+      ],
+      built: [
+        { title: L('RH et contrats', 'HR and contracts'), shot: { src: 'img/p/btp-360/2.webp', alt: L('Validation des absences dans BTP-360 (données de test)', 'Approving leave requests in BTP-360 (test data)') },
+          text: L('Contrats générés en PDF et DOCX à partir de modèles (grille de classification BTP, convention collective), dossiers salariés, absences validées en deux temps, habilitations avec alerte avant expiration.',
+            'Contracts generated as PDF and DOCX from templates (construction pay grid, collective agreement), employee files, two-step leave approval, certifications with an alert before they expire.') },
+        { title: L('Sur le terrain', 'On site'), shot: { src: 'img/p/btp-360/m4.webp', phone: true, alt: L('Fiche d’un chantier géolocalisé sur téléphone (données de test)', 'A geolocated site record on a phone (test data)') },
+          text: L('Pointage géolocalisé à l’entrée et à la sortie du chantier, un QR code par outil, remise d’outils signée à l’écran par le salarié, notes de frais lues par OCR sur le téléphone, même hors ligne.',
+            'Geolocated clock-in and clock-out on site, one QR code per tool, tool hand-overs signed on screen by the employee, receipts read by OCR on the phone, even offline.') },
+        { title: L('Absences et planning', 'Leave and scheduling'), shot: { src: 'img/p/btp-360/m1.webp', phone: true, alt: L('Le planning des absences sur téléphone (données de test)', 'The leave calendar on a phone (test data)') },
+          text: L('Planning au jour, à la semaine ou au mois, demandes de congé envoyées depuis le téléphone, notifications en temps réel.',
+            'Daily, weekly or monthly calendar, leave requests sent from the phone, real-time notifications.') },
+        { title: L('Documents et achats', 'Documents and purchasing'), shot: { src: 'img/p/btp-360/1.webp', alt: L('La gestion documentaire de BTP-360 (données de test)', 'Document management in BTP-360 (test data)') },
+          text: L('Documents rangés par société et par chantier, pièces à renouveler signalées, et demandes d’achat validées par la direction.',
+            'Documents filed by company and by site, files to renew flagged, and purchase requests approved by management.') },
+      ],
+      decisions: [
+        [L('Une file pour le hors ligne', 'A queue for offline work'), L("Toute écriture faite sans réseau est captée par un intercepteur HTTP, gardée sur l'appareil et affichée tout de suite. Au retour du réseau, la file est rejouée dans l'ordre, avec une clé d'idempotence pour ne jamais compter deux fois la même action. Après six échecs, l'action passe « à vérifier ». Les conflits sont rares par conception : chaque action est rattachée au salarié qui la fait.",
+          'Any write made without a network is caught by an HTTP interceptor, kept on the device and shown straight away. When the network comes back, the queue is replayed in order, with an idempotency key so the same action never counts twice. After six failures, the action is marked “to check”. Conflicts are rare by design: each action belongs to the employee who makes it.')],
+        [L('Un OCR qui ne sort pas de l’appareil', 'OCR that never leaves the device'), L("Les tickets sont lus sans service en ligne : Google ML Kit sur Android, PaddleOCR dans le navigateur, Tesseract.js sur le serveur. Seuls les champs sûrs sont préremplis, et une passe vérifie que HT + TVA = TTC. La CI échoue si un OCR distant réapparaît dans le code.",
+          'Receipts are read with no online service: Google ML Kit on Android, PaddleOCR in the browser, Tesseract.js on the server. Only confident fields are prefilled, and a check makes sure net + VAT = gross. CI fails if a remote OCR service ever comes back into the code.')],
+        [L('Cinq rôles, des données chiffrées', 'Five roles, encrypted data'), L("Admin, bureau, chargé d'affaires, magasinier, terrain : chacun ne voit que son périmètre. Le numéro de sécurité sociale et le salaire sont chiffrés en AES-256-GCM, et l'API refuse de démarrer sans vraie clé. Un départ archive le dossier au lieu de le supprimer.",
+          'Admin, office, project manager, storekeeper, field: each role only sees its own scope. Social security numbers and salaries are encrypted with AES-256-GCM, and the API refuses to start without a real key. When someone leaves, their file is archived instead of deleted.')],
+        [L('Le plus simple qui tient', 'The simplest thing that holds'), L("Une instance EC2 en région Paris avec Docker Compose, à l'échelle d'un MVP, plutôt qu'ECS ou Kubernetes. Terraform pour tout reconstruire, GitHub Actions pour déployer, Sentry pour les erreurs, et chaque nuit une sauvegarde chiffrée de PostgreSQL envoyée sur S3, à part du serveur. J'ai restauré cette sauvegarde pour vérifier qu'elle marche.",
+          'One EC2 instance in the Paris region with Docker Compose, sized for an MVP, rather than ECS or Kubernetes. Terraform to rebuild everything, GitHub Actions to deploy, Sentry for errors, and every night an encrypted PostgreSQL backup sent to S3, away from the server. I restored that backup to make sure it works.')],
+        [L('Des agents IA tenus en laisse', 'AI agents on a leash'), L("Pour chaque tâche, une spécification écrite. Un agent l'implémente, un second relit le diff contre la spécification, et les tests doivent passer avant toute fusion. Claude Code tenait le front et la logique métier, Codex le back-end et la sécurité. Règle posée dès le début : si l'agent ne sait pas m'expliquer sa logique, la fonctionnalité n'est pas validée.",
+          'Every task starts with a written spec. One agent implements it, a second reviews the diff against the spec, and the tests must pass before any merge. Claude Code handled the front end and business logic, Codex the back end and security. A rule from day one: if the agent cannot explain its logic to me, the feature is not accepted.')],
+      ],
+      diagram: { caption: L('Architecture de BTP-360', 'BTP-360 architecture'), layers: [
+        [L('Sur le terrain', 'On site'), [L('Application Android', 'Android app'), L('PWA au bureau', 'PWA in the office'), L('File hors ligne', 'Offline queue')]],
+        [L('Client', 'Client'), ['Ionic 8 + Angular 20', 'NgRx', 'Capacitor', L('OCR local', 'Local OCR')]],
+        ['API', ['NestJS 11', 'Socket.IO', L('JWT + 5 rôles', 'JWT + 5 roles'), 'Swagger']],
+        [L('Données', 'Data'), ['PostgreSQL 16', 'Prisma 7', 'AES-256-GCM']],
+        [L('Infrastructure', 'Infrastructure'), ['AWS EC2 (Paris) + S3', 'Docker Compose', 'Terraform', 'GitHub Actions', 'Sentry']],
       ] },
-      { title: 'Les choix techniques', body: ["Hors ligne d'abord : chaque action faite sur le terrain est gardée dans une file NgRx, puis rejouée au retour du réseau. L'application est livrée sur Android avec Capacitor, ou installable en PWA.", "Une seule base PostgreSQL, cloisonnée par société, cinq rôles, un journal d'audit et des données sensibles (numéro de sécurité sociale, salaire) chiffrées au repos. Les validations remontent en temps réel avec Socket.IO."] },
-      { title: 'La mise en production', body: ["Docker Compose sur EC2 en région Paris, infrastructure décrite en Terraform, intégration et déploiement continus avec GitHub Actions, sauvegardes PostgreSQL scriptées, erreurs suivies dans Sentry."] },
-      { title: 'Coder avec des agents IA', body: ["J'ai développé avec Claude Code et Codex, encadrés par des règles projet écrites (AGENTS.md, CLAUDE.md), des serveurs MCP et une relecture de chaque changement. Chaque changement proposé par un agent passe par les 255 fichiers de tests, les 54 suites Playwright et ma relecture avant d'être gardé."] },
-      { title: 'Ce que j’en retiens', body: ["Seul sur un projet de cette taille, on est obligé de tout écrire : la documentation, les décisions, les tests. C'est ce qui m'a permis d'aller vite sans casser ce qui marchait déjà."] },
-    ],
-    figures: [
-      { type: 'img', src: 'img/p/btp-360/2.webp', alt: 'Validation des congés et absences dans BTP-360', caption: 'Validation des absences, au bureau (données de test)', wide: true },
-      { type: 'phones', srcs: ['img/p/btp-360/m1.webp', 'img/p/btp-360/m4.webp', 'img/p/btp-360/m3.webp'], caption: 'Sur le terrain : planning, fiche chantier géolocalisée, demande de congé (données de test)' },
-      { type: 'diagram', caption: 'Architecture de BTP-360', layers: [
-        ['Sur le terrain', ['Application Android', 'PWA au bureau', 'File hors ligne']],
-        ['Client', ['Ionic 8 + Angular 20', 'NgRx', 'Capacitor', 'Tesseract.js (OCR)']],
-        ['API', ['NestJS 11', 'Socket.IO', 'JWT + 5 rôles', 'Swagger']],
-        ['Données', ['PostgreSQL 16', 'Prisma 7', 'Fichiers chiffrés']],
-        ['Infrastructure', ['AWS EC2 + S3', 'Docker', 'Terraform', 'GitHub Actions', 'Sentry']],
-      ] },
-    ],
+      result: {
+        stats: [['4', L('sociétés dans une seule application', 'companies in a single app')], ['380', L('commits', 'commits')], ['47', L('modèles de données', 'data models')], ['255', L('fichiers de tests unitaires', 'unit test files')], ['54', L('suites de tests de bout en bout', 'end-to-end test suites')]],
+        text: [L("L'application est en production sur AWS, sur le web et sur Android. L'OCR des notes de frais, la partie la plus dure, a été livré complet dans les délais, pas en version bêta.",
+          'The app is in production on AWS, on the web and on Android. Receipt OCR, the hardest part, shipped complete and on time, not as a beta.')],
+      },
+      lessons: [
+        L("Un jour, un agent a ajouté une fonctionnalité que je n'avais pas demandée : une signature électronique pour chaque document déposé dans le dossier d'un salarié. Je l'ai vue en relisant le diff. Trop lourde, et contraire à la logique : une notification suffisait. Je l'ai retirée (30 fichiers, environ 3 800 lignes en moins) et j'ai gardé la signature là où elle a un sens, quand le magasinier remet des outils.",
+          'One day an agent added a feature I had not asked for: an e-signature for every document added to an employee’s file. I caught it while reviewing the diff. Too heavy, and against the logic: a notification was enough. I removed it (30 files, about 3,800 lines gone) and kept signatures where they make sense, when the storekeeper hands over tools.'),
+        L("Seul sur un projet de cette taille, on est obligé de tout écrire : la documentation, les décisions, les tests. C'est ce qui m'a permis d'aller vite sans casser ce qui marchait déjà.",
+          'Alone on a project this size, you have to write everything down: the documentation, the decisions, the tests. That is what let me move fast without breaking what already worked.'),
+      ],
+    },
   },
   {
-    slug: 'subforge', device: 'phone', screenM: 'img/p/subforge/m1.webp', title: 'SubForge', color: C.eau, relief: { peaks: 2, rough: .35 },
-    kicker: "Un coach nutrition où l'on note un repas en une phrase, et où l'IA en tire les macros à valider.",
-    kind: 'perso', context: 'Projet personnel', org: 'Application mobile', year: '2026', period: 'Depuis août 2026',
-    team: 'Seul', role: 'Produit, design, développement',
+    slug: 'subforge', title: 'SubForge', emblem: 'jupiter', shots: ['img/p/subforge/m1.webp', 'img/p/subforge/m3.webp', 'img/p/subforge/m5.webp'], year: '2026', kind: 'perso',
+    kicker: L("Un prototype de coach nutrition : on décrit un repas en une phrase, l'IA propose les macros, on valide.", 'A nutrition coach prototype: describe a meal in one sentence, the AI suggests the macros, you confirm.'),
+    outcome: L('Un prototype Android, construit pour apprendre.', 'An Android prototype, built to learn.'),
+    brief: [
+      [L('Le problème', 'The problem'), L('Noter ses repas prend trop de temps, alors on abandonne au bout d’une semaine.', 'Logging meals takes too long, so you give up after a week.')],
+      [L('Ma part', 'My part'), L('Tout, seul : un prototype mobile où l’on décrit un repas en une phrase et où l’IA propose les macros.', 'All of it, solo: a mobile prototype where you describe a meal in one sentence and the AI suggests the macros.')],
+      [L('Le résultat', 'The result'), L('Un prototype qui tourne sur Android, et une vraie première expérience de Supabase et d’un LLM.', 'A prototype running on Android, and real first-hand experience of Supabase and an LLM.')],
+    ],
+    setting: L('Projet personnel, prototype', 'Personal project, prototype'), org: L('Application mobile', 'Mobile app'),
+    period: L('Août 2026', 'August 2026'),
+    team: L('Seul', 'Solo'), role: L('Produit, design, développement', 'Product, design, development'),
     stack: ['React Native', 'Expo', 'TypeScript', 'Supabase', 'Edge Functions', 'Gemini 2.5 Flash', 'Jest', 'Sentry', 'PostHog', 'EAS'],
-    links: [], privateNote: 'Code privé, projet en cours.',
-    intro: "Je reprenais la musculation avec un objectif de prise de masse, et je savais déjà où j'allais lâcher : l'alimentation. Chaque fois que j'avais essayé de suivre mes repas, j'avais abandonné au bout d'une semaine, parce que la saisie était trop lente. J'ai conçu SubForge pour que noter un repas prenne moins de temps que de le manger.",
-    sections: [
-      { title: 'L’idée', body: ["On dicte ou on tape « deux œufs, une tartine beurrée et un café ». Le modèle en extrait les aliments, les quantités et les macros dans un JSON contraint par un schéma, jamais dans du texte libre qu'il faudrait relire.", "La personne voit la proposition, corrige si besoin, puis valide. Rien n'est enregistré sans son accord."] },
-      { title: 'Quand l’IA ne répond pas', body: ["Le plan de la journée est généré par l'IA : c'est lent, et ça peut échouer. Au-delà de 15 secondes, un plan de repli calculé sans IA prend le relais, à partir de repas prédéfinis filtrés selon les contraintes (halal, budget, temps de préparation). Une erreur à cet instant aurait gâché la première impression."] },
-      { title: 'La technique', body: ["Les besoins caloriques sont calculés sur le téléphone, sans réseau. Les appels à Gemini passent par des Edge Functions Supabase : la clé reste côté serveur, avec un cache et une limite de requêtes.", "Les contraintes strictes, comme les allergies, sont vérifiées deux fois : dans la consigne envoyée au modèle, puis sur sa réponse. Les données sont protégées par des règles RLS, et l'application continue de fonctionner hors ligne."] },
-      { title: 'Où en est le projet', body: ["Le MVP se construit en APK et AAB avec EAS, testé avec Jest et suivi avec Sentry et PostHog. Je suis son premier utilisateur et je le teste sur mes propres repas."] },
-    ],
-    figures: [
-      { type: 'phones', srcs: ['img/p/subforge/m2.webp', 'img/p/subforge/m3.webp', 'img/p/subforge/m4.webp'], caption: 'L’accueil : objectif, morphologie, activité' },
-      { type: 'phones', srcs: ['img/p/subforge/m5.webp', 'img/p/subforge/m6.webp', 'img/p/subforge/m7.webp'], caption: 'Contraintes alimentaires, préférences, historique' },
-      { type: 'diagram', caption: 'Le chemin d’une phrase', layers: [
-        ['Téléphone', ['Voix ou texte', 'Calcul des besoins en local', 'File hors ligne']],
-        ['Edge Functions', ['Clé API protégée', 'Cache', 'Limite de requêtes']],
-        ['IA', ['Gemini 2.5 Flash', 'Sortie JSON contrainte', 'Plan de repli sans IA']],
-        ['Données', ['Supabase Postgres', 'Auth', 'RLS']],
+    links: [], private: L('Code privé. Captures de l’application telle qu’elle tourne.', 'Private code. Screenshots of the app as it runs.'),
+    cover: { src: 'img/p/subforge/m1.webp', phone: true, alt: L('L’écran d’accueil de SubForge', 'The SubForge welcome screen') },
+    story: {
+      context: [L("Je reprenais la musculation avec un objectif de prise de masse, et je savais déjà où j'allais lâcher : l'alimentation. Chaque fois que j'avais essayé de suivre mes repas, j'avais abandonné au bout d'une semaine, parce que la saisie était trop lente.",
+        'I was getting back into weight training to bulk up, and I already knew where I would give up: food. Every time I had tried to track my meals, I quit after a week because logging was too slow.')],
+      problem: [
+        L('Noter un repas devait prendre moins de temps que de le manger.', 'Logging a meal had to take less time than eating it.'),
+        L("Et je voulais découvrir Supabase et l'intégration d'un LLM sur un vrai cas, pas sur un tutoriel.", 'And I wanted to try Supabase and LLM integration on a real use case, not a tutorial.'),
+      ],
+      built: [
+        { title: L('Une phrase, des macros', 'One sentence, the macros'), shot: { src: 'img/p/subforge/m1.webp', phone: true, alt: L('Un repas décrit en une phrase et ses macros', 'A meal described in one sentence, with its macros') },
+          text: L("On décrit son repas à la voix ou au texte. L'IA propose les aliments et les macros, la personne corrige si besoin, et rien n'est enregistré sans sa validation.",
+            'You describe your meal by voice or text. The AI suggests the foods and macros, you fix them if needed, and nothing is saved until you confirm.') },
+        { title: L('Cinq questions pour commencer', 'Five questions to start'), shot: { src: 'img/p/subforge/m3.webp', phone: true, alt: L('L’accueil : sexe, date de naissance, taille, poids', 'Onboarding: sex, date of birth, height, weight') },
+          text: L('Objectif, morphologie, activité : l’accueil tient en cinq questions.', 'Goal, body, activity: onboarding takes five questions.') },
+        { title: L('Ce qui ne se négocie pas', 'What is non-negotiable'), shot: { src: 'img/p/subforge/m5.webp', phone: true, alt: L('Les contraintes strictes : halal, végétarien, allergies', 'Hard constraints: halal, vegetarian, allergies') },
+          text: L('Halal, végétarien, allergies : des contraintes qu’on règle une fois, à part des simples préférences.', 'Halal, vegetarian, allergies: constraints you set once, kept apart from simple preferences.') },
+        { title: L('L’historique', 'History'), shot: { src: 'img/p/subforge/m7.webp', phone: true, alt: L('L’historique par jour et par semaine', 'History by day and by week') },
+          text: L('Les repas de la journée et de la semaine.', 'Meals for the day and the week.') },
+      ],
+      decisions: [
+        [L('Le back-end le plus simple', 'The simplest back end'), L('Supabase et ses Edge Functions, pour tester l’idée vite et voir comment les deux se branchent.', 'Supabase and its Edge Functions, to test the idea fast and see how the two fit together.')],
+        [L('Gemini 2.5 Flash', 'Gemini 2.5 Flash'), L("Choisi parce que son API était gratuite à ce moment-là. Les appels passent par une Edge Function, pour que la clé reste côté serveur.", 'Chosen because its API was free at the time. Calls go through an Edge Function so the key stays on the server.')],
+        [L("L'IA propose, la personne valide", 'The AI suggests, the person decides'), L("Le modèle ne fait que proposer. C'est la personne qui valide ce qui est enregistré.", 'The model only suggests. The person confirms what gets saved.')],
+      ],
+      diagram: { caption: L('Le chemin d’une phrase', 'The path of a sentence'), layers: [
+        [L('Téléphone', 'Phone'), ['React Native + Expo', L('Voix ou texte', 'Voice or text'), L('Validation par la personne', 'Confirmed by the person')]],
+        ['Edge Functions', ['Supabase', L('Appel au modèle', 'Model call')]],
+        [L('IA', 'AI'), ['Gemini 2.5 Flash', L('Propose les macros', 'Suggests the macros')]],
+        [L('Données', 'Data'), ['Supabase Postgres', 'Auth']],
       ] },
-    ],
+      result: {
+        stats: [],
+        text: [L("Un prototype qui tourne : builds APK et AAB avec EAS, tests Jest, suivi avec Sentry et PostHog. Je l'ai construit pour apprendre, et je le teste sur mes propres repas.",
+          'A working prototype: APK and AAB builds with EAS, Jest tests, monitoring with Sentry and PostHog. I built it to learn, and I test it on my own meals.')],
+      },
+      lessons: [L("Un projet perso me sert à apprendre une stack : je prends l'outil qui me permet de tester l'idée vite et à moindre coût.", 'A side project is how I learn a stack: I pick the tool that lets me test the idea fast and cheaply.')],
+    },
   },
   {
-    slug: 'funfair-vr', device: 'quest', title: 'Funfair VR', color: C.ocre, relief: { peaks: 5, rough: .45 },
-    kicker: 'Une fête foraine médiévale en réalité virtuelle, avec cinq attractions.',
-    kind: 'ecole', context: 'Master Sciences et Technologies du Métavers', org: 'INSA Hauts-de-France', year: '2025', period: '2025',
-    team: 'Projet de Master', role: 'Développement Unity, interactions VR',
-    stack: ['Unity 2022.3', 'C#', 'URP', 'XR Interaction Toolkit', 'OpenXR', 'Meta Quest'],
-    links: [['Voir le code', 'https://github.com/Subdij/Project_VR']],
-    intro: "Cinq jeux de fête foraine en réalité virtuelle, conçus pour être compris dès qu'on les prend en main, sans tutoriel ni consigne à lire.",
-    sections: [
-      { title: 'Cinq attractions', list: [
-        ['Chamboule-tout', 'Renverser des piles de conserves avec des balles.'],
-        ['Fruit Ninja médiéval', 'Découper des fruits au vol à l’épée, en évitant les bombes.'],
-        ['Dunk tank', 'Viser la cible pour faire tomber le personnage dans l’eau.'],
-        ['Stand de tir', 'Toucher des cibles mobiles pour marquer un maximum de points.'],
-        ['Punching-ball', 'Frapper le plus fort possible.'],
-      ] },
-      { title: 'Le plus difficile', body: ["La découpe des fruits en temps réel avec EzySlice : couper un maillage à la volée, sans faire chuter la fréquence d'images du casque. Et la physique des lancers, qui doit paraître juste même quand on lance mal."] },
-      { title: 'La technique', body: ["Unity 2022.3 avec l'Universal Render Pipeline pour tenir la cadence en VR, XR Interaction Toolkit et OpenXR. Un hub central relie les cinq attractions, avec une navigation pensée pour ne pas donner mal au cœur."] },
+    slug: 'distri-sur-france', title: 'Distri Sûr France', emblem: 'sun', shots: ['img/p/distri-sur-france/2.webp', 'img/p/distri-sur-france/m1.webp'], year: '2024', kind: 'pro',
+    kicker: L("Dix mois d'alternance pour créer la boutique en ligne d'une entreprise.", 'Ten months of work-study to build a company’s online shop.'),
+    outcome: L('Le site e-commerce officiel de l’entreprise, en ligne.', 'The company’s official e-commerce site, live.'),
+    brief: [
+      [L('Le problème', 'The problem'), L('Une entreprise de l’Aube sans boutique en ligne.', 'A company in the Aube with no online shop.')],
+      [L('Ma part', 'My part'), L('En alternance : les maquettes Figma, le front-end et le back-end sur Odoo, le référencement.', 'As a work-study student: the Figma mockups, front end and back end on Odoo, SEO.')],
+      [L('Le résultat', 'The result'), L('La boutique est en ligne après dix mois, des maquettes à la mise en production.', 'The shop went live after ten months, from mockups to production.')],
     ],
-    figures: [{ type: 'img', src: 'img/ziyad-vr.webp', alt: 'Ziyad Chaabi présente un projet de réalité virtuelle, un Meta Quest 3 posé sur le bureau', caption: 'En présentation à l’INSA, avec le Meta Quest 3', wide: true }],
-  },
-  {
-    slug: 'hotel-murder-vr', device: 'hotel', cover: 'img/p/hotel-murder-vr/cover.jpg', title: 'Hotel Murder VR', color: C.prune, relief: { peaks: 3, rough: .7 },
-    kicker: "Un escape game d'enquête en VR, dans un hôtel où quelqu'un vient d'être tué.",
-    kind: 'ecole', context: 'Master Sciences et Technologies du Métavers', org: 'INSA Hauts-de-France', year: '2026', period: '2026',
-    team: 'Équipe de 3', role: 'Développement Unity, énigmes et interactions',
-    stack: ['Unity 6', 'C#', 'XR Interaction Toolkit 3', 'Audio spatialisé'],
-    links: [['Voir le code', 'https://github.com/Subdij/Hotel-Murder-Escape-game_VR']],
-    intro: "On arrive dans un hôtel, quelqu'un est mort, et il faut comprendre ce qui s'est passé. Aucune indication n'est affichée à l'écran : on avance en fouillant les objets et en suivant les sons.",
-    sections: [
-      { title: 'Les énigmes', list: [
-        ['Le levier', 'Un mécanisme physique monté sur une charnière (HingeJoint) qu’il faut vraiment tirer.'],
-        ['Le digicode', 'Un code à retrouver dans la pièce pour ouvrir la suite.'],
-        ['La fouille', 'Des objets à prendre, retourner, ouvrir.'],
-        ['La fin', 'Une cinématique qui révèle le coupable.'],
-      ] },
-      { title: 'Le son comme guide', body: ["L'audio 3D oriente sans rien afficher : un bruit derrière une porte, une radio dans la pièce d'à côté. En VR, on tourne naturellement la tête vers ce qu'on entend."] },
-    ],
-    figures: [],
-  },
-  {
-    slug: 'lolop', device: 'lanes', cover: 'img/p/lolop/cover.jpg', title: 'lolop', color: C.lagon, relief: { peaks: 3, rough: .4 },
-    kicker: 'Le compagnon League of Legends que je voulais avoir dans la poche.',
-    kind: 'perso', context: 'Projet personnel', org: 'Application Android', year: '2025', period: 'Fin 2025',
-    team: 'Seul', role: 'Conception et développement',
-    stack: ['Java', 'Android', 'MVVM', 'Retrofit', 'SQLite', 'WorkManager'],
-    links: [['Voir le code', 'https://github.com/Subdij/lolop']],
-    intro: "Champions, objets, notes de patch et favoris, dans une application qui marche aussi dans le train, sans réseau.",
-    sections: [
-      { title: 'Ce qu’on y trouve', list: [
-        ['Champions', 'Recherche animée, statistiques, histoire, conseils pour jouer avec ou contre, sorts et passifs.'],
-        ['Objets', 'Le catalogue complet, filtrable par catégorie.'],
-        ['Notes de patch', 'Les dernières mises à jour, lisibles dans l’application.'],
-        ['Favoris', 'Ses champions épinglés, retrouvés en un geste.'],
-      ] },
-      { title: 'L’architecture', body: ["MVVM avec un Repository qui choisit entre le réseau et le cache. Les données viennent de l'API de Riot via Retrofit et sont gardées dans SQLite. WorkManager rafraîchit tout en arrière-plan, et l'interface existe en français et en anglais."] },
-    ],
-    figures: [],
-  },
-  {
-    slug: 'turaty-naturels', device: 'apothecary', cover: 'img/p/turaty-naturels/cover.jpg', title: 'Turaty Naturels', color: C.foret, relief: { peaks: 2, rough: .3 },
-    kicker: 'Une boutique de cosmétiques bio, du catalogue jusqu’à la facture.',
-    kind: 'perso', context: 'Projet personnel', org: 'E-commerce', year: '2025', period: 'Été 2025',
-    team: 'Seul', role: 'Conception et développement',
-    stack: ['Symfony 6', 'Doctrine', 'MySQL 8', 'Twig', 'Tailwind', 'Stripe', 'PayPal', 'Docker'],
-    links: [], privateNote: 'Code privé.',
-    intro: "Une boutique en ligne pour une marque de cosmétiques naturels. J'ai commencé par le parcours d'achat, pour qu'une commande demande le moins de clics possible.",
-    sections: [
-      { title: 'Le parcours d’achat', body: ["Catalogue par catégories avec filtres et recherche, panier, adresses, livraison et paiement. Connexion possible avec Google, factures PDF générées automatiquement."] },
-      { title: 'Côté boutique', body: ["Un espace d'administration pour gérer les produits, les catégories, les commandes et les clients, plus une inscription à la newsletter."] },
-      { title: 'La technique', body: ["Symfony 6 et Doctrine sur MySQL 8, gabarits Twig et Tailwind, paiements Stripe et PayPal. L'ensemble tourne dans Docker avec PHP-FPM et Nginx."] },
-    ],
-    figures: [{ type: 'diagram', caption: 'Le parcours d’une commande', layers: [
-      ['Découvrir', ['Catalogue', 'Filtres', 'Recherche']],
-      ['Acheter', ['Panier', 'Connexion Google', 'Adresse et livraison']],
-      ['Payer', ['Stripe', 'PayPal']],
-      ['Après', ['Facture PDF', 'Suivi de commande', 'Newsletter']],
-    ] }],
-  },
-  {
-    slug: 'distri-sur-france', device: 'duo', screen: 'img/p/distri-sur-france/1.webp', screenM: 'img/p/distri-sur-france/m1.webp', title: 'Distri Sûr France', color: C.brique, relief: { peaks: 3, rough: .5 },
-    kicker: "Dix mois d'alternance pour créer la boutique en ligne d'une entreprise.",
-    kind: 'pro', context: 'Alternance', org: 'Distri Sûr France, Troyes', year: '2024', period: 'Novembre 2023 à août 2024',
-    team: 'Avec les équipes commerciales', role: 'Développeur full stack e-commerce',
+    setting: L('Alternance', 'Work-study'), org: 'Distri Sûr France, Troyes',
+    period: L('Novembre 2023 à août 2024', 'November 2023 to August 2024'),
+    team: L('Avec les équipes commerciales', 'With the sales teams'), role: L('Développeur Web Full Stack E-commerce', 'Full Stack E-commerce Web Developer'),
     stack: ['Odoo', 'Python', 'HTML', 'CSS', 'Figma', 'SEO'],
-    links: [], privateNote: 'Projet d’entreprise, pas de dépôt public.',
-    intro: "Pendant dix mois d'alternance, j'ai conçu et développé le site e-commerce de Distri Sûr France, des premières maquettes jusqu'à la mise en ligne.",
-    sections: [
-      { title: 'Ce que j’ai fait', list: [
-        ['Maquettes', 'Les pages et le parcours d’achat dessinés dans Figma, validés avec les équipes métier.'],
-        ['Boutique', 'Le développement front-end et back-end sur Odoo, l’intégration du catalogue et des contenus.'],
-        ['Référencement', 'Le travail sur le SEO pour que les produits soient trouvés.'],
-      ] },
-      { title: 'Ce que j’en retiens', body: ["Une bonne partie du travail a consisté à accorder les demandes des commerciaux avec ce qu'Odoo permettait, puis à vérifier que les clients s'y retrouvaient."] },
-    ],
-    figures: [{ type: 'img', src: 'img/p/distri-sur-france/2.webp', alt: 'Catégorie bornes de recharge de la boutique Distri Sûr France', caption: 'La boutique en ligne aujourd’hui : une catégorie', wide: true },
-      { type: 'img', src: 'img/p/distri-sur-france/3.webp', alt: 'Fiche produit de la boutique Distri Sûr France', caption: 'Une fiche produit' },
-      { type: 'phones', srcs: ['img/p/distri-sur-france/m1.webp'], caption: 'Sur mobile' }],
+    links: [], private: L('Projet d’entreprise, pas de dépôt public.', 'Company project, no public repository.'),
+    cover: { src: 'img/p/distri-sur-france/1.webp', alt: L('Le catalogue de la boutique Distri Sûr France', 'The Distri Sûr France shop catalogue') },
+    story: {
+      context: [L("Distri Sûr France vend du matériel de chauffage, de plomberie et d'électricité dans l'Aube. Pendant dix mois d'alternance, j'ai conçu et développé son site e-commerce, des premières maquettes jusqu'à la mise en ligne.",
+        'Distri Sûr France sells heating, plumbing and electrical equipment in the Aube region. Over ten months of work-study, I designed and built its e-commerce site, from the first mockups to launch.')],
+      problem: [L("L'entreprise n'avait pas de boutique en ligne : il fallait la concevoir, la développer et la mettre en production pendant l'alternance.",
+        'The company had no online shop: it had to be designed, built and put into production during the work-study year.')],
+      built: [
+        { title: L('Le catalogue', 'The catalogue'), shot: { src: 'img/p/distri-sur-france/2.webp', alt: L('La catégorie bornes de recharge', 'The EV chargers category') },
+          text: L('Le catalogue et les contenus intégrés dans Odoo, rangés par famille de produits.', 'The catalogue and content integrated in Odoo, sorted by product family.') },
+        { title: L('La fiche produit', 'The product page'), shot: { src: 'img/p/distri-sur-france/3.webp', alt: L('Une fiche produit', 'A product page') },
+          text: L('Les pages et le parcours d’achat dessinés dans Figma, validés avec les équipes métier.', 'The pages and checkout flow designed in Figma and approved with the business teams.') },
+        { title: L('Sur mobile', 'On mobile'), shot: { src: 'img/p/distri-sur-france/m1.webp', phone: true, alt: L('La boutique sur téléphone', 'The shop on a phone') },
+          text: L('La même boutique, pensée aussi pour le téléphone.', 'The same shop, designed for phones as well.') },
+      ],
+      decisions: [
+        [L('Les maquettes d’abord', 'Mockups first'), L('Chaque page était dessinée dans Figma et validée par les équipes métier avant d’être développée.', 'Every page was designed in Figma and approved by the business teams before being built.')],
+        [L('Odoo de bout en bout', 'Odoo end to end'), L('Le front-end et le back-end de la boutique sont développés sur Odoo, avec une intégration e-commerce complète.', 'The shop’s front end and back end are built on Odoo, with a full e-commerce integration.')],
+        [L('Le référencement', 'Search'), L('Le travail sur le SEO pour que les produits soient trouvés.', 'SEO work so that the products can be found.')],
+      ],
+      result: {
+        stats: [['10', L('mois, des maquettes à la mise en ligne', 'months, from mockups to launch')]],
+        text: [L("La boutique est en ligne : c'est le site e-commerce officiel de l'entreprise.", 'The shop is live: it is the company’s official e-commerce site.')],
+      },
+      lessons: [L("Une bonne partie du travail a consisté à accorder les demandes des commerciaux avec ce qu'Odoo permettait, puis à vérifier que les clients s'y retrouvaient.",
+        'Much of the work was reconciling what the sales team wanted with what Odoo allowed, then checking that customers could find their way.')],
+    },
   },
   {
-    slug: 'zabi', device: 'laptop', screen: 'img/p/zabi/4.webp', title: 'ZABI', color: C.orange, relief: { peaks: 4, rough: .8 },
-    kicker: 'Un jeu de duel entre super-héros, façon arcade.',
-    kind: 'ecole', context: 'Master Sciences et Technologies du Métavers', org: 'INSA Hauts-de-France', year: '2025', period: 'Avril 2025',
-    team: 'Équipe de 4', role: 'Développement full stack',
-    stack: ['Node.js', 'Express 5', 'MongoDB', 'API REST', 'JavaScript'],
-    links: [['Voir le code', 'https://github.com/Subdij/ZABI']],
-    intro: "Deux joueurs, deux héros tirés au sort parmi 731, et un combat au tour par tour. Le titre complet du projet : « Les super-héros qui se battent dans le jeu qu'on a développé ».",
-    sections: [
-      { title: 'Les règles', body: ["Chaque héros a ses statistiques : intelligence, force, vitesse, résistance, puissance, combat. Chaque type d'attaque peut exploiter une faiblesse de l'adversaire pour un coup critique (plus 20 dégâts), ou au contraire buter sur sa défense (moins 20)."] },
-      { title: 'La technique', body: ["Une API REST en Express 5 sur MongoDB, alimentée par l'import des 731 héros. L'interface reprend les codes de l'arcade : barres de vie, animations de dégâts et de soin, police pixel."] },
+    slug: 'realite-virtuelle', title: L('Réalité virtuelle', 'Virtual reality'), emblem: 'saturne', shots: ['img/ziyad-vr.webp'], year: '2026', kind: 'ecole',
+    kicker: L('Funfair VR et Hotel Murder VR, deux projets du Master. Ma part : des attractions, un menu à portails, le son, et une scène d’enquête.', 'Funfair VR and Hotel Murder VR, two Master’s projects. My part: attractions, a portal menu, the sound, and an investigation scene.'),
+    outcome: L('Deux projets d’équipe, code public sur GitHub.', 'Two team projects, code public on GitHub.'),
+    brief: [
+      [L('Le problème', 'The problem'), L('En VR, tout doit se comprendre sans notice, en prenant les objets en main.', 'In VR, everything has to make sense without a manual, just by picking things up.')],
+      [L('Ma part', 'My part'), L('Deux attractions, un menu à portails et le son de Funfair VR, la salle de sécurité de Hotel Murder VR.', 'Two attractions, a portal menu and the sound of Funfair VR, the security room of Hotel Murder VR.')],
+      [L('Le résultat', 'The result'), L('Deux projets menés au bout, en Unity et C#, code public sur GitHub.', 'Two projects seen through, in Unity and C#, code public on GitHub.')],
     ],
-    figures: [{ type: 'img', src: 'img/p/zabi/1.webp', alt: 'Écran d’accueil de ZABI', caption: 'L’écran d’accueil', wide: true },
-      { type: 'img', src: 'img/p/zabi/2.webp', alt: 'Saisie des pseudos des deux joueurs', caption: 'Les deux joueurs choisissent leur pseudo' },
-      { type: 'img', src: 'img/p/zabi/3.webp', alt: 'Analyse du combat avant le duel', caption: 'L’analyse de l’équilibre du combat' }],
-  },
-  {
-    slug: 'subchaine', device: 'laptop', screen: 'img/p/subchaine/3.webp', title: 'SUBCHAINE', color: C.ardoise, relief: { peaks: 6, rough: .3 },
-    kicker: 'Un simulateur pour comprendre une blockchain en la manipulant.',
-    kind: 'ecole', context: 'Master Sciences et Technologies du Métavers', org: 'INSA Hauts-de-France', year: '2025', period: 'Mai 2025',
-    team: 'Projet de Master', role: 'Développement',
-    stack: ['Node.js', 'Express', 'Socket.IO', 'crypto-js', 'elliptic'],
-    links: [['Voir le code', 'https://github.com/Subdij/BlockChain']],
-    intro: "Créer un portefeuille, signer une transaction, miner un bloc, et voir la chaîne se construire en direct. Le simulateur montre en direct des notions difficiles à saisir dans un cours écrit.",
-    sections: [
-      { title: 'Ce qu’on peut faire', list: [
-        ['Portefeuilles', 'Générer une paire de clés sur courbe elliptique.'],
-        ['Transactions', 'Les signer, puis vérifier la signature.'],
-        ['Minage', 'Preuve de travail et arbre de Merkle.'],
-        ['Visualisation', 'La chaîne qui se construit en temps réel avec Socket.IO.'],
-      ] },
-    ],
-    figures: [{ type: 'img', src: 'img/p/subchaine/1.webp', alt: 'Accueil du simulateur SUBCHAINE', caption: 'L’accueil du simulateur', wide: true },
-      { type: 'img', src: 'img/p/subchaine/2.webp', alt: 'Gestionnaire de portefeuilles avec deux portefeuilles créés', caption: 'Deux portefeuilles et leurs clés' },
-      { type: 'img', src: 'img/p/subchaine/4.webp', alt: 'Visualiseur de la blockchain', caption: 'La chaîne, bloc par bloc' }],
-  },
-  {
-    slug: 'reseau-sur-france', device: 'laptop', screen: 'img/p/reseau-sur-france/1.webp', title: 'Réseau Sûr France', color: C.eau, relief: { peaks: 2, rough: .45 },
-    kicker: "Le nouveau site d'une entreprise d'électricité et de domotique de l'Aube.",
-    kind: 'pro', context: 'Stage', org: 'Réseau Sûr France, Saint-André-les-Vergers', year: '2023', period: 'Avril à juin 2023',
-    team: 'Avec l’équipe marketing et communication', role: 'Design et développement',
-    stack: ['WordPress', 'Figma', 'Photoshop', 'HTML', 'CSS', 'JavaScript', 'OVH'],
-    links: [['Voir le site', 'https://reseausurfrance.fr']],
-    intro: "Trois mois de stage pour livrer le site vitrine de l'entreprise dans sa charte graphique. Les demandes ont évolué jusqu'au dernier moment, et le site a été livré à temps.",
-    sections: [
-      { title: 'Le travail', body: ["Maquettes dans Figma, visuels dans Photoshop, intégration dans WordPress, mise en ligne chez OVH. J'ai travaillé chaque semaine avec l'équipe marketing pour ajuster les pages."] },
-      { title: 'Ce qu’en dit ma tutrice', quote: ["Sa maîtrise des logiciels de conception graphique a été exceptionnelle […]. Malgré les modifications de dernière minute apportées à un projet, Ziyad a fait preuve d'une grande flexibilité.", 'Juliana Rebelo, assistante marketing et communication'] },
-    ],
-    figures: [
-      { type: 'video', src: 'media/reseau-sur-france.mp4', poster: 'img/p/reseau-sur-france/1.webp', caption: 'Parcours du site' },
-      { type: 'img', src: 'img/p/reseau-sur-france/1.webp', alt: "Page d'accueil du site Réseau Sûr France" },
-      { type: 'img', src: 'img/p/reseau-sur-france/2.webp', alt: 'Section des réalisations' },
-      { type: 'img', src: 'img/p/reseau-sur-france/3.webp', alt: "Page de vérification d'éligibilité" },
-      { type: 'img', src: 'img/p/reseau-sur-france/4.webp', alt: 'Pied de page avec les sociétés du groupe' },
-    ],
-  },
-  {
-    slug: 'jpo-iut-meaux', device: 'laptop', screen: 'img/p/jpo-iut-meaux/1.webp', title: 'JPO IUT de Meaux', color: C.prune, relief: { peaks: 5, rough: .55 },
-    kicker: 'Le site des portes ouvertes du département MMI, avec une salle modélisée en 3D.',
-    kind: 'ecole', context: 'BUT Métiers du Multimédia et de l’Internet', org: 'IUT de Meaux, Université Gustave Eiffel', year: '2024', period: 'Janvier 2024',
-    team: 'Équipe de 5', role: 'Modélisation et intégration 3D',
-    stack: ['Blender', '3ds Max', 'Unity', 'WebGL', 'Angular', 'Sass', 'C#'],
-    links: [],
-    intro: "Pour les journées portes ouvertes, notre équipe a créé un site de présentation du département MMI. Ma part : modéliser une de nos salles de cours en 3D et l'intégrer pour qu'on puisse la visiter depuis le navigateur.",
-    sections: [
-      { title: 'Ma part', body: ["Modélisation de la salle dans Blender et 3ds Max, export vers Unity puis WebGL, et intégration dans le site Angular. Le reste de l'équipe s'occupait des contenus et de l'interface."] },
-    ],
-    figures: [
-      { type: 'video', src: 'media/jpo-iut-meaux.mp4', poster: 'img/p/jpo-iut-meaux/1.webp', caption: 'Aperçu du site' },
-      { type: 'img', src: 'img/p/jpo-iut-meaux/2.webp', alt: 'La salle de cours modélisée en 3D' },
-      { type: 'img', src: 'img/p/jpo-iut-meaux/1.webp', alt: 'Accueil du site des portes ouvertes' },
-      { type: 'img', src: 'img/p/jpo-iut-meaux/4.webp', alt: 'Projets étudiants présentés sur le site' },
-    ],
-  },
-  {
-    slug: 'gestion-articles', device: 'laptop', screen: 'img/p/gestion-articles/1.webp', title: 'Gestionnaire d’articles', color: C.ocre, relief: { peaks: 2, rough: .25 },
-    kicker: 'Une application Symfony pour publier, modifier et supprimer des articles.',
-    kind: 'ecole', context: 'BUT Métiers du Multimédia et de l’Internet', org: 'IUT de Meaux', year: '2024', period: 'Mars 2024',
-    team: 'Équipe de 2', role: 'Design, intégration, développement',
-    stack: ['Symfony', 'PHP', 'Twig', 'MySQL', 'HTML', 'CSS', 'JavaScript'],
-    links: [['Voir le code', 'https://github.com/Subdij/Gestion_Recettes']],
-    intro: "Un catalogue d'articles (ici, des paquets de chips) où seules les personnes connectées peuvent ajouter, modifier ou supprimer. Mon premier vrai projet Symfony.",
-    sections: [
-      { title: 'Ce qu’il fait', body: ["Inscription, connexion et déconnexion, suppression de compte. Les articles et les utilisateurs sont stockés en base MySQL, et les droits changent selon qu'on est connecté ou non."] },
-    ],
-    figures: [
-      { type: 'video', src: 'media/gestion-articles.mp4', poster: 'img/p/gestion-articles/1.webp', caption: 'Démonstration' },
-      { type: 'img', src: 'img/p/gestion-articles/1.webp', alt: 'Liste des articles' },
-      { type: 'img', src: 'img/p/gestion-articles/2.webp', alt: "Formulaire d'ajout" },
-      { type: 'img', src: 'img/p/gestion-articles/3.webp', alt: "Modification d'un article" },
-    ],
-  },
-  {
-    slug: 'web-doc-artisans', device: 'laptop', screen: 'img/p/web-doc-artisans/1.webp', title: 'Web-documentaire artisans', color: C.foret, relief: { peaks: 4, rough: .6 },
-    kicker: 'Des artisans aux métiers rares, racontés avec leurs propres mots.',
-    kind: 'ecole', context: 'BUT Métiers du Multimédia et de l’Internet', org: 'IUT de Meaux', year: '2022', period: 'Novembre 2022',
-    team: 'Équipe de 4', role: 'Interviews et design',
-    stack: ['Figma', 'Premiere Pro', 'HTML', 'CSS', 'JavaScript'],
-    links: [['Voir le site', 'https://web-documentaire-artisant.netlify.app'], ['Voir le code', 'https://github.com/Subdij/Web-documentaire-artisant']],
-    intro: "Une ébéniste, une potière, un plumassier, un lapidaire. Nous sommes allés les interviewer pour comprendre des métiers qui disparaissent, puis nous avons construit un web-documentaire autour de leurs récits.",
-    sections: [
-      { title: 'Ma part', body: ["J'ai mené des entretiens et conçu l'interface dans Figma. Les vidéos ont été montées dans Premiere Pro, puis intégrées dans un site simple, page par métier."] },
-    ],
-    figures: [
-      { type: 'video', src: 'media/web-doc-artisans.mp4', poster: 'img/p/web-doc-artisans/1.webp', caption: 'Parcours du web-documentaire' },
-      { type: 'img', src: 'img/p/web-doc-artisans/1.webp', alt: 'Accueil du web-documentaire' },
-      { type: 'img', src: 'img/p/web-doc-artisans/2.webp', alt: 'Page consacrée à la poterie' },
-      { type: 'img', src: 'img/p/web-doc-artisans/3.webp', alt: 'Galerie photo' },
-    ],
-  },
-  {
-    slug: 'pub-steel-ball-run', device: 'laptop', screen: 'img/p/pub-steel-ball-run/3.webp', title: 'Pub Steel Ball Run', color: C.brique, relief: { peaks: 3, rough: .9 },
-    kicker: 'Une publicité animée pour un manga que j’adore.',
-    kind: 'ecole', context: 'BUT Métiers du Multimédia et de l’Internet', org: 'IUT de Meaux', year: '2022', period: 'Mars 2022',
-    team: 'Seul', role: 'Scénario, animation, montage',
-    stack: ['After Effects', 'Media Encoder'],
-    links: [['Voir sur YouTube', 'https://youtu.be/3-xCI2ds2RQ']],
-    intro: "Une annonce animée sous After Effects pour JoJo's Bizarre Adventure : Steel Ball Run, qui met en avant le manga et ses personnages. Tout devait tenir en trente-cinq secondes, ce qui a surtout demandé un travail de rythme au montage.",
-    sections: [],
-    figures: [
-      { type: 'video', src: 'media/pub-steel-ball-run.mp4', poster: 'img/p/pub-steel-ball-run/1.webp', caption: 'La publicité (avec le son)', sound: true },
-      { type: 'img', src: 'img/p/pub-steel-ball-run/3.webp', alt: 'Plan de la publicité avec les tomes du manga' },
-      { type: 'img', src: 'img/p/pub-steel-ball-run/2.webp', alt: 'Plan sur Gyro Zeppeli' },
-    ],
+    setting: L('Master Sciences et Technologies du Métavers', 'Master’s in Metaverse Science and Technology'), org: 'INSA Hauts-de-France',
+    period: L('2025 à 2026', '2025 to 2026'),
+    team: L('Projets de Master en équipe', 'Master’s team projects'), role: L('Développement Unity et C#, interactions VR, son', 'Unity and C# development, VR interactions, sound'),
+    stack: ['Unity 2022.3', 'Unity 6', 'C#', 'URP', 'XR Interaction Toolkit', 'OpenXR', 'Meta Quest'],
+    links: [[L('Code de Funfair VR', 'Funfair VR code'), 'https://github.com/Subdij/Project_VR'], [L('Code de Hotel Murder VR', 'Hotel Murder VR code'), 'https://github.com/Subdij/Hotel-Murder-Escape-game_VR']],
+    cover: { src: 'img/ziyad-vr.webp', alt: L('Ziyad Chaabi présente un projet de réalité virtuelle, un Meta Quest 3 posé sur le bureau', 'Ziyad Chaabi presenting a virtual reality project, a Meta Quest 3 on the desk') },
+    story: {
+      context: [L("Deux projets du Master Sciences et Technologies du Métavers. Funfair VR : une fête foraine médiévale en cinq mini-jeux. Hotel Murder VR : un escape game d'enquête dans un hôtel, où chaque membre de l'équipe crée sa propre scène.",
+        'Two projects from the Master’s in Metaverse Science and Technology. Funfair VR: a medieval fair with five mini-games. Hotel Murder VR: a detective escape game in a hotel, where each team member builds their own scene.')],
+      problem: [L("En VR, il n'y a pas de place pour une notice. Tout doit se comprendre en prenant les objets en main, sans consigne à lire.",
+        'In VR there is no room for a manual. Everything has to make sense once you pick things up, with nothing to read.')],
+      built: [
+        { title: L('Funfair VR, ma part', 'Funfair VR, my part'), shot: { src: 'img/ziyad-vr.webp', alt: L('En présentation à l’INSA, avec le Meta Quest 3', 'Presenting at INSA with the Meta Quest 3') },
+          text: L('La piscine (dunk tank), le punching-ball, le menu VR à portails qui relie les scènes, la musique et les effets sonores.', 'The dunk tank, the punching bag, the VR portal menu linking the scenes, the music and the sound effects.') },
+        { title: L('Hotel Murder VR, la salle de sécurité', 'Hotel Murder VR, the security room'), shot: { src: 'img/auto/hotel-murder-escape-game-vr/repo-1.png', alt: L('La configuration OpenXR du projet dans Unity', 'The project’s OpenXR setup in Unity') },
+          text: L("Dans l'escape game à trois, ma scène est la salle de sécurité : des PNJ, une enquête et des énigmes variées.", 'In the three-person escape game, my scene is the security room: NPCs, an investigation and a mix of puzzles.') },
+      ],
+      decisions: [
+        [L('Un menu qu’on traverse', 'A menu you walk through'), L('Le menu de Funfair VR est fait de portails : on passe d’une attraction à l’autre sans quitter le monde.', 'The Funfair VR menu is made of portals: you go from one attraction to the next without leaving the world.')],
+        [L('La physique comme règle du jeu', 'Physics as the rules'), L('La piscine et le punching-ball reposent sur la physique de Unity : on vise, on lance, on frappe.', 'The dunk tank and the punching bag rely on Unity physics: you aim, you throw, you hit.')],
+        [L('Deux versions de Unity', 'Two Unity versions'), L("Unity 2022.3 avec l'Universal Render Pipeline, XR Interaction Toolkit et OpenXR pour Funfair VR ; Unity 6 et XR Interaction Toolkit 3 pour Hotel Murder VR.", 'Unity 2022.3 with the Universal Render Pipeline, XR Interaction Toolkit and OpenXR for Funfair VR; Unity 6 and XR Interaction Toolkit 3 for Hotel Murder VR.')],
+      ],
+      result: {
+        stats: [['5', L('mini-jeux dans Funfair VR', 'mini-games in Funfair VR')], ['6', L('scènes', 'scenes')]],
+        text: [L('Le code des deux projets est public sur GitHub.', 'The code of both projects is public on GitHub.')],
+      },
+      lessons: [],
+    },
   },
 ];
 
-// Le labo affiche tout : les projets ci-dessus + les dépôts GitHub plus petits.
-// zone : pro | mobile | xr | web | data | jeux
-const zones = [
-  { id: 'pro', name: 'Au travail', x: -0.55, y: -0.35 },
-  { id: 'mobile', name: 'Mobile', x: 0.1, y: -0.55 },
-  { id: 'xr', name: 'Réalité virtuelle et 3D', x: 0.62, y: -0.2 },
-  { id: 'web', name: 'Web', x: -0.45, y: 0.45 },
-  { id: 'data', name: 'Données et algorithmes', x: 0.2, y: 0.5 },
-  { id: 'jeux', name: 'Jeux et vidéo', x: 0.7, y: 0.55 },
+/* ---------- L'archive : les autres projets racontés à la main ---------- */
+const others = [
+  { slug: 'lolop', title: 'lolop', year: '2025', kind: 'perso', zone: 'mobile', stack: ['Java', 'Android', 'MVVM', 'Retrofit', 'SQLite'], links: [['GitHub', 'https://github.com/Subdij/lolop']],
+    kicker: L('Un compagnon League of Legends pour Android. Ma partie : l’écran principal, le catalogue d’objets avec recherche, les notes de patch, la traduction FR/EN et les favoris.', 'A League of Legends companion for Android. My part: the main screen, the item catalogue with search, patch notes, the FR/EN translation and favourites.') },
+  { slug: 'turaty-naturels', title: 'Turaty Naturels', year: '2025', kind: 'perso', zone: 'web', stack: ['Symfony 6', 'MySQL 8', 'Twig', 'Tailwind', 'Stripe', 'Docker'], links: [], private: true,
+    kicker: L('Une boutique de cosmétiques bio construite et mise en ligne pour un proche au Canada : front, back et base de données, Stripe, PayPal, connexion Google, factures PDF.', 'An organic cosmetics shop built and launched for a relative in Canada: front end, back end and database, Stripe, PayPal, Google sign-in, PDF invoices.') },
+  { slug: 'zabi', title: 'ZABI', year: '2025', kind: 'ecole', zone: 'jeux', stack: ['Node.js', 'Express 5', 'MongoDB'], links: [['GitHub', 'https://github.com/Subdij/ZABI']], img: { src: 'img/p/zabi/1.webp' },
+    kicker: L('Un jeu de duel entre deux héros tirés parmi 731, en équipe de 4. Ma partie : tout le back-end, de l’import des héros aux statistiques, bonus et événements.', 'A duel game between two heroes drawn from 731, in a team of 4. My part: the whole back end, from importing the heroes to stats, bonuses and events.') },
+  { slug: 'subchaine', title: 'SUBCHAINE', year: '2025', kind: 'ecole', zone: 'data', stack: ['Node.js', 'Socket.IO', 'crypto-js', 'elliptic'], links: [['GitHub', 'https://github.com/Subdij/BlockChain']], img: { src: 'img/p/subchaine/3.webp' },
+    kicker: L('Un simulateur pour comprendre une blockchain en la manipulant : portefeuilles, signatures, minage.', 'A simulator to understand a blockchain by using it: wallets, signatures, mining.') },
+  { slug: 'jpo-iut-meaux', title: L('JPO IUT de Meaux', 'IUT Meaux open day'), year: '2024', kind: 'ecole', zone: 'xr', stack: ['Blender', 'Unity', 'WebGL', 'Angular'], links: [], img: { src: 'img/p/jpo-iut-meaux/1.webp' },
+    kicker: L('Le site des portes ouvertes du département MMI. Ma part : une salle de cours modélisée en 3D, visitable dans le navigateur.', 'The MMI department’s open-day site. My part: a classroom modelled in 3D, explorable in the browser.') },
+  { slug: 'gestion-articles', title: L('Gestionnaire d’articles', 'Article manager'), year: '2024', kind: 'ecole', zone: 'web', stack: ['Symfony', 'PHP', 'Twig', 'MySQL'], links: [['GitHub', 'https://github.com/Subdij/Gestion_Recettes']], img: { src: 'img/p/gestion-articles/1.webp' },
+    kicker: L('Mon premier vrai projet Symfony : un catalogue où seules les personnes connectées peuvent publier.', 'My first real Symfony project: a catalogue where only signed-in users can publish.') },
+  { slug: 'reseau-sur-france', title: 'Réseau Sûr France', year: '2023', kind: 'pro', zone: 'pro', stack: ['WordPress', 'Figma', 'Photoshop', 'JavaScript'], links: [[L('Le site', 'Website'), 'https://reseausurfrance.fr']], img: { src: 'img/p/reseau-sur-france/1.webp' },
+    kicker: L('Trois mois de stage pour livrer le site vitrine d’une entreprise d’électricité de l’Aube, dans sa charte.', 'A three-month internship to ship the website of an electrical company in the Aube, on brand.') },
+  { slug: 'web-doc-artisans', title: L('Web-documentaire artisans', 'Craftspeople web documentary'), year: '2022', kind: 'ecole', zone: 'web', stack: ['Figma', 'Premiere Pro', 'HTML', 'CSS'], links: [[L('Le site', 'Website'), 'https://web-documentaire-artisant.netlify.app'], ['GitHub', 'https://github.com/Subdij/Web-documentaire-artisant']], img: { src: 'img/p/web-doc-artisans/1.webp' },
+    kicker: L('Une ébéniste, une potière, un plumassier, un lapidaire : des métiers rares, racontés avec leurs mots.', 'A cabinetmaker, a potter, a featherworker, a gem cutter: rare crafts, told in their own words.') },
+  { slug: 'pub-steel-ball-run', title: 'Pub Steel Ball Run', year: '2022', kind: 'ecole', zone: 'jeux', stack: ['After Effects'], links: [['YouTube', 'https://youtu.be/3-xCI2ds2RQ']], img: { src: 'img/p/pub-steel-ball-run/3.webp' },
+    kicker: L('Une publicité animée de trente-cinq secondes pour un manga que j’adore.', 'A thirty-five-second animated ad for a manga I love.') },
 ];
 
-const labZone = {
-  'btp-360': 'pro', 'distri-sur-france': 'pro', 'reseau-sur-france': 'pro',
-  subforge: 'mobile', lolop: 'mobile',
-  'funfair-vr': 'xr', 'hotel-murder-vr': 'xr', 'jpo-iut-meaux': 'xr',
-  'turaty-naturels': 'web', 'gestion-articles': 'web', 'web-doc-artisans': 'web',
-  subchaine: 'data', zabi: 'jeux', 'pub-steel-ball-run': 'jeux',
+// zone d'un projet ou d'un dépôt, pour l'archive
+const zones = {
+  pro: L('Au travail', 'At work'), mobile: 'Mobile', xr: L('Réalité virtuelle et 3D', 'VR and 3D'),
+  web: 'Web', data: L('Données et algorithmes', 'Data and algorithms'), jeux: L('Jeux et vidéo', 'Games and video'),
 };
 
+// Descriptions écrites à la main pour les dépôts GitHub (prioritaires sur le README). Sans `repo` : dépôt privé.
 const repos = [
-  { n: 'GymBud', z: 'mobile', y: '2025', d: "Une application pour trouver un partenaire d'entraînement : swipe, profils sportifs, messagerie.", s: ['React Native', 'Expo'] },
-  { n: 'Facture Android', repo: 'Android_Facture', z: 'mobile', y: '2024', d: 'Mes débuts en Kotlin, autour de la facturation.', s: ['Kotlin', 'Android'] },
-  { n: 'Magasin VR', z: 'xr', y: '2025', d: 'Un showroom en réalité virtuelle pour se promener entre les produits.', s: ['Unity 6', 'C#'] },
-  { n: 'JoJo Maze', repo: 'JOJO_MAZE', z: 'xr', y: '2025', d: "Un labyrinthe 3D sous Unity, clin d'œil à JoJo's Bizarre Adventure.", s: ['Unity', 'C#'] },
-  { n: 'FPS en three.js', repo: 'Test_FPS_three.js', z: 'xr', y: '2024', d: 'Un jeu de tir à la première personne dans le navigateur.', s: ['three.js', 'WebGL'] },
-  { n: 'Bouton WebGL', repo: 'Webgl-Button', demo: 'https://subdij.github.io/Webgl-Button/', z: 'xr', y: '2024', d: 'Une scène Unity exportée en WebGL.', s: ['Unity', 'WebGL'] },
-  { n: 'Scène 3D foot', repo: 'base_3D_foot_ref', z: 'xr', y: '2024', d: "Base d'une scène 3D web servie par Node.", s: ['three.js', 'Node.js'] },
-  { n: 'Hôtel : gestion et paie', repo: 'Hotel-Paie', z: 'web', y: '2024', d: 'Gestion hôtelière et paie des employés, à trois.', s: ['PHP', 'MySQL', 'Tailwind'] },
-  { n: 'AppScol', repo: 'app-scol', z: 'web', y: '2023', d: 'Une application scolaire en Angular 17.', s: ['Angular', 'TypeScript'] },
-  { n: 'Gestion académique', repo: 'academic-management-system-ts', z: 'web', y: '2023', d: 'Étudiants, cours, notes et moyennes pondérées.', s: ['TypeScript'] },
-  { n: 'API REST employés', repo: 'API_REST-Employee-Management', z: 'web', y: '2023', d: 'Une API REST en PHP.', s: ['PHP'] },
-  { n: "Livre d'or", repo: 'Guest-Book', z: 'web', y: '2023', d: "Un livre d'or en PHP.", s: ['PHP'] },
-  { n: 'Mini Twitter', repo: 'twitter', z: 'web', y: '2023', d: 'Un clone simplifié de Twitter.', s: ['PHP', 'MySQL'] },
-  { n: 'Salaire brut en net', repo: 'Calculateur-de-salaire-brut-en-net', demo: 'https://subdij.github.io/Calculateur-de-salaire-brut-en-net/', z: 'web', y: '2023', d: 'Convertir un salaire brut en net, en direct.', s: ['JavaScript'] },
-  { n: "Calculateur d'IMC", repo: 'Calculateur-d-IMC', demo: 'https://subdij.github.io/Calculateur-d-IMC/', z: 'web', y: '2023', d: "Calculer son indice de masse corporelle.", s: ['JavaScript'] },
-  { n: 'Site Minecraft', repo: 'Minecraft', demo: 'https://subdij.github.io/Minecraft/', z: 'web', y: '2023', d: 'Un site de fan : constructions et redstone.', s: ['HTML', 'Bootstrap'] },
-  { n: 'Portfolio V2', repo: 'Portfolio-V2', demo: 'https://subdij.github.io/Portfolio-V2/', z: 'web', y: '2023', d: 'Mon portfolio précédent, toujours en ligne.', s: ['HTML', 'CSS'] },
-  { n: 'Portfolio Next.js', repo: 'portfolio-2.0.1', z: 'web', y: '2023', d: 'Une version de portfolio en Next.js.', s: ['Next.js', 'Tailwind'] },
-  { n: 'Prénoms et Hadoop', repo: 'mini-projet-hadoop', z: 'data', y: '2025', d: 'Les prénoms les plus donnés par décennie, données INSEE, Hadoop Streaming et Pig.', s: ['Python', 'Hadoop', 'Pig'] },
-  { n: 'QuizDown', repo: 'TP5_Quizz', z: 'data', y: '2024', d: "Un quiz en Pygame, à cinq. J'étais responsable de l'architecture.", s: ['Python', 'Pygame'] },
-  { n: 'Wifi auto', repo: 'wifi-connexion', z: 'data', y: '2025', d: 'Un script Selenium qui se reconnecte au portail wifi toutes les 3 h 30, parce qu’il me déconnectait sans arrêt.', s: ['Python', 'Selenium'] },
+  { n: 'GymBud', z: 'mobile', y: '2025', d: L("Une application pour trouver un partenaire d'entraînement : swipe, profils sportifs, messagerie.", 'An app to find a workout partner: swipe, sports profiles, messaging.'), s: ['React Native', 'Expo'] },
+  { n: 'Facture Android', repo: 'Android_Facture', z: 'mobile', y: '2024', d: L('Mes débuts en Kotlin, autour de la facturation.', 'My first steps in Kotlin, around invoicing.'), s: ['Kotlin', 'Android'] },
+  { n: 'Magasin VR', z: 'xr', y: '2025', d: L('Un showroom en réalité virtuelle pour se promener entre les produits.', 'A virtual reality showroom to walk among the products.'), s: ['Unity 6', 'C#'] },
+  { n: 'JoJo Maze', repo: 'JOJO_MAZE', z: 'xr', y: '2025', d: L("Un labyrinthe 3D sous Unity, clin d'œil à JoJo's Bizarre Adventure.", "A 3D maze in Unity, a nod to JoJo's Bizarre Adventure."), s: ['Unity', 'C#'] },
+  { n: 'FPS en three.js', repo: 'Test_FPS_three.js', z: 'xr', y: '2024', d: L('Un jeu de tir à la première personne dans le navigateur.', 'A first-person shooter in the browser.'), s: ['three.js', 'WebGL'] },
+  { n: 'Bouton WebGL', repo: 'Webgl-Button', z: 'xr', y: '2024', d: L('Une scène Unity exportée en WebGL.', 'A Unity scene exported to WebGL.'), s: ['Unity', 'WebGL'] },
+  { n: 'Scène 3D foot', repo: 'base_3D_foot_ref', z: 'xr', y: '2024', d: L("Base d'une scène 3D web servie par Node.", 'The base of a web 3D scene served by Node.'), s: ['three.js', 'Node.js'] },
+  { n: 'Hôtel : gestion et paie', repo: 'Hotel-Paie', z: 'web', y: '2024', d: L('Gestion hôtelière et paie, à trois. Ma partie : l’API REST et le déploiement sur Azure.', 'Hotel management and payroll, as a team of three. My part: the REST API and the Azure deployment.'), s: ['PHP', 'MySQL', 'Tailwind'] },
+  { n: 'AppScol', repo: 'app-scol', z: 'web', y: '2023', d: L('Une application scolaire en Angular 17.', 'A school app in Angular 17.'), s: ['Angular', 'TypeScript'] },
+  { n: 'Gestion académique', repo: 'academic-management-system-ts', z: 'web', y: '2023', d: L('Étudiants, cours, notes et moyennes pondérées.', 'Students, courses, grades and weighted averages.'), s: ['TypeScript'] },
+  { n: 'API REST employés', repo: 'API_REST-Employee-Management', z: 'web', y: '2023', d: L('Une API REST en PHP.', 'A REST API in PHP.'), s: ['PHP'] },
+  { n: "Livre d'or", repo: 'Guest-Book', z: 'web', y: '2023', d: L("Un livre d'or en PHP.", 'A guest book in PHP.'), s: ['PHP'] },
+  { n: 'Mini Twitter', repo: 'twitter', z: 'web', y: '2023', d: L('Un clone simplifié de Twitter.', 'A simplified Twitter clone.'), s: ['PHP', 'MySQL'] },
+  { n: 'Salaire brut en net', repo: 'Calculateur-de-salaire-brut-en-net', z: 'web', y: '2023', d: L('Convertir un salaire brut en net, en direct.', 'Convert a gross salary to net, live.'), s: ['JavaScript'] },
+  { n: "Calculateur d'IMC", repo: 'Calculateur-d-IMC', z: 'web', y: '2023', d: L('Calculer son indice de masse corporelle.', 'Work out your body mass index.'), s: ['JavaScript'] },
+  { n: 'Site Minecraft', repo: 'Minecraft', z: 'web', y: '2023', d: L('Un site de fan : constructions et redstone.', 'A fan site: builds and redstone.'), s: ['HTML', 'Bootstrap'] },
+  { n: 'Portfolio V2', repo: 'Portfolio-V2', z: 'web', y: '2023', d: L('Mon portfolio précédent, toujours en ligne.', 'My previous portfolio, still online.'), s: ['HTML', 'CSS'] },
+  { n: 'Portfolio Next.js', repo: 'portfolio-2.0.1', z: 'web', y: '2023', d: L('Une version de portfolio en Next.js.', 'A portfolio version in Next.js.'), s: ['Next.js', 'Tailwind'] },
+  { n: 'Prénoms et Hadoop', repo: 'mini-projet-hadoop', z: 'data', y: '2025', d: L('Les prénoms les plus donnés par décennie, données INSEE, Hadoop Streaming et Pig.', 'The most given first names by decade, INSEE data, Hadoop Streaming and Pig.'), s: ['Python', 'Hadoop', 'Pig'] },
+  { n: 'QuizDown', repo: 'TP5_Quizz', z: 'data', y: '2024', d: L("Un quiz en Pygame, à cinq. J'étais responsable de l'architecture.", 'A quiz game in Pygame, as a team of five. I was in charge of the architecture.'), s: ['Python', 'Pygame'] },
+  { n: 'Wifi auto', repo: 'wifi-connexion', z: 'data', y: '2025', d: L('Un script Selenium qui se reconnecte au portail wifi toutes les 3 h 30, parce qu’il me déconnectait sans arrêt.', 'A Selenium script that logs back into the wifi portal every 3.5 hours, because it kept kicking me out.'), s: ['Python', 'Selenium'] },
 ];
-// Dépôts publics volontairement absents (doublons, tests vides, ce site).
+// Dépôts publics volontairement absents (doublons, tests vides, ce site). Lu par scripts/sync.mjs.
 const skipRepos = ['Final-Portfolio-V.X', 'ziyad-chaabi.github.io', 'subdij', 'premierprojet_git', 'test_FPS', 'video', 'Hotel-Paiee'];
 
-const timeline = [
-  { year: '2021', place: 'Troyes', coords: '48.30° N, 4.08° E', title: 'Le déclic', text: "Bac STI2D, option Systèmes d'information et numérique, au lycée Saint-Joseph La Salle. J'y écris mes premiers programmes, avec l'envie de comprendre ce qu'il y a derrière un écran." },
-  { year: '2021', place: 'Meaux', coords: '48.96° N, 2.88° E', title: 'Le détour par le design', img: 'img/parcours/iut-meaux.webp', alt: "L'IUT de Meaux", text: "Je pars trois ans à Meaux pour un BUT MMI : code, UX, vidéo, graphisme. J'y ai appris à tester une interface avec les personnes qui vont s'en servir." },
-  { year: '2022', place: 'Troyes', coords: '48.30° N, 4.08° E', title: 'Mon premier outil métier', text: "Un stage administratif chez Ophta Médical. En voyant le planning de l'équipe, j'ai construit un tableau qui calcule les heures et les heures supplémentaires de chacun." },
-  { year: '2023', place: 'Saint-André-les-Vergers', coords: '48.28° N, 4.05° E', title: 'Premier site livré en entreprise', img: 'img/p/reseau-sur-france/1.webp', alt: 'Le site Réseau Sûr France', text: "Trois mois chez Réseau Sûr France pour livrer leur nouveau site, avec l'équipe marketing et des demandes qui changent jusqu'au bout.", link: 'reseau-sur-france' },
-  { year: '2023', place: 'Troyes', coords: '48.30° N, 4.08° E', title: "Dix mois d'e-commerce", img: 'img/p/distri-sur-france/1.webp', alt: 'La boutique en ligne Distri Sûr France', text: "En alternance chez Distri Sûr France, j'ai conçu et développé la boutique en ligne, des maquettes Figma à la mise en ligne sur Odoo.", link: 'distri-sur-france' },
-  { year: '2024', place: 'Valenciennes', coords: '50.36° N, 3.52° E', title: 'Cap sur le métavers', img: 'img/ziyad-vr.webp', alt: 'Ziyad en présentation de projet VR, un Meta Quest 3 sur le bureau', text: "Master Sciences et Technologies du Métavers à l'INSA Hauts-de-France : réalité virtuelle, IA, mobile, blockchain, big data. Et l'équipe e-sport de l'école entre deux rendus.", link: 'funfair-vr' },
-  { year: '2026', place: 'Troyes', coords: '48.30° N, 4.08° E', title: 'BTP-360, seul aux commandes', img: 'img/p/btp-360/1.webp', alt: 'Écran Documents de BTP-360', text: "Sept mois pour remplacer les fichiers Excel de quatre sociétés par une seule application, web et Android, en production sur AWS.", link: 'btp-360' },
-  { year: '2026', place: 'Troyes', coords: '48.30° N, 4.08° E', title: 'Et maintenant', text: "De retour à Troyes. SubForge avance, et le labo grossit à chaque nouveau dépôt GitHub.", link: 'subforge' },
+/* ---------- Accueil : expérience et formation (CV) ---------- */
+const experience = [
+  { period: L('Mars à oct. 2026', 'Mar. to Oct. 2026'), org: 'Iso Sûr France', role: 'Full Stack AI Engineer', where: L('Troyes, stage de fin d’études, développeur principal', 'Troyes, final-year internship, lead developer'), proof: 'btp-360',
+    impact: L('Conçu, développé et mis en production seul BTP-360, qui remplace les fichiers Excel d’Iso Sûr France et de ses trois sociétés sœurs.', 'Designed, built and shipped BTP-360 on my own; it replaces the Excel files of Iso Sûr France and its three sister companies.'),
+    stack: ['Angular', 'Ionic', 'NestJS', 'Prisma', 'PostgreSQL', 'AWS'] },
+  { period: L('Nov. 2023 à août 2024', 'Nov. 2023 to Aug. 2024'), org: 'Distri Sûr France', role: L('Développeur Web Full Stack E-commerce', 'Full Stack E-commerce Web Developer'), where: L('Troyes, alternance de 10 mois', 'Troyes, 10-month work-study'), proof: 'distri-sur-france',
+    impact: L('Créé le site e-commerce officiel de l’entreprise, des maquettes Figma à la mise en production sur Odoo.', 'Built the company’s official e-commerce site, from Figma mockups to production on Odoo.'),
+    stack: ['Odoo', 'Python', 'Figma', 'SEO'] },
+  { period: L('Avr. à juin 2023', 'Apr. to Jun. 2023'), org: 'Réseau Sûr France', role: L('Développeur Web Front-End', 'Front-End Web Developer'), where: L('Saint-André-les-Vergers, stage de 3 mois', 'Saint-André-les-Vergers, 3-month internship'), proof: 'reseau-sur-france',
+    impact: L('Livré le nouveau site officiel de l’entreprise dans les délais du stage, dans sa charte graphique.', 'Shipped the company’s new official website within the internship, on brand.'),
+    stack: ['WordPress', 'JavaScript', 'Figma', L('Suite Adobe', 'Adobe suite')] },
+];
+const education = [
+  { period: '2024 à 2026', degree: L('Master Informatique, Sciences et Technologies du Métavers', 'Master’s in Computer Science, Metaverse Science and Technology'), school: 'INSA Hauts-de-France, Valenciennes' },
+  { period: '2021 à 2024', degree: L('BUT Métiers du Multimédia et de l’Internet, parcours Développement web et dispositifs interactifs', 'Bachelor’s in Multimedia and Internet (BUT MMI), web development and interactive media'), school: 'IUT de Meaux, Université Gustave Eiffel' },
+  { period: '2021', degree: L('Bac STI2D, option Systèmes d’information et numérique', 'Technology baccalaureate (STI2D), digital systems'), school: L('Lycée Saint-Joseph La Salle, Troyes', 'Saint-Joseph La Salle, Troyes') },
 ];
 
-// level : prod (utilisé en production) | projet (utilisé sur des projets)
+/* ---------- Stack : chaque outil relié aux projets qui le prouvent (étude de cas ou archive) ---------- */
+// [nom, level, preuves, logo] : level prod (utilisé en production) | projet (sur des projets) ; logo = nom Simple Icons (scripts/icons.mjs)
 const skills = [
-  { group: 'Front et mobile', items: [
-    ['Angular', 'prod', ['btp-360']], ['Ionic', 'prod', ['btp-360']], ['NgRx', 'prod', ['btp-360']], ['Capacitor', 'prod', ['btp-360']],
-    ['TypeScript', 'prod', ['btp-360', 'subforge']], ['React Native', 'projet', ['subforge']], ['Expo', 'projet', ['subforge']],
-    ['React', 'projet', []], ['Next.js', 'projet', []], ['Tailwind', 'projet', ['turaty-naturels']], ['Android (Java)', 'projet', ['lolop']],
+  { group: L('Front et mobile', 'Front end and mobile'), items: [
+    ['Angular', 'prod', ['btp-360'], 'angular'], ['Ionic', 'prod', ['btp-360'], 'ionic'], ['NgRx', 'prod', ['btp-360'], 'ngrx'], ['Capacitor', 'prod', ['btp-360'], 'capacitor'],
+    ['TypeScript', 'prod', ['btp-360', 'subforge'], 'typescript'], ['RxJS', 'prod', ['btp-360'], 'reactivex'], ['React Native', 'projet', ['subforge'], 'react'], ['Expo', 'projet', ['subforge'], 'expo'],
+    ['Tailwind', 'projet', ['turaty-naturels'], 'tailwindcss'], [L('Android (Java)', 'Android (Java)'), 'projet', ['lolop'], 'android'], ['Kotlin', 'projet', ['android-facture'], 'kotlin'],
   ] },
-  { group: 'Back-end et données', items: [
-    ['NestJS', 'prod', ['btp-360']], ['Prisma', 'prod', ['btp-360']], ['PostgreSQL', 'prod', ['btp-360', 'subforge']], ['Socket.IO', 'prod', ['btp-360', 'subchaine']],
-    ['Supabase', 'projet', ['subforge']], ['Node.js', 'projet', ['zabi', 'subchaine']], ['Express', 'projet', ['zabi', 'subchaine']], ['MongoDB', 'projet', ['zabi']],
-    ['Symfony', 'projet', ['turaty-naturels', 'gestion-articles']], ['MySQL', 'projet', ['turaty-naturels', 'gestion-articles']], ['Odoo', 'prod', ['distri-sur-france']],
+  { group: L('Back-end et données', 'Back end and data'), items: [
+    ['NestJS', 'prod', ['btp-360'], 'nestjs'], ['Prisma', 'prod', ['btp-360'], 'prisma'], ['PostgreSQL', 'prod', ['btp-360', 'subforge'], 'postgresql'], ['Socket.IO', 'prod', ['btp-360', 'subchaine'], 'socketdotio'],
+    ['Supabase', 'projet', ['subforge'], 'supabase'], ['Node.js', 'projet', ['zabi', 'subchaine'], 'nodedotjs'], ['MongoDB', 'projet', ['zabi'], 'mongodb'],
+    ['Symfony', 'projet', ['turaty-naturels', 'gestion-articles'], 'symfony'], ['MySQL', 'projet', ['turaty-naturels', 'gestion-articles'], 'mysql'], ['Odoo', 'prod', ['distri-sur-france'], 'odoo'], ['Python', 'projet', ['mini-projet-hadoop', 'wifi-connexion'], 'python'],
   ] },
-  { group: 'IA appliquée', items: [
-    ['Intégration de LLM (Gemini)', 'projet', ['subforge']], ['Sorties structurées et repli sans IA', 'projet', ['subforge']], ['Agents de code (Claude Code, Codex)', 'prod', ['btp-360']],
-    ['MCP', 'prod', ['btp-360']], ['Systèmes multi-agents', 'projet', []], ['OCR (Tesseract.js)', 'prod', ['btp-360']],
+  { group: L('IA appliquée', 'Applied AI'), items: [
+    [L('Agents de code (Claude Code, Codex)', 'Coding agents (Claude Code, Codex)'), 'prod', ['btp-360'], 'claude'], [L('Revue du code généré par IA', 'Reviewing AI-generated code'), 'prod', ['btp-360']],
+    [L('Workflow multi-agents', 'Multi-agent workflow'), 'prod', ['btp-360']], ['MCP', 'prod', ['btp-360']], [L('OCR local (ML Kit, PaddleOCR, Tesseract.js)', 'Local OCR (ML Kit, PaddleOCR, Tesseract.js)'), 'prod', ['btp-360']],
+    [L('Intégration de LLM (Gemini)', 'LLM integration (Gemini)'), 'projet', ['subforge'], 'googlegemini'],
   ] },
-  { group: 'Mise en production et qualité', items: [
-    ['Docker', 'prod', ['btp-360', 'turaty-naturels']], ['AWS', 'prod', ['btp-360']], ['Terraform', 'prod', ['btp-360']], ['GitHub Actions', 'prod', ['btp-360']],
-    ['Playwright', 'prod', ['btp-360']], ['Jest', 'projet', ['subforge']], ['Sentry', 'prod', ['btp-360', 'subforge']], ['Git', 'prod', []],
+  { group: L('Mise en production et qualité', 'Shipping and quality'), items: [
+    ['Docker', 'prod', ['btp-360', 'turaty-naturels'], 'docker'], ['AWS', 'prod', ['btp-360'], 'amazonwebservices'], ['Terraform', 'prod', ['btp-360'], 'terraform'], ['GitHub Actions', 'prod', ['btp-360'], 'githubactions'],
+    ['Playwright', 'prod', ['btp-360']], ['Jest', 'projet', ['subforge'], 'jest'], ['Sentry', 'prod', ['btp-360', 'subforge'], 'sentry'], ['Azure', 'projet', ['hotel-paie']],
   ] },
-  { group: 'Réalité virtuelle et 3D', items: [
-    ['Unity', 'projet', ['funfair-vr', 'hotel-murder-vr', 'jpo-iut-meaux']], ['C#', 'projet', ['funfair-vr', 'hotel-murder-vr']], ['XR Interaction Toolkit', 'projet', ['funfair-vr', 'hotel-murder-vr']],
-    ['OpenXR', 'projet', ['funfair-vr']], ['three.js et WebGL', 'projet', ['jpo-iut-meaux']], ['Blender', 'projet', ['jpo-iut-meaux']],
+  { group: L('Réalité virtuelle et 3D', 'VR and 3D'), items: [
+    ['Unity', 'projet', ['realite-virtuelle', 'jpo-iut-meaux'], 'unity'], ['C#', 'projet', ['realite-virtuelle']], ['XR Interaction Toolkit', 'projet', ['realite-virtuelle']],
+    ['OpenXR', 'projet', ['realite-virtuelle']], ['Blender', 'projet', ['jpo-iut-meaux'], 'blender'],
   ] },
-  { group: 'Design et méthode', items: [
-    ['UX et UI', 'prod', ['btp-360', 'subforge', 'distri-sur-france']], ['Figma', 'prod', ['distri-sur-france', 'reseau-sur-france', 'web-doc-artisans']], ['Suite Adobe', 'prod', ['reseau-sur-france', 'pub-steel-ball-run']],
-    ['Accessibilité WCAG', 'projet', []], ['RGPD', 'prod', ['btp-360']], ['Agile, Scrum', 'projet', []], ['SEO', 'prod', ['distri-sur-france']],
+  { group: L('Design et méthode', 'Design and method'), items: [
+    [L('UX et UI', 'UX and UI'), 'prod', ['btp-360', 'subforge', 'distri-sur-france']], ['Figma', 'prod', ['distri-sur-france', 'reseau-sur-france'], 'figma'],
+    [L('Suite Adobe', 'Adobe suite'), 'prod', ['reseau-sur-france', 'pub-steel-ball-run'], 'adobe'], [L('RGPD', 'GDPR'), 'prod', ['btp-360']], ['SEO', 'prod', ['distri-sur-france']],
   ] },
 ];
 
+/* ---------- À propos ---------- */
+/* ---------- À propos : trois paragraphes (qui, ce que je cherche, d'où je viens) ---------- */
+const about = [
+  L("Je suis ingénieur développeur full stack, diplômé du Master Informatique de l'INSA Hauts-de-France. J'écris surtout du TypeScript : Angular et Ionic côté client, NestJS et PostgreSQL côté serveur, et du React Native pour le mobile.",
+    'I am a full stack software engineer with a Master’s in Computer Science from INSA Hauts-de-France. I mostly write TypeScript: Angular and Ionic on the client, NestJS and PostgreSQL on the server, and React Native for mobile.'),
+  L("Avant le code, il y a eu le design : trois ans de BUT MMI à Meaux. J'y ai pris l'habitude de tester une interface avec les gens qui vont s'en servir. Puis BTP-360 : pendant mon stage de fin d'études, seul, une application en production pour quatre sociétés.",
+    'Before code, there was design: three years of a multimedia degree in Meaux. That is where I got used to testing an interface with the people who will use it. Then BTP-360: during my final-year internship, on my own, an app in production for four companies.'),
+  L("Aujourd'hui, je cherche mon premier CDI. Je suis à Troyes, prêt à déménager, et ouvert à l'hybride comme au télétravail.",
+    'Now I am looking for my first permanent role. I am based in Troyes, ready to relocate, and open to hybrid or remote work.'),
+];
+
+const method = [
+  [L('Partir des gens', 'Start with people'), L("Je pense d'abord à ceux qui vont se servir de l'outil, sur un chantier ou un casque VR sur la tête, et seulement ensuite à la stack. Le BUT MMI m'a appris à tester une interface avec les personnes qui vont s'en servir.",
+    'I think first about the people who will use the tool, on a building site or with a VR headset on, and only then about the stack. My design degree taught me to test an interface with the people who will use it.')],
+  [L('Tout écrire', 'Write everything down'), L('La documentation, les décisions, les tests. Seul sur BTP-360, c’est ce qui m’a permis d’aller vite sans casser ce qui marchait déjà.',
+    'Documentation, decisions, tests. Alone on BTP-360, that is what let me move fast without breaking what already worked.')],
+  [L('L’IA écrit vite, je décide', 'The AI writes fast, I decide'), L("Je code avec des agents (Claude Code, Codex). Je cadre le besoin, j'écris la spécification, je relis chaque diff comme celui d'un collègue et je décide de ce qui part en production.",
+    'I code with agents (Claude Code, Codex). I frame the need, write the spec, review every diff like a colleague’s, and decide what goes to production.')],
+];
+
+const timeline = [
+  { year: '2021', place: 'Troyes', title: L('Le déclic', 'The spark'), text: L("Bac STI2D, option Systèmes d'information et numérique, au lycée Saint-Joseph La Salle. J'y écris mes premiers programmes.", 'A technology baccalaureate (STI2D, digital systems option) at Saint-Joseph La Salle. I write my first programs there.') },
+  { year: '2021', place: 'Meaux', title: L('Le détour par le design', 'The design detour'), text: L("Trois ans à Meaux pour un BUT MMI : code, UX, vidéo, graphisme.", 'Three years in Meaux for a multimedia degree: code, UX, video, graphic design.') },
+  { year: '2022', place: 'Troyes', title: L('Mon premier outil métier', 'My first business tool'), avis: 'karima', text: L("Deux mois d'assistant administratif chez Ophta Médical. En voyant le planning de l'équipe, j'ai construit un tableau qui calcule les heures et les heures supplémentaires de chacun.", 'Two months as an admin assistant at Ophta Médical. Looking at the team’s schedule, I built a sheet that works out everyone’s hours and overtime.') },
+  { year: '2023', place: 'Saint-André-les-Vergers', title: L('Premier site livré en entreprise', 'First website shipped at a company'), avis: 'juliana', link: 'reseau-sur-france', text: L("Trois mois chez Réseau Sûr France pour livrer leur nouveau site, avec l'équipe marketing et des demandes qui changent jusqu'au bout.", 'Three months at Réseau Sûr France to ship their new website, with the marketing team and requests that changed until the very end.') },
+  { year: '2023', place: 'Troyes', title: L("Dix mois d'e-commerce", 'Ten months of e-commerce'), link: 'distri-sur-france', text: L("En alternance chez Distri Sûr France, j'ai conçu et développé la boutique en ligne, des maquettes Figma à la mise en ligne sur Odoo.", 'As a work-study student at Distri Sûr France, I designed and built the online shop, from Figma mockups to launch on Odoo.') },
+  { year: '2024', place: 'Valenciennes', title: L('Cap sur le métavers', 'Heading for the metaverse'), link: 'realite-virtuelle', text: L("Master Sciences et Technologies du Métavers à l'INSA Hauts-de-France : réalité virtuelle, IA, mobile, blockchain, big data. Et l'équipe e-sport de l'école entre deux rendus.", 'A Master’s in Metaverse Science and Technology at INSA Hauts-de-France: VR, AI, mobile, blockchain, big data. And the school’s esports team between deadlines.') },
+  { year: '2026', place: 'Troyes', title: L('BTP-360, seul aux commandes', 'BTP-360, on my own'), link: 'btp-360', text: L("Stage de fin d'études chez Iso Sûr France : remplacer les fichiers Excel de quatre sociétés par une seule application, web et Android, en production sur AWS.", 'Final-year internship at Iso Sûr France: replacing the Excel files of four companies with a single app, web and Android, in production on AWS.') },
+  { year: '2026', place: 'Troyes', title: L('Et maintenant', 'And now'), link: 'subforge', text: L("Diplômé, de retour à Troyes, je cherche mon premier CDI de développeur full stack. SubForge avance en parallèle.", 'Graduated and back in Troyes, I am looking for my first permanent full stack role. SubForge keeps moving on the side.') },
+];
+
+const avis = {
+  juliana: { name: 'Juliana Rebelo', role: L('Assistante marketing et communication, ma tutrice chez Réseau Sûr France', 'Marketing and communications assistant, my supervisor at Réseau Sûr France'),
+    text: L('Ziyad a su mettre en avant ses compétences et son savoir-faire tout au long de son stage. Il s’est adapté très rapidement à l’entreprise, à sa charte graphique ainsi qu’à son fonctionnement.',
+      'Ziyad showed his skills and know-how throughout his internship. He adapted very quickly to the company, its brand guidelines and the way it works.') },
+  karima: { name: 'Karima Ghezza', role: L('Orthoptiste chez Ophta Médical, Troyes', 'Orthoptist at Ophta Médical, Troyes'),
+    text: L('Il nous a apporté des idées pour compléter notre planning du personnel, en créant un tableau qui permet de calculer les heures de travail journalières et de visualiser les heures supplémentaires de chaque employé.',
+      'He brought us ideas to complete our staff schedule, creating a sheet that calculates daily working hours and shows each employee’s overtime.') },
+};
+
+const offscreen = L(
+  'Hors de l’écran : l’e-sport en semi-pro avec l’équipe de l’INSA, la guitare et le chant, la photo, la musculation (d’où SubForge) et les mangas, JoJo’s Bizarre Adventure en tête (assez pour en tirer une pub animée).',
+  'Away from the screen: semi-pro esports with the INSA team, guitar and singing, photography, weight training (hence SubForge) and manga, JoJo’s Bizarre Adventure first (enough to make an animated ad).');
+
+const languages = [[L('Français', 'French'), L('bilingue', 'bilingual')], [L('Arabe', 'Arabic'), L('langue maternelle', 'native')], [L('Anglais', 'English'), 'C1'], [L('Espagnol', 'Spanish'), L('notions', 'basic')]];
+
+/* ---------- Veille ---------- */
 const notes = [
-  ['Les agents de code, oui, mais tenus en laisse', "J'ai codé BTP-360 avec Claude Code et Codex. Ce qui a marché : des règles projet écrites, des tests partout et une relecture de chaque changement."],
-  ['MCP pour brancher des outils à un modèle', "Un protocole commun pour donner à un modèle l'accès à une base, un navigateur ou un outil métier. Je l'utilise tous les jours et je regarde comment l'appliquer à des logiciels d'entreprise."],
-  ['L’IA propose, l’humain valide', "Dans SubForge, rien n'est enregistré sans l'accord de la personne, et un plan de repli sans IA prend le relais quand le modèle échoue. Pour moi, c'est la bonne façon de mettre de l'IA dans un produit."],
+  [L('Les agents de code, oui, mais tenus en laisse', 'Coding agents, yes, but on a leash'), L("J'ai codé BTP-360 avec Claude Code et Codex. Ce qui a marché : des règles projet écrites, des tests partout et une relecture de chaque changement.", 'I built BTP-360 with Claude Code and Codex. What worked: written project rules, tests everywhere and a review of every change.')],
+  [L('MCP pour brancher des outils à un modèle', 'MCP to plug tools into a model'), L("Un protocole commun pour donner à un modèle l'accès à une base, un navigateur ou un outil métier. Je l'utilise tous les jours et je regarde comment l'appliquer à des logiciels d'entreprise.", 'A common protocol to give a model access to a database, a browser or a business tool. I use it every day and I am looking at how to apply it to business software.')],
+  [L('L’IA propose, l’humain valide', 'The AI proposes, the human decides'), L("Dans BTP-360, si un agent ne sait pas m'expliquer sa logique, le changement n'est pas gardé. Dans SubForge, rien n'est enregistré sans l'accord de la personne.", 'In BTP-360, if an agent cannot explain its logic to me, the change is not kept. In SubForge, nothing is saved without the person’s consent.')],
 ];
 
-window.ZC = { site, projects, zones, labZone, repos, skipRepos, timeline, skills, notes };
+window.ZC = { site, profile, cases, others, zones, repos, skipRepos, experience, education, skills, about, method, timeline, avis, offscreen, languages, notes };
