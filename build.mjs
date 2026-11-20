@@ -218,7 +218,7 @@ ${LANGS.map(x => `<link rel="alternate" hreflang="${x}" href="${canon(fileOf(key
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Serif:ital@1&display=swap">
 <link rel="stylesheet" href="${P.a('css/style.css')}">
 ${lcp ? `<link rel="preload" as="image" href="${P.a(lcp)}" fetchpriority="high">` : ''}
-<script>(function(d){d.classList.add('js');${key === 'home' ? "try{if(!sessionStorage.getItem('zc-intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('intro')}catch(e){}" : ''}setTimeout(function(){if(!d.classList.contains('booted'))d.classList.remove('js','intro')},2500)})(document.documentElement)</script>
+<script>(function(d){d.classList.add('js');${key === 'home' ? "try{if(!sessionStorage.getItem('zc-intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('is-intro')}catch(e){}" : ''}setTimeout(function(){if(!d.classList.contains('booted'))d.classList.remove('js','is-intro')},2500)})(document.documentElement)</script>
 </head>
 <body data-page="${key.split(':')[0]}">
 <a class="skip" href="#main">${t.skip}</a>

@@ -207,14 +207,14 @@ if (!calm) $$('[data-stars]').forEach(box => {
 
 /* ---------- Premier passage : monogramme, puis les objets se rangent dans la bande ---------- */
 function intro() {
-  if (!root.classList.contains('intro')) return Promise.resolve();
+  if (!root.classList.contains('is-intro')) return Promise.resolve();
   try { sessionStorage.setItem('zc-intro', '1'); } catch {}
   const box = $('.intro'), stack = $('.intro-stack'), items = $$('.band-item:not(.is-dup)');
   items.forEach(p => { const im = $('img', p).cloneNode(); im.removeAttribute('loading'); im.removeAttribute('srcset'); im.src = $('img', p).currentSrc || im.src; stack.append(im); });
   const imgs = [...stack.children], flick = 30, start = 240;
   return new Promise(done => {
     let over = false;
-    const end = () => { if (over) return; over = true; root.classList.remove('intro'); done(); };
+    const end = () => { if (over) return; over = true; root.classList.remove('is-intro'); done(); };
     const skip = () => { imgs.forEach(i => i.getAnimations().forEach(a => a.cancel())); end(); };
     ['keydown', 'pointerdown', 'wheel', 'touchstart'].forEach(ev => addEventListener(ev, skip, { once: true, passive: true }));
     imgs.forEach((im, i) => im.animate([{ opacity: 1 }, { opacity: 1 }], { delay: start + i * flick, duration: flick, fill: i === imgs.length - 1 ? 'forwards' : 'none' }));
